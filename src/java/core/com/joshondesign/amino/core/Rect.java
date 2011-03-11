@@ -2,6 +2,8 @@ package com.joshondesign.amino.core;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,8 +15,7 @@ import java.awt.geom.Point2D;
 public class Rect extends Shape {
     private double width;
     private double height;
-    private Color fill = Color.GRAY;
-    private double strokeWidth;
+    private double corner = 0;
 
     public Rect set(double x, double y, double width, double height) {
         this.x = x;
@@ -24,13 +25,9 @@ public class Rect extends Shape {
         return this;
     }
 
-    public Rect setFill(Color fill) {
-        this.fill = fill;
-        return this;
-    }
 
-    public Node setStrokeWidth(double strokeWidth) {
-        this.strokeWidth = strokeWidth;
+    public Rect setCorner(double corner) {
+        this.corner = corner;
         return this;
     }
 
@@ -38,6 +35,21 @@ public class Rect extends Shape {
     public void draw(Graphics2D gfx) {
         gfx.setPaint(fill);
         gfx.fillRect((int)x,(int)y,(int)width, (int)height);
+
+        java.awt.Shape r = null;
+        if(corner > 0) {
+            r = new RoundRectangle2D.Double(x, y, width, height, corner*2, corner*2);
+        } else {
+            r = new Rectangle2D.Double(x, y, width, height);
+        }
+        gfx.fill(r);
+        if(strokeWidth > 0) {
+            gfx.setPaint(stroke);
+            gfx.setStroke(new BasicStroke((float) strokeWidth));
+            gfx.draw(r);
+            gfx.setStroke(new BasicStroke(1));
+        }
+        this.clearDirty();
     }
 
     public double getWidth() {

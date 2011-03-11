@@ -15,7 +15,6 @@ public abstract class Node {
     private boolean visible = true;
     private boolean mouseBlocked = false;
     private boolean dirty = true;
-    private double corner = 0;
 
     public Node() {
 
@@ -62,10 +61,6 @@ public abstract class Node {
         this.dirty = false;
     }
 
-    public Node setCorner(double corner) {
-        this.corner = corner;
-        return this;
-    }
 
 
     public boolean contains(Point2D pt) {

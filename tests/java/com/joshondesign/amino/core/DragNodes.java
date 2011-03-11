@@ -20,12 +20,12 @@ public class DragNodes {
         Group g = new Group();
         runner.root = g;
 
-        Rect r1 = new Rect().set(200, 10, 100, 100);
-        r1.setFill(Color.BLUE).setStrokeWidth(4).setCorner(10);
-        Rect r2 = new Rect().set(40, 200, 100, 100);
-        r2.setFill(Color.RED).setStrokeWidth(4).setCorner(10);
-        Rect r3 = new Rect().set(300, 200, 100, 100);
-        r3.setFill(Color.GREEN).setStrokeWidth(4).setCorner(10);
+        Rect r1 = new Rect().set(200, 10, 100, 100).setCorner(10);
+        r1.setFill(new Color(0xccddff)).setStrokeWidth(4);
+        Rect r2 = new Rect().set(40, 200, 100, 100).setCorner(10);
+        r2.setFill(new Color(0xffccdd)).setStrokeWidth(4);
+        Rect r3 = new Rect().set(300, 200, 100, 100).setCorner(10);
+        r3.setFill(new Color(0xccffdd)).setStrokeWidth(4);
 
         Connector c1 = new Connector(r1,r2);
         Connector c2 = new Connector(r1,r3);

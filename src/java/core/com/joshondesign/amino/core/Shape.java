@@ -1,5 +1,7 @@
 package com.joshondesign.amino.core;
 
+import java.awt.*;
+
 /**
  * Created by IntelliJ IDEA.
  * User: joshmarinacci
@@ -8,4 +10,16 @@ package com.joshondesign.amino.core;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class Shape extends Node {
+    protected Color fill = Color.GRAY;
+    protected double strokeWidth;
+    protected Color stroke = Color.BLACK;
+
+    public Node setStrokeWidth(double strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        return this;
+    }
+    public Shape setFill(Color fill) {
+        this.fill = fill;
+        return this;
+    }
 }
