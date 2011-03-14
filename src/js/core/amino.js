@@ -754,11 +754,6 @@ function Runner() {
             }
             a.update(time);
         }
-        //process callbacks
-        for(i=0;i<self.callbacks.length;i++) {
-            self.callbacks[i]();
-        }
-        
         var ctx = self.canvas.getContext("2d");
         
         if(self.dirtyTrackingEnabled) {
@@ -768,6 +763,18 @@ function Runner() {
             }
         } else {
             self.drawScene(ctx);
+        }
+        
+        //process callbacks
+        for(i=0;i<self.callbacks.length;i++) {
+            var cb = self.callbacks[i];
+            if(!cb.done) {
+                cb();
+            }
+            if(cb.doLater) {
+                cb.doLater = false;
+                cb.done = true;
+            }
         }
         
         ctx.save();
@@ -838,9 +845,42 @@ function Runner() {
         //p("added listener. key = "+ key + " type = " + eventType + " = " + callback);
     };
     
+    this.doLater = function(callback) {
+        callback.doLater = true;
+        callback.done = false;
+        self.addCallback(callback);
+        return self;
+    };
+    
     return true;
 }
 
+
+function Util() {
+    this.toDataURL = function(canvas) {
+	    console.log(" $$ Canvas = " + canvas);
+	    var canWidth = canvas.width;
+	    var canHeight = canvas.height;
+        var c = canvas.getContext('2d');
+        var data = c.getImageData(0,0,canWidth, canHeight);
+        var p = new PNGlib(canWidth, canHeight, 2); 
+        for (var j = 0; j < canHeight; j++) {
+            for (var i = 0; i < canWidth; i++) {
+                var n = i+j*canWidth;
+                var pi = n*4; //pixel index 
+                var r = data.data[pi+0];
+                var g = data.data[pi+1];
+                var b = data.data[pi+2];
+                var a = data.data[pi+3];
+                p.buffer[p.index(i,j)] = p.getColor(r,g,b,a);
+            }
+        }
+        
+        var url = "data:image/png;base64,"+p.getBase64();
+        return url;
+    };
+    return true;
+};
 
 
 
