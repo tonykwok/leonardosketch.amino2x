@@ -5,11 +5,11 @@
 </script>
 
 <body>
-<canvas id="can" width="500" height="500"></canvas>
+<canvas id="canvas" width="500" height="500"></canvas>
 
 <script language="JavaScript">
     var runner = new Runner();
-    runner.setCanvas(document.getElementById("can"));
+    runner.setCanvas(document.getElementById("canvas"));
     
     var g = new Group();
     g.add(new Rect().setWidth(100).setHeight(50).setFill("green"))
