@@ -56,17 +56,20 @@ public class Rect extends Shape {
         return width;
     }
 
-    public void setWidth(double width) {
+    public Rect setWidth(double width) {
         this.width = width;
+        return this;
     }
 
     public double getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public Rect setHeight(double height) {
         this.height = height;
+        return this;
     }
+
     public boolean contains(Point2D pt) {
         double x= pt.getX();
         double y = pt.getY();

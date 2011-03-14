@@ -2,9 +2,7 @@ package com.joshondesign.amino.core;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +32,7 @@ public class Core {
     private int tickIndex;
     private int tickSamples = 30;
     private long[] tickList = new long[tickSamples];
+    private List<PropAnim> anims = new ArrayList<PropAnim>();
 
     public void setSize(int width, int height) {
         this.width = width;
@@ -69,6 +68,11 @@ public class Core {
         MasterListener ml = new MasterListener(comp,root);
         comp.addMouseListener(ml);
         comp.addMouseMotionListener(ml);
+        new Timer(1000/60,new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                comp.repaint();
+            }
+        }).start();
     }
 
     private void drawScene(Graphics2D ctx) {
@@ -86,16 +90,24 @@ public class Core {
 
     private void _update(Graphics2D ctx) {
         long time = System.nanoTime();
-        /*
+
         //process animation
         for(int i=0;i<this.anims.size(); i++) {
-            Anim a = self.anims[i];
+            PropAnim a = anims.get(i);
             if(!a.isStarted()) {
-                a.start(time);
+                try {
+                    a.start(time);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 continue;
             }
-            a.update(time);
-        }*/
+            try {
+                a.update(time);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         //process callbacks
         for(int i=0;i<callbacks.size();i++) {
@@ -143,7 +155,7 @@ public class Core {
         //ctx.restore();
     }
 
-    public void listen(String eventType, Object eventTarget, Callback callback) {
+    public Core listen(String eventType, Object eventTarget, Callback callback) {
         String key = "";
         if(eventTarget != null) {
             key = eventTarget.hashCode()+"";
@@ -158,10 +170,17 @@ public class Core {
         }
         this.listeners.get(key).get(eventType).add(callback);
         //u.p("added listener. key = "+ key + " type = " + eventType + " = " + callback);
+        return this;
     }
 
-    public void addCallback(Callback callback) {
+    public Core addCallback(Callback callback) {
         this.callbacks.add(callback);
+        return this;
+    }
+
+    public Core addAnim(PropAnim anim) {
+        this.anims.add(anim);
+        return this;
     }
 
     private class MasterListener implements MouseListener, MouseMotionListener {
