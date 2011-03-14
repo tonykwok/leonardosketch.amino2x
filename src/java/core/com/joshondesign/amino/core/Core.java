@@ -27,6 +27,13 @@ public class Core {
     private boolean clearBackground = true;
     private Map<String,Map<String,List<Callback>>> listeners = new HashMap<String,Map<String,List<Callback>>>();
     private JComponent comp;
+    private List<Callback> callbacks = new ArrayList<Callback>();
+    private boolean dirtyTrackingEnabled;
+    private long lastTick;
+    private long tickSum;
+    private int tickIndex;
+    private int tickSamples = 30;
+    private long[] tickList = new long[tickSamples];
 
     public void setSize(int width, int height) {
         this.width = width;
@@ -52,7 +59,7 @@ public class Core {
             @Override
             protected void paintComponent(Graphics graphics) {
                 Graphics2D gfx = (Graphics2D) graphics;
-                drawScene(gfx);
+                _update(gfx);
             }
         };
         frame.add(comp);
@@ -77,6 +84,65 @@ public class Core {
         root.draw(ctx);
     }
 
+    private void _update(Graphics2D ctx) {
+        long time = System.nanoTime();
+        /*
+        //process animation
+        for(int i=0;i<this.anims.size(); i++) {
+            Anim a = self.anims[i];
+            if(!a.isStarted()) {
+                a.start(time);
+                continue;
+            }
+            a.update(time);
+        }*/
+
+        //process callbacks
+        for(int i=0;i<callbacks.size();i++) {
+            callbacks.get(i).call(null);
+        }
+
+        //var ctx = self.canvas.getContext("2d");
+
+        if(dirtyTrackingEnabled) {
+            if(root.isDirty()) {
+                //console.log("drawing");
+                drawScene(ctx);
+            }
+        } else {
+            drawScene(ctx);
+        }
+
+
+        //ctx.save();
+        ctx.translate(0,height-50);
+        ctx.setPaint(Color.GRAY);
+        ctx.fillRect(0,-10,200,60);
+        //draw a debugging overlay
+        ctx.setPaint(Color.BLACK);
+        ctx.drawString("timestamp " + System.nanoTime(), 10, 0);
+
+        //calc fps
+        long delta = time-this.lastTick;
+        this.lastTick = time;
+        if(this.tickList.length <= this.tickIndex) {
+            this.tickList[this.tickList.length] = 0;
+        }
+        this.tickSum -= this.tickList[this.tickIndex];
+        this.tickSum += delta;
+        this.tickList[this.tickIndex]=delta;
+        ++this.tickIndex;
+        if(this.tickIndex>=this.tickSamples) {
+            this.tickIndex = 0;
+        }
+        double fpsAverage = this.tickSum/this.tickSamples;
+        ctx.drawString("last msec/frame " + delta/(1000*1000), 10, 10);
+        ctx.drawString("last frame msec " + ((System.nanoTime() - time)/(1000*1000)), 10, 20);
+        ctx.drawString("avg msec/frame  " + (fpsAverage), 10, 30);
+        ctx.drawString("avg fps = " + ((1.0 / fpsAverage) * 1000*1000*1000), 10, 40);
+        //ctx.restore();
+    }
+
     public void listen(String eventType, Object eventTarget, Callback callback) {
         String key = "";
         if(eventTarget != null) {
@@ -92,6 +158,10 @@ public class Core {
         }
         this.listeners.get(key).get(eventType).add(callback);
         //u.p("added listener. key = "+ key + " type = " + eventType + " = " + callback);
+    }
+
+    public void addCallback(Callback callback) {
+        this.callbacks.add(callback);
     }
 
     private class MasterListener implements MouseListener, MouseMotionListener {

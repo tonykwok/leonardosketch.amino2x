@@ -77,15 +77,19 @@ public abstract class Node {
         return x;
     }
 
-    public void setX(double x) {
+    public Node setX(double x) {
         this.x = x;
+        markDirty();
+        return this;
     }
 
     public double getY() {
         return y;
     }
 
-    public void setY(double y) {
+    public Node setY(double y) {
         this.y = y;
+        markDirty();
+        return this;
     }
 }
