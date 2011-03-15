@@ -832,7 +832,7 @@ function Runner() {
                 //send general events next
                 self.fireEvent("MOUSE_DRAG",null,evt);
             }
-        },false);
+        });
         canvas.addEventListener('mouseup',function(e){
             _mouse_pressed = false;
             _drag_target = false;

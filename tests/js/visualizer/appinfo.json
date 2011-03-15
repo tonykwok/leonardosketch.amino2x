@@ -1,0 +1,9 @@
+{
+	"id": "com.joshondesign.amino.visualizer-test",
+	"version": "0.0.2",
+	"vendor": "Josh Marinacci",
+	"type": "web",
+	"main": "index.html",
+	"title": "Amino Visualizer",
+	"icon": "icon.png"
+}
