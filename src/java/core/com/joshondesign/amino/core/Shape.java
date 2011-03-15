@@ -22,4 +22,20 @@ public abstract class Shape extends Node {
         this.fill = fill;
         return this;
     }
+    public Shape setStroke(Color stroke) {
+        this.stroke = stroke;
+        return this;
+    }
+
+    public Color getFill() {
+        return fill;
+    }
+
+    public double getStrokeWidth() {
+        return strokeWidth;
+    }
+
+    public Color getStroke() {
+        return stroke;
+    }
 }

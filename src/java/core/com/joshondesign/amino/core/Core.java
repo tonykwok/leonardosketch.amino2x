@@ -32,7 +32,7 @@ public class Core {
     private int tickIndex;
     private int tickSamples = 30;
     private long[] tickList = new long[tickSamples];
-    private List<PropAnim> anims = new ArrayList<PropAnim>();
+    private List<Anim> anims = new ArrayList<Anim>();
 
     public void setSize(int width, int height) {
         this.width = width;
@@ -93,7 +93,7 @@ public class Core {
 
         //process animation
         for(int i=0;i<this.anims.size(); i++) {
-            PropAnim a = anims.get(i);
+            Anim a = anims.get(i);
             if(!a.isStarted()) {
                 try {
                     a.start(time);
@@ -178,7 +178,7 @@ public class Core {
         return this;
     }
 
-    public Core addAnim(PropAnim anim) {
+    public Core addAnim(Anim anim) {
         this.anims.add(anim);
         return this;
     }

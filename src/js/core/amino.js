@@ -223,6 +223,12 @@ function Shape() {
     this.getStrokeWidth = function() {
         return this.strokeWidth;
     };
+    this.stroke = "black";
+    this.setStroke = function(stroke) {
+        this.stroke = stroke;
+        return this;
+    }
+    this.getStroke = function() { return this.stroke; }
     this.contains = function() { return false; }
     return true;
 }
@@ -282,6 +288,7 @@ Text.extend(Shape);
 
 
 
+
 /* A circle shape */
 function Circle() {
     Shape.call(this);
@@ -326,6 +333,10 @@ function Circle() {
     return true;
 };
 Circle.extend(Shape);
+
+
+
+
 
 
 function ImageView(url) {
@@ -381,6 +392,9 @@ function ImageView(url) {
     return true;
 };
 ImageView.extend(Node);
+
+
+
 
 /* A rectangle shape. May be rounded or have straight corners */
 function Rect() {
@@ -479,6 +493,126 @@ Rect.extend(Shape);
 
 
 
+var SEGMENT_MOVETO = 1;
+var SEGMENT_LINETO = 2;
+var SEGMENT_CLOSETO = 3;
+var SEGMENT_CURVETO = 4;
+function Segment(kind,x,y,a,b,c,d) {
+    this.kind = kind;
+    this.x = x;
+    this.y = y;
+    if(kind == SEGMENT_CURVETO) {
+        this.cx1 = x;
+        this.cy1 = y;
+        this.cx2 = a;
+        this.cy2 = b;
+        this.x = c;
+        this.y = d;
+    }
+};
+
+function Path() {
+    this.segments = [];
+    this.moveTo = function(x,y) {
+        this.segments.push(new Segment(SEGMENT_MOVETO,x,y));
+        return this;
+    };
+    this.lineTo = function(x,y) {
+        this.segments.push(new Segment(SEGMENT_LINETO,x,y));
+        return this;
+    };
+    this.closeTo = function(x,y) {
+        this.segments.push(new Segment(SEGMENT_CLOSETO,x,y));
+        return this;
+    };
+    this.curveTo = function(cx1,cy1,cx2,cy2,x2,y2) {
+        this.segments.push(new Segment(SEGMENT_CURVETO,cx1,cy1,cx2,cy2,x2,y2));
+        return this;
+    };
+    this.build = function() {
+        return this;
+    };
+    
+    this.pointAtT = function(fract) {
+        if(fract >= 1.0 || fract < 0) return [0,0];
+
+        var segIndex = 0;
+        segIndex = Math.floor(fract*(this.segments.length-1));
+        var segFract = (fract*(this.segments.length-1))-segIndex;
+        //console.log("seg index = " + (segIndex+1) + " f=" + fract + " sgf=" + segFract);// + " type=" + this.segments[segIndex+1].kind);
+        var seg = this.segments[segIndex+1];
+        var prev;
+        var cur;
+        switch (seg.kind) {
+            case SEGMENT_MOVETO: return [0,0];
+            case SEGMENT_LINETO:
+                prev = this.segments[segIndex];
+                cur = seg;
+                return this.interpLinear(prev.x,prev.y,cur.x,cur.y,segFract);
+            case SEGMENT_CURVETO:
+                prev = this.segments[segIndex];
+                cur = seg;
+                return this.interpCurve(prev.x,prev.y,cur.cx1,cur.cy1,cur.cx2,cur.cy2, cur.x, cur.y,segFract);
+            case SEGMENT_CLOSETO:
+                prev = this.segments[segIndex];
+                cur = this.segments[0];
+                return this.interpLinear(prev.x,prev.y,cur.x,cur.y,segFract);
+        }
+        return [10,10];
+    };
+
+    this.interpLinear = function(x1, y1, x2, y2, fract) {
+        return [ (x2-x1)*fract + x1, (y2-y1)*fract + y1 ];
+    }
+    
+    this.interpCurve = function( x1, y1, cx1, cy1, cx2, cy2, x2, y2, fract) {
+        return getBezier(fract, [x2,y2], [cx2,cy2], [cx1,cy1], [x1,y1] );
+    }
+    
+    return true;
+};
+
+function B1(t) { return t*t*t; }
+function B2(t) { return 3*t*t*(1-t); }
+function B3(t) { return 3*t*(1-t)*(1-t); }
+function B4(t) { return (1-t)*(1-t)*(1-t); }
+function getBezier(percent, C1, C2, C3, C4) {
+    var pos = [];
+    pos[0] = C1[0]*B1(percent) + C2[0]*B2(percent) + C3[0]*B3(percent) + C4[0]*B4(percent);
+    pos[1] = C1[1]*B1(percent) + C2[1]*B2(percent) + C3[1]*B3(percent) + C4[1]*B4(percent);
+    return pos;
+}
+
+function PathNode() {
+    Shape.call(this);
+    this.path = null;
+    this.setPath = function(path) {
+        this.path = path;
+        return this;
+    };
+    this.draw = function(ctx) {
+        ctx.fillStyle = this.fill;
+        ctx.beginPath();
+        for(var i=0; i<this.path.segments.length; i++) {
+            var s = this.path.segments[i];
+            if(s.kind == SEGMENT_MOVETO) ctx.moveTo(s.x,s.y);
+            if(s.kind == SEGMENT_LINETO) ctx.lineTo(s.x,s.y);
+            if(s.kind == SEGMENT_CURVETO) ctx.bezierCurveTo(s.cx1,s.cy1,s.cx2,s.cy2,s.x,s.y);
+            if(s.kind == SEGMENT_CLOSETO) ctx.closePath();
+        }
+        ctx.fill();
+        if(this.strokeWidth > 0) {
+            ctx.strokeStyle = this.stroke;
+            ctx.lineWidth = this.strokeWidth;
+            ctx.stroke();
+            ctx.lineWidth = 1;
+        }
+        this.clearDirty();
+    };
+    return true;
+};
+PathNode.extend(Shape);
+
 
 
 
@@ -564,7 +698,53 @@ function Anim(n,prop,start,end,duration) {
     return true;
 }    
 
+function PathAnim(n,path,duration) {
+    this.node = n;
+    this.path = path;
+    this.duration = duration;
+    this.loop = false;
+    this.forward = true;
+    var self = this;
+    this.isStarted = function() {
+        return self.started;
+    };
+    this.setLoop = function(loop) {
+        this.loop = loop;
+        return this;
+    };
+    this.start = function(time) {
+        self.started = true;
+        self.startTime = time;
+        //        self.node[self.prop] = self.startValue;
+        return self;
+    };
+    this.update = function(time) {
+        var elapsed = time-self.startTime;
+        var fract = 0.0;
+        fract = elapsed/(duration*1000);
+        if(fract > 1.0) {
+            if(self.loop) {
+                self.startTime = time;
+                if(self.autoReverse) {
+                    self.forward = !self.forward;
+                }
+                fract = 0.0;
+            } else {
+                return;
+            }
+        }
 
+        if(!self.forward) {
+            fract = 1.0-fract;
+        }
+
+        var pt = self.path.pointAtT(fract);
+        self.node.setX(pt[0]);
+        self.node.setY(pt[1]);
+        self.node.setDirty();
+    }
+    return true;
+}
 
 
 

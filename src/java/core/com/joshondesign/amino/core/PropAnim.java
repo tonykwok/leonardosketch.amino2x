@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * Time: 12:20 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PropAnim {
+public class PropAnim extends Anim {
     private Node node;
     private String prop;
     private boolean started;
@@ -55,7 +55,7 @@ public class PropAnim {
         return this;
     }
 
-    PropAnim start(long time) throws InvocationTargetException, IllegalAccessException {
+    Anim start(long time) throws Exception {
     //this.start = function(time) {
         this.startTime = time;
         this.started = true;
@@ -64,7 +64,7 @@ public class PropAnim {
         return this;
     }
 
-    void update(long time) throws InvocationTargetException, IllegalAccessException {
+    void update(long time) throws Exception {
         long elapsed = time-this.startTime;
         double fract = 0.0;
         fract = elapsed/(duration*1000*1000*1000);

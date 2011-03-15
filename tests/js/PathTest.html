@@ -1,0 +1,37 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../src/js/core/amino.js"></script>
+<script language="JavaScript">
+</script>
+
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    
+    //TODO: this should be using a builder or factory to make it immutable
+    var path = new Path()
+                .moveTo(30,30)
+                .lineTo(80,50)
+                //.lineTo(60,90)
+                .curveTo(120,70, 80,100, 60,90)
+                .closeTo()
+                .build();
+    var p = new PathNode().setPath(path).setFill("yellow").setStroke("black").setStrokeWidth(5);
+
+    var c = new Circle().set(200,200,10).setFill("blue");
+    var anim = new PathAnim(c,path,10.0).setLoop(true);
+    runner.addAnim(anim);
+
+    var g = new Group().add(p).add(c);
+    runner.root = g;
+
+    //runner.fps = 1;
+    runner.start();
+    
+</script>
+
+</body>
+</html>
