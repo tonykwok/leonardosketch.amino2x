@@ -1,0 +1,63 @@
+<html>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<script src="amino.js"></script>
+<style type="text/css">
+body { border: 0px solid black; margin: 0; padding: 0}
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+</style>
+<body>
+<img src="standard.png"/>
+<canvas id="canvas" width="1024" height="768"></canvas>
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    runner.transparentBackground = true;
+    //runner.clearBackground = false;
+    runner.setBackground("rgba(0,0,0,0)");
+    
+    var now = new Date();
+    
+    //var iv = new ImageView("standard.png");
+    var g = new Group();
+        //.add(iv)
+    
+    var mh = new Rect()
+        .set(-10,-10,20,200)
+        .setFill("#2d2d2d")
+        .setStrokeWidth(1);
+    var mht= new Transform(mh)
+        .setTranslateX(528)
+        .setTranslateY(360)
+        .setRotate(0);    
+    var m = now.getMinutes()*360/60;
+    runner.addAnim(new Anim(mht,"rotate",m+180,m+360+180,30/*60*60*/).setLoop(true));
+    g.add(mht);
+    
+    var hh = new Rect()
+        .set(-10,-10,20,100)
+        .setFill("#2d2d2d")
+        .setStrokeWidth(1);
+    var hht= new Transform(hh)
+        .setTranslateX(528)
+        .setTranslateY(360)
+        .setRotate(0);    
+    var h = now.getHours()*360/12 + now.getMinutes()*360/60/12;
+    //runner.addAnim(new Anim(hht,"rotate",h+180,h+360+180,12/* *60*60*/).setLoop(true));
+    g.add(hht);
+    
+    var center = new ImageView("images/center.png")
+        .setX(492)
+        .setY(320);
+    g.add(center);
+    runner.root = g;
+    runner.fps = 5;
+    runner.start();
+    
+</script>
+
+</body>
+</html>
