@@ -781,6 +781,7 @@ function Runner() {
     this.fps = 60;
     this.dirtyTrackingEnabled = true;
     this.clearBackground = true;
+    this.DEBUG = true;
     
     var self = this;
     
@@ -974,33 +975,35 @@ function Runner() {
             }
         }
         
-        ctx.save();
-        ctx.translate(0,self.canvas.height-50);
-        ctx.fillStyle = "gray";
-        ctx.fillRect(0,-10,200,60);
-        //draw a debugging overlay
-        ctx.fillStyle = "black";
-        ctx.fillText("timestamp " + new Date().getTime(),10,0);
-        
-        //calc fps
-        var delta = time-self.lastTick;
-        self.lastTick = time;
-        if(self.tickList.length <= self.tickIndex) {
-            self.tickList[self.tickList.length] = 0;
+        if(self.DEBUG) {
+            ctx.save();
+            ctx.translate(0,self.canvas.height-50);
+            ctx.fillStyle = "gray";
+            ctx.fillRect(0,-10,200,60);
+            //draw a debugging overlay
+            ctx.fillStyle = "black";
+            ctx.fillText("timestamp " + new Date().getTime(),10,0);
+            
+            //calc fps
+            var delta = time-self.lastTick;
+            self.lastTick = time;
+            if(self.tickList.length <= self.tickIndex) {
+                self.tickList[self.tickList.length] = 0;
+            }
+            self.tickSum -= self.tickList[self.tickIndex];
+            self.tickSum += delta;
+            self.tickList[self.tickIndex]=delta;
+            ++self.tickIndex;
+            if(self.tickIndex>=self.tickSamples) {
+                self.tickIndex = 0;
+            }
+            var fpsAverage = self.tickSum/self.tickSamples;
+            ctx.fillText("last msec/frame " + delta,10,10);
+            ctx.fillText("last frame msec " + (new Date().getTime()-time),10,20);
+            ctx.fillText("avg msec/frame  " + (fpsAverage).toPrecision(3),10,30);
+            ctx.fillText("avg fps = " + ((1.0/fpsAverage)*1000).toPrecision(3),10,40);
+            ctx.restore();
         }
-        self.tickSum -= self.tickList[self.tickIndex];
-        self.tickSum += delta;
-        self.tickList[self.tickIndex]=delta;
-        ++self.tickIndex;
-        if(self.tickIndex>=self.tickSamples) {
-            self.tickIndex = 0;
-        }
-        var fpsAverage = self.tickSum/self.tickSamples;
-        ctx.fillText("last msec/frame " + delta,10,10);
-        ctx.fillText("last frame msec " + (new Date().getTime()-time),10,20);
-        ctx.fillText("avg msec/frame  " + (fpsAverage).toPrecision(3),10,30);
-        ctx.fillText("avg fps = " + ((1.0/fpsAverage)*1000).toPrecision(3),10,40);
-        ctx.restore();
     };
     
     this.start = function() {

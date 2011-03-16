@@ -13,6 +13,9 @@ body { border: 0px solid black; margin: 0; padding: 0}
 <img src="standard.png"/>
 <canvas id="canvas" width="1024" height="768"></canvas>
 <script language="JavaScript">
+    if (window.PalmSystem) {
+        window.PalmSystem.enableFullScreenMode(true);
+    }
     var runner = new Runner();
     runner.setCanvas(document.getElementById("canvas"));
     runner.transparentBackground = true;
@@ -34,7 +37,7 @@ body { border: 0px solid black; margin: 0; padding: 0}
         .setTranslateY(360)
         .setRotate(0);    
     var m = now.getMinutes()*360/60;
-    runner.addAnim(new Anim(mht,"rotate",m+180,m+360+180,30/*60*60*/).setLoop(true));
+    runner.addAnim(new Anim(mht,"rotate",m+180,m+360+180,60*60).setLoop(true));
     g.add(mht);
     
     var hh = new Rect()
@@ -46,7 +49,7 @@ body { border: 0px solid black; margin: 0; padding: 0}
         .setTranslateY(360)
         .setRotate(0);    
     var h = now.getHours()*360/12 + now.getMinutes()*360/60/12;
-    //runner.addAnim(new Anim(hht,"rotate",h+180,h+360+180,12/* *60*60*/).setLoop(true));
+    runner.addAnim(new Anim(hht,"rotate",h+180,h+360+180,12*60*60).setLoop(true));
     g.add(hht);
     
     var center = new ImageView("images/center.png")
@@ -55,6 +58,7 @@ body { border: 0px solid black; margin: 0; padding: 0}
     g.add(center);
     runner.root = g;
     runner.fps = 5;
+    runner.DEBUG = false;
     runner.start();
     
 </script>

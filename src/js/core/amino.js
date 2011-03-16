@@ -794,11 +794,19 @@ function Runner() {
         return self;
     };
     
+    function attachEvent(node,name,func) {
+        if(node.addEventListener) {
+            node.addEventListener(name,func,false);
+        } else if(node.attachEvent) {
+            node.attachEvent(name,func);
+        }
+    };
+    
     this.setCanvas = function(canvas) {
         self.canvas = canvas;
         var _mouse_pressed = false;
         var _drag_target = null;
-        canvas.addEventListener('mousedown',function(e){
+        attachEvent(canvas,'mousedown',function(e){
             _mouse_pressed = true;
             //send target node event first
             var node = self.findNode(self.root,e.offsetX,e.offsetY);
@@ -821,8 +829,8 @@ function Runner() {
             //send general events next
             self.fireEvent("MOUSE_PRESS",null,evt);
             //p("---------------");
-        },false);
-        canvas.addEventListener('mousemove', function(e) {
+        });
+        attachEvent(canvas,'mousemove',function(e){
             if(_mouse_pressed) {
                 var node = self.findNode(self.root,e.offsetX,e.offsetY);
                 var evt = new MEvent();
@@ -845,8 +853,8 @@ function Runner() {
                 //send general events next
                 self.fireEvent("MOUSE_DRAG",null,evt);
             }
-        },false);
-        canvas.addEventListener('mouseup',function(e){
+        });
+        attachEvent(canvas, 'mouseup', function(e) {
             _mouse_pressed = false;
             _drag_target = false;
             //send target node event first
@@ -866,7 +874,7 @@ function Runner() {
             }
             //send general events next
             self.fireEvent("MOUSE_RELEASE",null,evt);
-        },false);
+        });
         return self;
     };
     
