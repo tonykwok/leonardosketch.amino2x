@@ -18,15 +18,15 @@ body { border: 0px solid black; margin: 0; padding: 0}
     }
     var runner = new Runner();
     runner.setCanvas(document.getElementById("canvas"));
-    runner.transparentBackground = true;
+    //runner.transparentBackground = true;
     //runner.clearBackground = false;
     runner.setBackground("rgba(0,0,0,0)");
     
     var now = new Date();
     
-    //var iv = new ImageView("standard.png");
     var g = new Group();
-        //.add(iv)
+    var iv = new ImageView("standard.png");
+    g.add(iv)
     
     var mh = new Rect()
         .set(-10,-10,20,200)
@@ -37,7 +37,7 @@ body { border: 0px solid black; margin: 0; padding: 0}
         .setTranslateY(360)
         .setRotate(0);    
     var m = now.getMinutes()*360/60;
-    runner.addAnim(new Anim(mht,"rotate",m+180,m+360+180,60*60).setLoop(true));
+    runner.addAnim(new Anim(mht,"rotate",m+180,m+360+180,40/*60*60*/).setLoop(true));
     g.add(mht);
     
     var hh = new Rect()
@@ -58,7 +58,7 @@ body { border: 0px solid black; margin: 0; padding: 0}
     g.add(center);
     runner.root = g;
     runner.fps = 5;
-    runner.DEBUG = false;
+    //runner.DEBUG = false;
     runner.start();
     
 </script>
