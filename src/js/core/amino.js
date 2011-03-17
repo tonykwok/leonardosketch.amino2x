@@ -96,10 +96,11 @@ function Transform(n) {
     this.rotate = 0;
     this.translateX = 0;
     this.translateY = 0;
+    var self = this;
     this.setTranslateX = function(tx) {
-        this.translateX = tx;
-        this.setDirty();
-        return this;
+        self.translateX = tx;
+        self.setDirty();
+        return self;
     };
     this.setRotate = function(rotate) {
         this.rotate = rotate;
@@ -110,6 +111,9 @@ function Transform(n) {
         this.translateY = ty;
         this.setDirty();
         return this;
+    };
+    this.getTranslateX = function() {
+        return this.translateX;
     };
     this.contains = function(x,y) {
         return false;
@@ -133,7 +137,7 @@ function Transform(n) {
     };
     this.draw = function(ctx) {
         ctx.save();
-        ctx.translate(this.translateX,this.translateY);
+        ctx.translate(self.translateX,this.translateY);
         var r = this.rotate % 360;
         if(ROTATE_BACKWARDS) {
             r = 360-r;
@@ -160,6 +164,16 @@ function Group() {
     this.children = [];
     this.parent = null;
     var self = this;
+    this.x = 0;
+    this.y = 0;
+    this.setX = function(x) {
+        self.x = x;
+        return self;
+    };
+    this.setY = function(y) {
+        self.y = y;
+        return self;
+    };
     this.add = function(n) {
         self.children[self.children.length] = n;
         n.setParent(self);
@@ -178,9 +192,11 @@ function Group() {
     this.draw = function(ctx) {
         if(!self.isVisible()) return;
         indent();
+        ctx.translate(self.x,self.y);
         for(var i=0; i<self.children.length;i++) {
             self.children[i].draw(ctx);
         }
+        ctx.translate(-self.x,-self.y);
         outdent();
         this.clearDirty();
     };
@@ -196,7 +212,7 @@ function Group() {
         return true;
     };
     this.convertToChildCoords = function(x,y) {
-        return [x,y];
+        return [x-self.x,y-self.y];
     };
     this.childCount = function() {
         return self.children.length;
@@ -781,6 +797,7 @@ function Runner() {
     this.fps = 60;
     this.dirtyTrackingEnabled = true;
     this.clearBackground = true;
+    this.DEBUG = true;
     
     var self = this;
     
@@ -982,6 +999,7 @@ function Runner() {
             }
         }
         
+        if(self.DEBUG) {
         ctx.save();
         ctx.translate(0,self.canvas.height-50);
         ctx.fillStyle = "gray";
@@ -1009,6 +1027,7 @@ function Runner() {
         ctx.fillText("avg msec/frame  " + (fpsAverage).toPrecision(3),10,30);
         ctx.fillText("avg fps = " + ((1.0/fpsAverage)*1000).toPrecision(3),10,40);
         ctx.restore();
+        }
     };
     
     this.start = function() {
