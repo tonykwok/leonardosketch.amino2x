@@ -476,11 +476,9 @@ function Rect() {
         //console.log("comparing: " + this.x + " " + this.y + " " + this.width + " " + this.height + " --- " + x + " " + y);
         if(x >= this.x && x <= this.x + this.width) {
             if(y >= this.y && y<=this.y + this.height) {
-                //console.log("returning true");
                 return true;
             }
         }
-        //console.log("returning false");
         return false;
     };
     this.draw = function(ctx) {
@@ -488,19 +486,19 @@ function Rect() {
         if(this.corner > 0) {
             var x = this.x;
             var y = this.y;
-            var width = this.width;
-            var height = this.height;
-            var radius = this.corner;
+            var w = this.width;
+            var h = this.height;
+            var r = this.corner;
             ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
-            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-            ctx.lineTo(x + width, y + height - radius);
-            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-            ctx.lineTo(x + radius, y + height);
-            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.moveTo(x+r,y);
+            ctx.lineTo(x+w-r, y);
+            ctx.bezierCurveTo(x+w-r/2,y,   x+w,y+r/2,   x+w,y+r);
+            ctx.lineTo(x+w,y+h-r);
+            ctx.bezierCurveTo(x+w,y+h-r/2, x+w-r/2,y+h, x+w-r, y+h);
+            ctx.lineTo(x+r,y+h);
+            ctx.bezierCurveTo(x+r/2,y+h,   x,y+h-r/2,   x,y+h-r);
+            ctx.lineTo(x,y+r);
+            ctx.bezierCurveTo(x,y+r/2,     x+r/2,y,     x+r,y);
             ctx.closePath();
             ctx.fill();
             if(this.strokeWidth > 0) {
@@ -980,7 +978,6 @@ function Runner() {
         
         if(self.dirtyTrackingEnabled) {
             if(self.root.isDirty()) {
-                //console.log("drawing");
                 self.drawScene(ctx);
             }
         } else {
