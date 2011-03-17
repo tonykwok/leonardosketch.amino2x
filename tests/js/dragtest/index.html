@@ -1,0 +1,74 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="amino.js"></script>
+<body>
+<canvas id="can" width="800" height="600"></canvas>
+
+<script language="JavaScript">
+    
+    
+    //connector is a custom shape that draws a line between the center of
+    //two other shapes
+    function Connector(r1,r2) {
+        this.r1 = r1;
+        this.r2 = r2;
+        this.draw = function(g) {
+            g.strokeStyle = "black";
+            g.lineWidth = 3;
+            g.beginPath();
+            g.moveTo(this.r1.x+this.r1.width/2,this.r1.y+this.r1.height/2);
+            g.lineTo(this.r2.x+this.r2.width/2,this.r2.y+this.r2.height/2);
+            g.stroke();
+        };
+        return true;
+    };
+    Connector.extend(Shape);
+    
+    
+    //the dragger makes all shapes draggable
+    function Dragger(runner) {
+        var sx = 0;
+        var sy = 0;
+        runner.listen("MOUSE_PRESS", null, function(e) {
+            sx = e.x;
+            sy = e.y;
+        });
+        runner.listen("MOUSE_DRAG", null, function(e) {
+            if(e.node) {
+                var dx = e.x-sx;
+                var dy = e.y-sy;
+                sx = e.x;
+                sy = e.y;
+                e.node.setX(e.node.getX() + dx);
+                e.node.setY(e.node.getY() + dy);
+            }
+        });
+        runner.listen("MOUSE_RELEASE", null, function(e) {
+        });
+        
+    };
+    
+    //set up the scene
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("can")).setBackground("white").setFPS(30);
+    
+    var g = new Group();
+    runner.root = g;
+    
+    //add three rects and two connectors to the scene.
+    var r1 = new Rect().set(200,10,100,100).setFill("#ccddff").setStrokeWidth(4).setCorner(10);
+    var r2 = new Rect().set(40,200,100,100).setFill("#ffccdd").setStrokeWidth(4).setCorner(10);
+    var r3 = new Rect().set(300,200,100,100).setFill("ccffdd").setStrokeWidth(4).setCorner(10);
+    var c1 = new Connector(r1,r2);
+    var c2 = new Connector(r1,r3);
+    g.add(c1).add(c2);
+    g.add(r1).add(r2).add(r3);
+        
+    new Dragger(runner);
+    
+    
+    runner.start();
+</script>
+
+</body>
+</html>

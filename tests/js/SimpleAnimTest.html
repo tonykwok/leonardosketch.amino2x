@@ -1,0 +1,31 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../src/js/core/amino.js"></script>
+<script language="JavaScript">
+</script>
+
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    
+    var g = new Group();
+    g.add(new Rect().setWidth(100).setHeight(50).setFill("green"))
+     .add(new Rect().setWidth(50).setHeight(50).setY(100).setFill("yellow"))
+    ;
+
+    var r = new Rect().set(-25,-25,50,50).setFill("white");    
+    var t = new Transform(r).setTranslateX(100).setTranslateY(100);
+    g.add(t);
+    runner.addAnim(new Anim(t,"rotate",0,90,1).setLoop(true).setAutoReverse(false));
+    runner.addAnim(new Anim(t,"translateX",100,500,4).setLoop(true).setAutoReverse(true));
+    runner.addAnim(new Anim(t,"translateY",100,150,0.5).setLoop(true).setAutoReverse(true));
+     
+    runner.root = g;
+    runner.start();
+</script>
+
+</body>
+</html>

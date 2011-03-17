@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<project default="help">
+    <target name="help">
+
+    </target>
+
+    <target name="init">
+        <property name="tests.dir" value="tests/js"/>
+        <property name="amino.path" value="src/js/core/amino.js"/>
+        <mkdir dir="build/webos/tests"/>
+    </target>
+
+    <target name="build-apps">
+        <antcall target="build-app"><param name="appname" value="visualizer"/></antcall>
+        <antcall target="build-app"><param name="appname" value="clock"/></antcall>
+        <antcall target="build-app"><param name="appname" value="blocks"/></antcall>
+        <antcall target="build-app"><param name="appname" value="dragtest"/></antcall>
+    </target>
+
+
+    <target name="build-app" depends="init">
+        <property name="appdir" value="build/webos/tests/${appname}"/>
+        <mkdir dir="${appdir}"/>
+        <copy todir="${appdir}">
+            <fileset dir="${tests.dir}/${appname}">
+                <include name="**"/>
+            </fileset>
+        </copy>
+        <copy todir="${appdir}" file="${amino.path}"/>
+
+        <echo file="${appdir}/appinfo.json">
+{
+        "id": "com.joshondesign.amino.${appname}",
+        "version": "0.0.1",
+        "vendor": "Josh Marinacci",
+        "type": "web",
+        "main": "index.html",
+        "title": "Amino ${appname}",
+        "icon": "icon.png"
+}        </echo>
+
+
+        <exec command="palm-package ${appname}" dir="build/webos/tests"/>
+        <exec command="palm-install com.joshondesign.amino.${appname}_0.0.1_all.ipk" dir="build/webos/tests"/>
+    </target>
+
+    <target name="run-app" depends="init">
+        <antcall target="build-app"/>
+        <!--<param name="appname" value="visualizer"/></antcall>-->
+        <exec command="palm-launch com.joshondesign.amino.${appname}" dir="build/webos/tests"/>
+    </target>
+</project>

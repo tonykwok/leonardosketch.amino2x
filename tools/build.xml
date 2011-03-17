@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<project default="all" basedir="..">
+
+    <target name="init-build">
+        <property name="version" value="0.01"/>
+        <mkdir dir="dist"/>
+    </target>
+    
+    <target name="all" depends="build-java, build-js"/>
+    
+    
+    <target name="build-java" depends="init-build">
+        <mkdir dir="build/classes/"/>
+        <javac destdir="build/classes">
+            <src path="src/java/core"/>
+        </javac>        
+        
+        <jar destfile="dist/amino-${version}.jar">
+            <fileset dir="build/classes"/>
+        </jar>
+        
+    </target>
+    
+    <target name="build-js" depends="init-build">
+        <copy tofile="dist/amino-${version}.js" file="src/js/core/amino.js"/>
+    </target>
+    
+    
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="dist"/>
+    </target>
+    
+</project>

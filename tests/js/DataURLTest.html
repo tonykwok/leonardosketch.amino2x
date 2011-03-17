@@ -1,0 +1,40 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../src/js/core/amino.js"></script>
+    <script src="../../src/js/core/pnglib.js"></script>
+<script language="JavaScript">
+</script>
+<style type="text/css">
+body { background-color: gray; }
+img { border: 1px solid black; }
+</style>
+
+<body>
+<canvas id="canvas" width="300" height="200"></canvas>
+<div id="result">a</div>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    
+    
+    var g = new Group();
+    g.add(new Rect().setWidth(100).setHeight(50).setFill("green"))
+     .add(new Rect().setWidth(50).setHeight(50).setY(100).setFill("yellow"))
+    ;
+    runner.root = g;
+    runner.start();
+    
+    runner.doLater(function() {
+        console.log("doing it");
+        runner.doLater(function() {
+        var url = new Util().toDataURL(document.getElementById("canvas"));
+        //alert("url = " + url.substring(0,40));
+        document.getElementById("result").innerHTML = "<img src='"+url+"'/>";
+        //alert("doc = " + document.getElementById("result"));
+        });
+    });
+</script>
+
+</body>
+</html>
