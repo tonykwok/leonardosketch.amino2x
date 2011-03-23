@@ -111,6 +111,18 @@ function Buffer(w,h) {
         var data = c.getImageData(0,0,this.getWidth(), this.getHeight());
         return data;
     };
+    this.getR = function(data, x, y) {
+        var pi = x+y*this.getWidth();
+        return data.data[pi*4+0];
+    };
+    this.getG = function(data, x, y) {
+        var pi = x+y*this.getWidth();
+        return data.data[pi*4+1];
+    };
+    this.getB = function(data, x, y) {
+        var pi = x+y*this.getWidth();
+        return data.data[pi*4+2];
+    };
     this.getA = function(data, x, y) {
         var pi = x+y*this.getWidth();
         return data.data[pi*4+3];
@@ -122,9 +134,16 @@ function Buffer(w,h) {
         data.data[pi+1] = g; //red
         data.data[pi+2] = b; //green
         data.data[pi+3] = a; //blue
+        return this;
     };
     this.setData = function(data) {
         this.getContext().putImageData(data,0,0);
+        return this;
+    };
+    this.clear = function() {
+        var ctx = this.getContext();
+        ctx.clearRect(0,0,this.getWidth(),this.getHeight());
+        return this;
     };
     return true;
 };
@@ -161,59 +180,208 @@ BufferNode.extend(Node);
 
 /* draws the child into a buffer and applies a shadow
  to it. */
-function ShadowNode(n) {
-	Node.call(this);
+function BlurNode(n) {
+    Node.call(this);
+	console.log("n = " + n);
 	this.node = n;
     this.node.setParent(this);
-    this.buf = null;
-    this.offsetX = 0;
-    this.offsetY = 0;
-    this.setOffsetX = function(x) { this.offsetX = x; return this; }
-    this.setOffsetY = function(y) { this.offsetY = y; return this; }
+    this.buf1 = null;
+    this.buf2 = null;
+    this.blurRadius = 3;
+    this.setBlurRadius = function(r) { this.blurRadius = r; return this; }
     var self = this;
     this.draw = function(ctx) {
         var bounds = this.node.getVisualBounds();
-        if(!this.buf) {
-            this.buf = new Buffer(bounds.getWidth()+this.offsetX,bounds.getHeight()+this.offsetY);
+        if(!this.buf1) {
+            this.buf1 = new Buffer(
+                bounds.getWidth()+this.blurRadius*4
+                ,bounds.getHeight()+this.blurRadius*4
+                );
+            this.buf2 = new Buffer(
+                bounds.getWidth()+this.blurRadius*4
+                ,bounds.getHeight()+this.blurRadius*4
+                );
+        }
+        
+        //redraw the child only if it's dirty
+        if(this.isDirty()) {
+            //render child into first buffer
+            this.buf1.clear();
+            var ctx1 = this.buf1.getContext();
+            ctx1.save();
+            ctx1.translate(
+                -bounds.getX()+this.blurRadius*2
+                ,-bounds.getY()+this.blurRadius*2);
+            this.node.draw(ctx1);
+            ctx1.restore();
+
+            //apply affect from buf1 into buf2
+            this.buf2.clear();
+            this.applyEffect(this.buf1,this.buf2,this.blurRadius);
+            //buf1->buf2
+        }
+        ctx.save();
+        ctx.translate(bounds.getX(),bounds.getY());
+        ctx.drawImage(this.buf2.buffer,0,0);
+        ctx.restore();
+        
+        this.clearDirty();
+    };
+    this.applyEffect = function(buf, buf2, radius) {
+        var data = buf.getData();
+        var s = radius*2;
+        var size = s/2;
+        for(var x = 0+size; x<buf.getWidth()-size; x++) {
+            for(var y = 0+size; y<buf.getHeight()-size; y++) {
+                var r = 0;
+                var g = 0;
+                var b = 0;
+                var a = 0;
+                for(var ix=x-size; ix<=x+size; ix++) {
+                    for(var iy=y-size;iy<=y+size;iy++) {
+                        r += buf.getR(data,ix,iy);
+                        g += buf.getG(data,ix,iy);
+                        b += buf.getB(data,ix,iy);
+                        a += buf.getA(data,ix,iy);
+                    }
+                }
+                var divisor = s*s;
+                r = r/divisor;
+                g = g/divisor;
+                b = b/divisor;
+                a = a/divisor;
+                //r = 0x00; g = 0x00; b = 0x00;
+                a// = a*this.blurOpacity;
+                buf2.setRGBA(data,x,y,r,g,b,a);                
+            }
+        }
+        
+        /*
+        for(var x = 0+size; x<buf.getWidth()-size; x++) {
+            for(var y=0+size; y<buf.getHeight()-size; y++) {
+                var r = buf.getR(data,x,y);
+                var g = buf.getG(data,x,y);
+                var b = buf.getB(data,x,y);
+                var a = buf.getA(data,x,y);
+                buf2.setRGBA(data,x,y,r,g,b,a);
+            }
+        }
+        */
+        
+        /*
+        for(var i = 0; i<buf2.getHeight(); i++) {
+            buf2.setRGBA(data,0,i,0xFF,0xFF,0xFF,0xFF);
+            buf2.setRGBA(data,buf2.getWidth()-1,i,0xFF,0xFF,0xFF,0xFF);
+        }
+        for(var i = 0; i<buf2.getWidth(); i++) {
+            buf2.setRGBA(data,i,0,0xFF,0xFF,0xFF,0xFF);
+            buf2.setRGBA(data,i,buf2.getHeight()-1,i,0xFF,0xFF,0xFF,0xFF);
+        }
+        */
+        
+        buf2.setData(data);        
+    };
+    return true;
+};
+BlurNode.extend(Node);
+
+function ShadowNode(n) {
+	BlurNode.call(this,n);
+    this.offsetX = 0;
+    this.setOffsetX = function(x) { this.offsetX = x; return this; }
+    this.offsetY = 0;
+    this.setOffsetY = function(y) { this.offsetY = y; return this; }
+    this.blurRadius = 3;
+    this.setBlurRadius = function(r) { this.blurRadius = r; return this; }
+    this.blurOpacity = 0.8;
+    this.setBlurOpacity = function(r) { this.blurOpacity = r; return this; }
+    
+    var self = this;
+    this.draw = function(ctx) {
+        var bounds = this.node.getVisualBounds();
+        if(!this.buf1) {
+            this.buf1 = new Buffer(
+                bounds.getWidth()+this.offsetX+this.blurRadius*4
+                ,bounds.getHeight()+this.offsetY+this.blurRadius*4
+                );
+            this.buf2 = new Buffer(
+                bounds.getWidth()+this.offsetX+this.blurRadius*4
+                ,bounds.getHeight()+this.offsetY+this.blurRadius*4
+                );
         }
         //redraw the child only if it's dirty
         if(this.isDirty()) {
-            var ctx2 = this.buf.getContext();
+            //render child into first buffer
+            this.buf1.clear();
+            var ctx1 = this.buf1.getContext();
+            ctx1.save();
+            ctx1.translate(
+                -bounds.getX()+this.blurRadius*2
+                ,-bounds.getY()+this.blurRadius*2);
+            ctx1.translate(this.offsetX,this.offsetY);
+            this.node.draw(ctx1);
+            ctx1.restore();
+
+            //apply affect from buf1 into buf2
+            this.buf2.clear();
+            //buf1->buf2
+            this.applyEffect(this.buf1,this.buf2,this.blurRadius);
+            
+            
+            //draw child over blur in buf2
+            var ctx2 = this.buf2.getContext();
             ctx2.save();
-            ctx2.translate(-bounds.getX(),-bounds.getY());
-            ctx2.translate(this.offsetX,this.offsetY);
-            this.node.draw(ctx2);
-            this.applyEffect();
-            ctx2.restore();
-            ctx2.translate(-bounds.getX(),-bounds.getY());
+            ctx2.translate(
+                -bounds.getX()+this.blurRadius*2
+                ,-bounds.getY()+this.blurRadius*2);
             this.node.draw(ctx2);
             ctx2.restore();
-            }
+        }
         ctx.save();
         ctx.translate(bounds.getX(),bounds.getY());
-        ctx.drawImage(this.buf.buffer,0,0);
+        ctx.drawImage(this.buf2.buffer,0,0);
         ctx.restore();
         this.clearDirty();
     };
     
-    this.applyEffect = function() {
-        var data = this.buf.getData();
-        for(var x = 0; x<this.buf.getWidth(); x++) {
-            for(var y = 0; y<this.buf.getHeight(); y++) {
-                var a = this.buf.getA(data,x,y);
-                if(a > 0) {
-                    this.buf.setRGBA(data,x,y,0x00,0x00,0x00,0xFF);
-                } else {
-                    this.buf.setRGBA(data,x,y,0x00,0x00,0x00,0x00);
+    this.applyEffect = function(buf, buf2, radius) {
+        var data = buf.getData();
+        var s = radius*2;
+        var size = s/2;
+        
+        for(var x = 0+size; x<buf.getWidth()-size; x++) {
+            for(var y = 0+size; y<buf.getHeight()-size; y++) {
+                var r = 0;
+                var g = 0;
+                var b = 0;
+                var a = 0;
+                for(var ix=x-size; ix<=x+size; ix++) {
+                    for(var iy=y-size;iy<=y+size;iy++) {
+                        r += buf.getR(data,ix,iy);
+                        g += buf.getG(data,ix,iy);
+                        b += buf.getB(data,ix,iy);
+                        a += buf.getA(data,ix,iy);
+                    }
                 }
-                
+                var divisor = s*s;
+                r = r/divisor;
+                g = g/divisor;
+                b = b/divisor;
+                a = a/divisor;
+                r = 0x00; g = 0x00; b = 0x00;
+                a = a*this.blurOpacity;
+                buf2.setRGBA(data,x,y,r,g,b,a);                
             }
         }
-        this.buf.setData(data);        
+        buf2.setData(data);        
     };
     return true;
 };
-ShadowNode.extend(Node);
+ShadowNode.extend(BlurNode);
+
+
+
+
 
 
 
