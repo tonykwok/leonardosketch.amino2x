@@ -11,14 +11,18 @@
     runner.setCanvas(document.getElementById("canvas"));
     runner.dirtyTrackingEnabled = false;    
     //runner.setRoot(new BufferNode(new Rect().set(30,40,50,60).setFill("red")));
-    var sn = new ShadowNode(new Circle()
-    	    .set(100,100,50)
-	.setFill("blue"))
-    	.setOffsetX(6).setOffsetY(4);
+    //var sn = new BlurNode(new Circle().set(100,100,25).setFill("yellow"))
+    var sn = new ShadowNode(new Circle().set(100,100,25).setFill("yellow"))
+    	//.setOffsetX(0)
+    	//.setOffsetY(0)
+    	.setBlurRadius(3)
+    	//.setBlurOpacity(0.7)
+    	;
     
     var t = new Transform(sn);
     runner.addAnim(new Anim(t,"translateX",0,90,10).setLoop(true).setAutoReverse(true));
     runner.setRoot(t);
+    runner.setBackground("blue");
     runner.fps = 30;
     runner.start();
     
