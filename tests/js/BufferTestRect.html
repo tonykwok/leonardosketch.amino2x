@@ -1,0 +1,28 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../src/js/core/amino.js"></script>
+<script language="JavaScript">
+</script>
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    runner.dirtyTrackingEnabled = false;    
+    //runner.setRoot(new BufferNode(new Rect().set(30,40,50,60).setFill("red")));
+    var sn = new ShadowNode(new Circle()
+    	    .set(100,100,50)
+	.setFill("blue"))
+    	.setOffsetX(6).setOffsetY(4);
+    
+    var t = new Transform(sn);
+    runner.addAnim(new Anim(t,"translateX",0,90,10).setLoop(true).setAutoReverse(true));
+    runner.setRoot(t);
+    runner.fps = 30;
+    runner.start();
+    
+</script>
+
+</body>
+</html>
