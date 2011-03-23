@@ -84,6 +84,136 @@ function Node() {
     return true;
 }
 
+function Bounds(x,y,w,h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.getX = function() { return this.x; };
+    this.getY = function() { return this.y; };
+    this.getWidth = function() { return this.w; }
+    this.getHeight = function() { return this.h; }
+    return true;
+};
+
+function Buffer(w,h) {
+    this.w = w;
+    this.h = h;
+    this.buffer = document.createElement("canvas");
+    this.buffer.width = this.w;
+    this.buffer.height = this.h;
+    var self = this;
+    this.getWidth = function() { return this.w; }
+    this.getHeight = function() { return this.h; }
+    this.getContext = function() { return self.buffer.getContext('2d'); }
+    this.getData = function() {
+        var c = this.getContext();
+        var data = c.getImageData(0,0,this.getWidth(), this.getHeight());
+        return data;
+    };
+    this.getA = function(data, x, y) {
+        var pi = x+y*this.getWidth();
+        return data.data[pi*4+3];
+    };
+    this.setRGBA = function(data,x,y,r,g,b,a) {
+        var pi = (x+y*this.getWidth())*4;
+        //console.log("pi = " + pi);
+        data.data[pi+0] = r; //alpha
+        data.data[pi+1] = g; //red
+        data.data[pi+2] = b; //green
+        data.data[pi+3] = a; //blue
+    };
+    this.setData = function(data) {
+        this.getContext().putImageData(data,0,0);
+    };
+    return true;
+};
+
+/* draws the child into a buffer */
+function BufferNode(n) {
+	Node.call(this);
+	this.node = n;
+    this.node.setParent(this);
+    this.buf = null;//= new Buffer(200,200);
+    var self = this;
+    this.draw = function(ctx) {
+        var bounds = this.node.getVisualBounds();
+        if(!this.buf) {
+            this.buf = new Buffer(bounds.getWidth(),bounds.getHeight());
+        }
+        //redraw the child only if it's dirty
+        if(this.isDirty()) {
+            var ctx2 = this.buf.getContext();
+            ctx2.save();
+            ctx2.translate(-bounds.getX(),-bounds.getY());
+            this.node.draw(ctx2);
+            ctx2.restore();
+        }
+        ctx.save();
+        ctx.translate(bounds.getX(),bounds.getY());
+        ctx.drawImage(this.buf.buffer,0,0);
+        ctx.restore();
+        this.clearDirty();
+    };
+    return true;
+};
+BufferNode.extend(Node);
+
+/* draws the child into a buffer and applies a shadow
+ to it. */
+function ShadowNode(n) {
+	Node.call(this);
+	this.node = n;
+    this.node.setParent(this);
+    this.buf = null;
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this.setOffsetX = function(x) { this.offsetX = x; return this; }
+    this.setOffsetY = function(y) { this.offsetY = y; return this; }
+    var self = this;
+    this.draw = function(ctx) {
+        var bounds = this.node.getVisualBounds();
+        if(!this.buf) {
+            this.buf = new Buffer(bounds.getWidth()+this.offsetX,bounds.getHeight()+this.offsetY);
+        }
+        //redraw the child only if it's dirty
+        if(this.isDirty()) {
+            var ctx2 = this.buf.getContext();
+            ctx2.save();
+            ctx2.translate(-bounds.getX(),-bounds.getY());
+            ctx2.translate(this.offsetX,this.offsetY);
+            this.node.draw(ctx2);
+            this.applyEffect();
+            ctx2.restore();
+            ctx2.translate(-bounds.getX(),-bounds.getY());
+            this.node.draw(ctx2);
+            ctx2.restore();
+            }
+        ctx.save();
+        ctx.translate(bounds.getX(),bounds.getY());
+        ctx.drawImage(this.buf.buffer,0,0);
+        ctx.restore();
+        this.clearDirty();
+    };
+    
+    this.applyEffect = function() {
+        var data = this.buf.getData();
+        for(var x = 0; x<this.buf.getWidth(); x++) {
+            for(var y = 0; y<this.buf.getHeight(); y++) {
+                var a = this.buf.getA(data,x,y);
+                if(a > 0) {
+                    this.buf.setRGBA(data,x,y,0x00,0x00,0x00,0xFF);
+                } else {
+                    this.buf.setRGBA(data,x,y,0x00,0x00,0x00,0x00);
+                }
+                
+            }
+        }
+        this.buf.setData(data);        
+    };
+    return true;
+};
+ShadowNode.extend(Node);
 
 
 
@@ -359,6 +489,12 @@ function Circle() {
         }
         return false;
     };
+    this.getVisualBounds = function() {
+        return new Bounds(this.x-this.radius
+            ,this.y-this.radius
+            ,this.radius*2
+            ,this.radius*2);
+    };
     return true;
 };
 Circle.extend(Shape);
@@ -513,6 +649,9 @@ function Rect() {
             }
         }
         this.clearDirty();
+    };
+    this.getVisualBounds = function() {
+        return new Bounds(this.x,this.y,this.width,this.height);
     };
     return true;
 };
@@ -799,6 +938,10 @@ function Runner() {
     
     var self = this;
     
+    this.setRoot = function(r) {
+        self.root = r;
+        return self;
+    };
     this.setBackground = function(background) {
         self.background = background;
         return self;
