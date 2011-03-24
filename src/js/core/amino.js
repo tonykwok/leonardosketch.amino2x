@@ -181,9 +181,11 @@ function Bounds(x,y,w,h) {
 @class Buffer An offscreen area that you can draw into. Used for special effects and caching.
 */
 function Buffer(w,h) {
+    var self = this;    
+    
     //@property width  The width of the buffer, set at creation time.
     this.w = w;
-    this.getWidth = function() { return this.w; }
+    this.getWidth = function() { return self.w; }
     
     //@property height  The height of the buffer, set at creation time.
     this.h = h;
@@ -192,7 +194,6 @@ function Buffer(w,h) {
     this.buffer = document.createElement("canvas");
     this.buffer.width = this.w;
     this.buffer.height = this.h;
-    var self = this;    
     
     //@doc get the Canvas 2D context of the buffer, so you can draw on it
     this.getContext = function() { return self.buffer.getContext('2d'); }
@@ -200,6 +201,7 @@ function Buffer(w,h) {
     //@doc Get an canvas ImageData structure.
     this.getData = function() {
         var c = this.getContext();
+        console.log("getting data for c " + self.getWidth() + " " + this.getHeight());
         var data = c.getImageData(0,0,this.getWidth(), this.getHeight());
         return data;
     };
@@ -288,20 +290,29 @@ BufferNode.extend(Node);
 /*
 @class SaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
 */
-function SaturationNode() {
+function SaturationNode(n) {
     Node.call(this);
 	this.node = n;
     this.node.setParent(this);
     this.buf1 = null;
     this.buf2 = null;
+    
+    //@property saturation value between 0 and 1
+    this.saturation = 0.5;
+    this.setSaturation = function(s) {
+        this.saturation = s;
+        return this;
+    };
     var self = this;
     this.draw = function(ctx) {
         var bounds = this.node.getVisualBounds();
         if(!this.buf1) {
+            console.log("creating buffers");
             this.buf1 = new Buffer(
                 bounds.getWidth()+this.blurRadius*4
                 ,bounds.getHeight()+this.blurRadius*4
                 );
+            console.log("buffer width is " + this.buf1.getWidth());
             this.buf2 = new Buffer(
                 bounds.getWidth()+this.blurRadius*4
                 ,bounds.getHeight()+this.blurRadius*4
@@ -333,6 +344,7 @@ function SaturationNode() {
         this.clearDirty();
     };
     this.applyEffect = function(buf, buf2, radius) {
+        console.log("buf = " + buf + " "+ buf.getWidth());
         var data = buf.getData();
         var s = radius*2;
         var size = s/2;
@@ -370,7 +382,7 @@ function SaturationNode() {
                 buf2.setRGBA(data,x,y,r,g,b,a);
             }
         }
-        
+        /*
         for(var i = 0; i<buf2.getHeight(); i++) {
             buf2.setRGBA(data,0,i,0xFF,0xFF,0xFF,0xFF);
             buf2.setRGBA(data,buf2.getWidth()-1,i,0xFF,0xFF,0xFF,0xFF);
@@ -379,7 +391,7 @@ function SaturationNode() {
             buf2.setRGBA(data,i,0,0xFF,0xFF,0xFF,0xFF);
             buf2.setRGBA(data,i,buf2.getHeight()-1,i,0xFF,0xFF,0xFF,0xFF);
         }
-        
+        */
         buf2.setData(data);        
     };
     return true;
@@ -392,10 +404,10 @@ SaturationNode.extend(Node);
 @class BlurNode A parent node which blurs its child.
 */
 function BlurNode(n) {
-    Node.call(this);
-	console.log("n = " + n);
 	this.node = n;
-    this.node.setParent(this);
+	console.log("n = " + n);
+    Node.call(this);
+    if(n) n.setParent(this);
     this.buf1 = null;
     this.buf2 = null;
     
@@ -503,6 +515,7 @@ BlurNode.extend(Node);
 @class ShadowNode A parent node which draws a shadow under its child. Uses a buffer internally.
 */
 function ShadowNode(n) {
+    console.log("initing shadow node");
 	BlurNode.call(this,n);
 	
 	//@property offsetX The X offset of the shadow
