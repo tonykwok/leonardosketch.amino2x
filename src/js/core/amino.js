@@ -1,3 +1,63 @@
+/*
+@overview Amino: JavaScript Scenegraph
+
+Amino is a scenegraph for drawing 2D graphics in JavaScript with the
+HTML 5 Canvas API. By creating a tree of nodes, you can draw shapes, text, images special effects; complete with transforms and animation.
+Amino takes care of all rendering, animation, and event handling
+so you can build *rich* interactive graphics with very little code.
+Using Amino is much more convenient than writing canvas code by hand.
+
+Here's a quick example:
+    
+
+    <canvas id="can" width="200" height="200"></canvas>
+    <script>
+    
+    //attach a runner to the canvas
+    var can = document.getElementById("can");
+    var runner = new Runner().setCanvas(can);
+    
+    //create a rect and a circle
+    var r = new Rect().set(0,0,50,50).setFill("green");
+    var c = new Circle().set(100,100,30).setFill("blue");
+    
+    //add the shapes to a group
+    var g = new Group().add(r).add(c);
+    
+    //make the rectangle go left and right every 5 seconds
+    var anim = new Anim(g,"x",0,150,5);
+    runner.addAnim(anim);
+    
+    //set the group as the root of the scenegraph, then start
+    runner.root = g;
+    runner.start();
+    
+    </script>
+
+A note on properties. Most objects have properties like `x` or `width`.
+Properties are accessed with getters.  For example, to access the `width`
+property on a rectangle, call `rect.getWidth()`. Properties are set 
+with setters. For example, to set the `width` property
+on a rectangle, call `rect.setWidth(100)`. Most functions, especially 
+property setters, are chainable. This means you
+can set a bunch of properties at once like this:
+
+    var c = new Rect()
+        .setX(50)
+        .setY(50)
+        .setWidth(100)
+        .setHeight(200)
+        .setFill("green")
+        .setStrokeWidth(5)
+        .setStroke("black")
+        ;
+
+
+    
+@end
+*/
+
+//@language javascript
 var ROTATE_BACKWARDS = false;
 if (window.PalmSystem) {
     ROTATE_BACKWARDS = true;
@@ -40,20 +100,22 @@ function p(s) {
 
 
 
-/* The root node class. All nodes have a parent and could
-potentially have children */
-
+/*
+@class Node The base class for all nodes. All nodes have a parent and can potentially have children if they implement *hasChildren*.
+*/
 __node_hash_counter = 0;
 function Node() {
-    this.parent = null;
     __node_hash_counter++;
     this._hash = __node_hash_counter;
     var self = this;
+    
+    //@property parent Get the parent of this node, or null if there is no parent.  A node not yet put into the scene may not have a parent. The top most node may not have a parent.
+    this.parent = null;
     this.setParent = function(parent) { this.parent = parent; return this; };
     this.getParent = function() { return this.parent; };
+    
+    //@property visible Indicates if the node is visible. Non-visible nodes are not drawn on screen.      non visible nodes cannot intercept click events.
     this.visible = true;
-    this.dirty = true;
-    this.blocksMouse = false;
     this.setVisible = function(visible) {
         self.visible = visible;
         self.setDirty();
@@ -62,6 +124,10 @@ function Node() {
     this.isVisible = function() {
         return this.visible;
     };
+    
+    
+    // @property blocksMouse Indicates if this node will block mouse events from hitting nodes beneath it.
+    this.blocksMouse = false;
     this.isMouseBlocked = function() {
         return this.blocksMouse;
     };
@@ -69,64 +135,100 @@ function Node() {
         this.blocksMouse = m;
         return this;
     };
+    
+    this.dirty = true;
+    //@doc Marks this node as dirty, so it is scheduled to be redrawn
     this.setDirty = function() {
         this.dirty = true;
         if(this.getParent()) {
             this.getParent().setDirty();
         }
     };
+    //@doc Returns if this node is dirty, meaning it still needs to be completely redrawn
     this.isDirty = function() {
         return self.dirty;
     };
+    //@doc Clears the dirty bit. usually this is called by the node itself after it redraws itself
     this.clearDirty = function() {
         self.dirty = false;
     };
     return true;
 }
 
+/*
+@class Bounds  Represents the maximum bounds of something, usually the visible bounds of a node.
+*/
 function Bounds(x,y,w,h) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    
+    
+    //@property x Return the x coordinate of the bounds.
     this.getX = function() { return this.x; };
+    //@property y Return the y coordinate of the bounds.
     this.getY = function() { return this.y; };
+    //@property width Return the width of the bounds.
     this.getWidth = function() { return this.w; }
+    //@property height Return the height of the bounds.
     this.getHeight = function() { return this.h; }
+    
     return true;
 };
 
+/*
+@class Buffer An offscreen area that you can draw into. Used for special effects and caching.
+*/
 function Buffer(w,h) {
+    //@property width  The width of the buffer, set at creation time.
     this.w = w;
+    this.getWidth = function() { return this.w; }
+    
+    //@property height  The height of the buffer, set at creation time.
     this.h = h;
+    this.getHeight = function() { return this.h; }
+    
     this.buffer = document.createElement("canvas");
     this.buffer.width = this.w;
     this.buffer.height = this.h;
-    var self = this;
-    this.getWidth = function() { return this.w; }
-    this.getHeight = function() { return this.h; }
+    var self = this;    
+    
+    //@doc get the Canvas 2D context of the buffer, so you can draw on it
     this.getContext = function() { return self.buffer.getContext('2d'); }
+    
+    //@doc Get an canvas ImageData structure.
     this.getData = function() {
         var c = this.getContext();
         var data = c.getImageData(0,0,this.getWidth(), this.getHeight());
         return data;
     };
+    
+    //@method Return the *red* component at the specified x and y.
     this.getR = function(data, x, y) {
         var pi = x+y*this.getWidth();
         return data.data[pi*4+0];
     };
+    
+    //@method Return the *green* component at the specified x and y.
     this.getG = function(data, x, y) {
         var pi = x+y*this.getWidth();
         return data.data[pi*4+1];
     };
+    
+    //@method Return the *blue* component at the specified x and y.
     this.getB = function(data, x, y) {
         var pi = x+y*this.getWidth();
         return data.data[pi*4+2];
     };
+    
+    //@method Return the *alpha* component at the specified x and y.
     this.getA = function(data, x, y) {
         var pi = x+y*this.getWidth();
         return data.data[pi*4+3];
     };
+    
+    //@method Set the red, green, blue, and alpha components at the specified x and y.
     this.setRGBA = function(data,x,y,r,g,b,a) {
         var pi = (x+y*this.getWidth())*4;
         //console.log("pi = " + pi);
@@ -136,10 +238,12 @@ function Buffer(w,h) {
         data.data[pi+3] = a; //blue
         return this;
     };
+    //@method Set the data structure back into the canvas. This should be the same value you got from *getData()*.
     this.setData = function(data) {
         this.getContext().putImageData(data,0,0);
         return this;
     };
+    //@method Clear the buffer with transparent black.
     this.clear = function() {
         var ctx = this.getContext();
         ctx.clearRect(0,0,this.getWidth(),this.getHeight());
@@ -148,7 +252,9 @@ function Buffer(w,h) {
     return true;
 };
 
-/* draws the child into a buffer */
+/* 
+@class BufferNode A node which draws its child into a buffer. Use it to cache children which are expensive to draw.
+*/
 function BufferNode(n) {
 	Node.call(this);
 	this.node = n;
@@ -178,8 +284,113 @@ function BufferNode(n) {
 };
 BufferNode.extend(Node);
 
-/* draws the child into a buffer and applies a shadow
- to it. */
+
+/*
+@class SaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
+*/
+function SaturationNode() {
+    Node.call(this);
+	this.node = n;
+    this.node.setParent(this);
+    this.buf1 = null;
+    this.buf2 = null;
+    var self = this;
+    this.draw = function(ctx) {
+        var bounds = this.node.getVisualBounds();
+        if(!this.buf1) {
+            this.buf1 = new Buffer(
+                bounds.getWidth()+this.blurRadius*4
+                ,bounds.getHeight()+this.blurRadius*4
+                );
+            this.buf2 = new Buffer(
+                bounds.getWidth()+this.blurRadius*4
+                ,bounds.getHeight()+this.blurRadius*4
+                );
+        }
+        
+        //redraw the child only if it's dirty
+        if(this.isDirty()) {
+            //render child into first buffer
+            this.buf1.clear();
+            var ctx1 = this.buf1.getContext();
+            ctx1.save();
+            ctx1.translate(
+                -bounds.getX()+this.blurRadius*2
+                ,-bounds.getY()+this.blurRadius*2);
+            this.node.draw(ctx1);
+            ctx1.restore();
+
+            //apply affect from buf1 into buf2
+            this.buf2.clear();
+            this.applyEffect(this.buf1,this.buf2,5);
+            //buf1->buf2
+        }
+        ctx.save();
+        ctx.translate(bounds.getX(),bounds.getY());
+        ctx.drawImage(this.buf2.buffer,0,0);
+        ctx.restore();
+        
+        this.clearDirty();
+    };
+    this.applyEffect = function(buf, buf2, radius) {
+        var data = buf.getData();
+        var s = radius*2;
+        var size = s/2;
+        for(var x = 0+size; x<buf.getWidth()-size; x++) {
+            for(var y = 0+size; y<buf.getHeight()-size; y++) {
+                var r = 0;
+                var g = 0;
+                var b = 0;
+                var a = 0;
+                for(var ix=x-size; ix<=x+size; ix++) {
+                    for(var iy=y-size;iy<=y+size;iy++) {
+                        r += buf.getR(data,ix,iy);
+                        g += buf.getG(data,ix,iy);
+                        b += buf.getB(data,ix,iy);
+                        a += buf.getA(data,ix,iy);
+                    }
+                }
+                var divisor = s*s;
+                r = r/divisor;
+                g = g/divisor;
+                b = b/divisor;
+                a = a/divisor;
+                //r = 0x00; g = 0x00; b = 0x00;
+                a// = a*this.blurOpacity;
+                buf2.setRGBA(data,x,y,r,g,b,a);                
+            }
+        }
+        
+        for(var x = 0+size; x<buf.getWidth()-size; x++) {
+            for(var y=0+size; y<buf.getHeight()-size; y++) {
+                var r = buf.getR(data,x,y);
+                var g = buf.getG(data,x,y);
+                var b = buf.getB(data,x,y);
+                var a = buf.getA(data,x,y);
+                buf2.setRGBA(data,x,y,r,g,b,a);
+            }
+        }
+        
+        for(var i = 0; i<buf2.getHeight(); i++) {
+            buf2.setRGBA(data,0,i,0xFF,0xFF,0xFF,0xFF);
+            buf2.setRGBA(data,buf2.getWidth()-1,i,0xFF,0xFF,0xFF,0xFF);
+        }
+        for(var i = 0; i<buf2.getWidth(); i++) {
+            buf2.setRGBA(data,i,0,0xFF,0xFF,0xFF,0xFF);
+            buf2.setRGBA(data,i,buf2.getHeight()-1,i,0xFF,0xFF,0xFF,0xFF);
+        }
+        
+        buf2.setData(data);        
+    };
+    return true;
+}
+SaturationNode.extend(Node);
+
+
+
+/*
+@class BlurNode A parent node which blurs its child.
+*/
 function BlurNode(n) {
     Node.call(this);
 	console.log("n = " + n);
@@ -187,8 +398,11 @@ function BlurNode(n) {
     this.node.setParent(this);
     this.buf1 = null;
     this.buf2 = null;
+    
+    //@property blurRadius the radius of the blur
     this.blurRadius = 3;
     this.setBlurRadius = function(r) { this.blurRadius = r; return this; }
+    
     var self = this;
     this.draw = function(ctx) {
         var bounds = this.node.getVisualBounds();
@@ -285,14 +499,25 @@ function BlurNode(n) {
 };
 BlurNode.extend(Node);
 
+/*
+@class ShadowNode A parent node which draws a shadow under its child. Uses a buffer internally.
+*/
 function ShadowNode(n) {
 	BlurNode.call(this,n);
+	
+	//@property offsetX The X offset of the shadow
     this.offsetX = 0;
     this.setOffsetX = function(x) { this.offsetX = x; return this; }
+    
+    //@property offsetY The Y offset of the shadow
     this.offsetY = 0;
     this.setOffsetY = function(y) { this.offsetY = y; return this; }
+    
+    //@property blurRadius The radius of the shadow area
     this.blurRadius = 3;
     this.setBlurRadius = function(r) { this.blurRadius = r; return this; }
+    
+    //@property blurOpacity The opacity of the shadow
     this.blurOpacity = 0.8;
     this.setBlurOpacity = function(r) { this.blurOpacity = r; return this; }
     
@@ -385,33 +610,40 @@ ShadowNode.extend(BlurNode);
 
 
 
-/* transforms the children inside of it */
-
+/*
+@class Transform Transforms the child inside of it with a translation and/or rotation.
+*/
 function Transform(n) {
     Node.call(this);
     this.node = n;
     this.node.setParent(this);
     this.rotate = 0;
-    this.translateX = 0;
-    this.translateY = 0;
     var self = this;
+    
+    //@property translateX translate in the X direction
+    this.translateX = 0;
     this.setTranslateX = function(tx) {
         self.translateX = tx;
         self.setDirty();
         return self;
     };
-    this.setRotate = function(rotate) {
-        this.rotate = rotate;
-        this.setDirty();
-        return this;
+    this.getTranslateX = function() {
+        return this.translateX;
     };
+    
+    //@property translateY translate in the Y direction
+    this.translateY = 0;
     this.setTranslateY = function(ty) {
         this.translateY = ty;
         this.setDirty();
         return this;
     };
-    this.getTranslateX = function() {
-        return this.translateX;
+    
+    //@property rotate set the rotation, in degrees
+    this.setRotate = function(rotate) {
+        this.rotate = rotate;
+        this.setDirty();
+        return this;
     };
     this.contains = function(x,y) {
         return false;
@@ -453,8 +685,8 @@ Transform.extend(Node);
 
 
 
-/* A Group holds a set of child nodes. It does not draw anything
-by itself, but setting visible to false will hide the children.
+/*
+@class Group A parent node which holds an ordered list of child nodes. It does not draw anything by itself, but setting visible to false will hide the children.
 */
 
 function Group() {
@@ -462,22 +694,28 @@ function Group() {
     this.children = [];
     this.parent = null;
     var self = this;
+    
+    //@property x set the x coordinate of the group.
     this.x = 0;
-    this.y = 0;
     this.setX = function(x) {
         self.x = x;
         return self;
     };
+    //@property y set the y coordinate of the group.
+    this.y = 0;
     this.setY = function(y) {
         self.y = y;
         return self;
     };
+    
+    //@method Add the child `n` to this group.
     this.add = function(n) {
         self.children[self.children.length] = n;
         n.setParent(self);
         self.setDirty();
         return self;
     };
+    //@method Remove the child `n` from this group.
     this.remove = function(n) {
         var i = self.children.indexOf(n);
         if(i >= 0) {
@@ -487,6 +725,7 @@ function Group() {
         self.setDirty();
         return self;
     };
+    
     this.draw = function(ctx) {
         if(!self.isVisible()) return;
         indent();
@@ -498,23 +737,29 @@ function Group() {
         outdent();
         this.clearDirty();
     };
+    //@method Remove all children from this group.
     this.clear = function() {
         self.children = [];
         self.setDirty();
         return self;
     };
+    //@method Always returns false. You should call contains on the children instead.
     this.contains = function(x,y) {
         return false;
     };
+    //@method Always returns true, whether or not it actually has children at the time.
     this.hasChildren = function() {
         return true;
     };
+    //@method Convert the `x` and `y` in to child coordinates.
     this.convertToChildCoords = function(x,y) {
         return [x-self.x,y-self.y];
     };
+    //@method Returns the number of child nodes in this group.
     this.childCount = function() {
         return self.children.length;
     };
+    //@method Returns the child node at index `n`.
     this.getChild = function(n) {
         return self.children[n];
     };
@@ -525,13 +770,14 @@ Group.extend(Node, {});
 
 
 
-/* The base of all shapes. Shapes are geometric
-shapes which have a fill, a stroke, and opacity. They
-may be filled or unfilled.  */
+/* 
+@class Shape The base of all shapes. Shapes are geometric shapes which have a fill, a stroke, and opacity. They may be filled or unfilled. 
+*/
 function Shape() {
     Node.call(this);
     this.hasChildren = function() { return false; }
     
+    //@property fill The color, gradient, or texture used to fill the shape. May be set to "" or null.
     this.fill = "red";
     this.setFill = function(fill) {
         this.fill = fill;
@@ -541,21 +787,17 @@ function Shape() {
     this.getFill = function() {
         return this.fill;
     };
+    
+    //@property strokeWidth The width of the shape's outline stroke. Set it to 0 to not draw a stroke.
     this.strokeWidth = 0;
-    this.setStrokeWidth = function(sw) {
-        this.strokeWidth = sw;
-        this.setDirty();
-        return this;
-    };
-    this.getStrokeWidth = function() {
-        return this.strokeWidth;
-    };
+    this.setStrokeWidth = function(sw) {  this.strokeWidth = sw;  this.setDirty();  return this;  };
+    this.getStrokeWidth = function() { return this.strokeWidth; };
+    
+    //@property stroke  The color of the stroke. Will only be drawn if `strokeWidth` is greater than 0.
     this.stroke = "black";
-    this.setStroke = function(stroke) {
-        this.stroke = stroke;
-        return this;
-    }
+    this.setStroke = function(stroke) { this.stroke = stroke; return this; }
     this.getStroke = function() { return this.stroke; }
+    
     this.contains = function() { return false; }
     return true;
 }
@@ -565,15 +807,25 @@ Shape.extend(Node);
 
 
 
-/* A text shape. draws text on the screen with the
-desired content, font, and color.
+/* 
+@class Text A shape which draws a single line of text with the specified content (a string), font, and color.
 */
 function Text() {
     Shape.call(this);
+    //this.parent = null;
+    
+    //@property x  The X coordinate of the left edge of the text.
     this.x = 0;
+    this.setX = function(x) { this.x = x; this.setDirty(); return this; };
+    
+    //@property y  The Y coordinate of the bottom edge of the text.
     this.y = 0;
+    this.setY = function(y) { this.y = y; this.setDirty(); return this; };
+    
+    //@property text The actual text string which will be drawn.
     this.text = "-no text-";
-    this.parent = null;
+    this.setText = function(text) { this.text = text;  this.setDirty();  return this;  };
+    
     
     this.draw = function(ctx) {
         var f = ctx.font;
@@ -583,28 +835,10 @@ function Text() {
         ctx.font = f;
         this.clearDirty();
     };
-    this.setText = function(text) {
-        this.text = text;
-        this.setDirty();
-        return this;
-    };
-    this.setX = function(x) {
-        this.x = x;
-        this.setDirty();
-        return this;
-    };
-    this.setY = function(y) {
-        this.y = y;
-        this.setDirty();
-        return this;
-    };
     
+    //@property font  The font description used to draw the text. Use the CSS font format. ex: *20pt Verdana*
     this.font = "20pt Verdana";
-    this.setFont = function(font) {
-        this.font = font;
-        this.setDirty();
-        return this;
-    }
+    this.setFont = function(font) { this.font = font; this.setDirty(); return this; }
     
     this.contains = function() { return false; }
     return true;    
@@ -616,14 +850,29 @@ Text.extend(Shape);
 
 
 
-/* A circle shape */
+/*
+@class Circle  A circle shape.
+*/
 function Circle() {
     Shape.call(this);
+    
+    //@property x  The X coordinate of the *center* of the circle (not it's left edge).
     this.x = 0.0;
+    this.getX = function() { return this.x; };
+    this.setX = function(x) { this.x = x; this.setDirty(); return this; };
+    
+    //@property y  The Y coordinate of the *center* of the circle (not it's top edge).
     this.y = 0.0;
+    this.getY = function() { return this.y; };
+    this.setY = function(y) { this.y = y; this.setDirty(); return this; };
+    
+    //@property radius The radius of the circle
     this.radius = 10.0;
-    this.fill = "black";
+    this.getRadius = function() { return this.radius; };
+    
     var self = this;
+    
+    //@method Set the x, y, and radius of the circle all in one step
     this.set = function(x,y,radius) {
         self.x = x;
         self.y = y;
@@ -631,16 +880,15 @@ function Circle() {
         self.setDirty();
         return self;
     };
-    this.getX = function() { return this.x; };
-    this.getY = function() { return this.y; };
-    this.getRadius = function() { return this.radius; };
-    this.setX = function(x) { this.x = x; this.setDirty(); return this; };
-    this.setY = function(y) { this.y = y; this.setDirty(); return this; };
+    
+    //this.fill = "black";
+    /*
     this.setFill = function(fill) {
         self.fill = fill;
         self.setDirty();
         return self;
-    };
+    };*/
+    
     this.draw = function(ctx) {
         ctx.fillStyle = self.fill;
         ctx.beginPath();
@@ -671,27 +919,25 @@ Circle.extend(Shape);
 
 
 
-
+/*
+@class ImageView  A node which draws an image. Takes a string URL in it's constructor. ex: new ImageView("blah.png")
+*/
 function ImageView(url) {
     Node.call(this);
     this.src = url;
     this.img = new Image();
     this.loaded = false;
-    this.x = 0.0;
-    this.y = 0.0;
     this.width = 10;
     this.height = 10;
-    this.setX = function(x) {
-        this.x = x;
-        this.setDirty();
-        return this;
-    };
+    
+    //@property x  The Y coordinate of the upper left corner of the image.
+    this.x = 0.0;
+    this.setX = function(x) { this.x = x;   this.setDirty();  return this;  };
     this.getX = function() { return this.x; };
-    this.setY = function(y) {
-        this.y = y;
-        this.setDirty();
-        return this;
-    };
+    
+    //@property y  The Y coordinate of the upper left corner of the image.
+    this.y = 0.0;
+    this.setY = function(y) {  this.y = y;  this.setDirty();  return this;  };
     this.getY = function() { return this.y; };
     
     var self = this;
@@ -728,14 +974,13 @@ ImageView.extend(Node);
 
 
 
-
-/* A rectangle shape. May be rounded or have straight corners */
+/*
+@class Rect A rectangular shape. May be rounded or have straight corners.
+*/
 function Rect() {
     Shape.call(this);
-    this.x = 0.0;
-    this.y = 0.0;
-    this.width = 100.0;
-    this.height = 100.0;
+    
+    //@method Set the x, y, w, h at the same time.
     this.set = function(x,y,w,h) {
         this.x = x;
         this.y = y;
@@ -744,32 +989,46 @@ function Rect() {
         this.setDirty();
         return this;
     };
+    
+    //@property width The width of the rectangle.
+    this.width = 100.0;
     this.getWidth = function() { return this.width; };
     this.setWidth = function(w) {
         this.width = w;
         this.setDirty();
         return this;
     };
+    
+    //@property height The height of the rectangle.
+    this.height = 100.0;
     this.getHeight = function() { return this.height; };
     this.setHeight = function(h) {
         this.height = h;
         this.setDirty();
         return this;
     };
+    
+    //@property x The X coordinate of the rectangle.
+    this.x = 0.0;
     this.setX = function(x) {
         this.x = x;
         this.setDirty();
         return this;
     };
     this.getX = function() { return this.x; };
+    
+    //@property y The Y coordinate of the rectangle.
+    this.y = 0.0;
     this.setY = function(y) {
         this.y = y;
         this.setDirty();
         return this;
     };
     this.getY = function() { return this.y; };
-    this.corner = 0;
     
+    
+    //@property corner  The radius of the corner, if it's rounded. The radius is the same for all corners. If zero, then the rectangle will not be rounded.
+    this.corner = 0;
     this.setCorner = function(c) {
         this.corner = c;
         this.setDirty();
@@ -845,24 +1104,26 @@ function Segment(kind,x,y,a,b,c,d) {
     }
 };
 
+//@class Path A Path is a sequence of line and curve segments. It is used for drawing arbitrary shapes and animating.  Path objects are immutable. You should create them and then reuse them.
 function Path() {
     this.segments = [];
-    this.moveTo = function(x,y) {
-        this.segments.push(new Segment(SEGMENT_MOVETO,x,y));
-        return this;
-    };
-    this.lineTo = function(x,y) {
-        this.segments.push(new Segment(SEGMENT_LINETO,x,y));
-        return this;
-    };
-    this.closeTo = function(x,y) {
-        this.segments.push(new Segment(SEGMENT_CLOSETO,x,y));
-        return this;
-    };
+    
+    //@doc jump directly to the x and y. This is usually the first thing in your path.
+    this.moveTo = function(x,y) { this.segments.push(new Segment(SEGMENT_MOVETO,x,y)); return this; };
+    
+    //@doc draw a line from the previous x and y to the new x and y.
+    this.lineTo = function(x,y) { this.segments.push(new Segment(SEGMENT_LINETO,x,y)); return this; };
+    
+    //@doc close the path. It will draw a line from the last x,y to the first x,y if needed.
+    this.closeTo = function(x,y) { this.segments.push(new Segment(SEGMENT_CLOSETO,x,y)); return this; };
+    
+    //@doc draw a beizer curve from the previous x,y to a new point (x2,y2) using the four control points (cx1,cy1,cx2,cy2).
     this.curveTo = function(cx1,cy1,cx2,cy2,x2,y2) {
         this.segments.push(new Segment(SEGMENT_CURVETO,cx1,cy1,cx2,cy2,x2,y2));
         return this;
     };
+    
+    //@doc build the final path object.
     this.build = function() {
         return this;
     };
@@ -917,8 +1178,13 @@ function getBezier(percent, C1, C2, C3, C4) {
     return pos;
 }
 
+
+/*
+@class PathNode  Draws a path.
+*/
 function PathNode() {
     Shape.call(this);
+    //@property path  the Path to draw
     this.path = null;
     this.setPath = function(path) {
         this.path = path;
@@ -950,14 +1216,15 @@ PathNode.extend(Shape);
 
 
 
-/* The base mouse event. Has a reference to the node that
-the event was on (if any), and the x and y coords. Will have
-more functionality in the future. */
+/* 
+@class MEvent The base mouse event. Has a reference to the node that the event was on (if any), and the x and y coords. Will have more functionality in the future. 
+*/
 function MEvent() {
     this.node = null;
     this.x = -1;
     this.y = -1;
     var self = this;
+    //@method Get the node that this mouse event actually happened on.
     this.getNode = function() {
         return this.node;
     }
@@ -968,9 +1235,8 @@ function MEvent() {
 
 
 
-/* An Anim is a property animation. It animates a property
-on an object over time, optionally looping and reversing direction
-at the end of each loop (making it oscillate).
+/* 
+@class Anim An Anim is a single property animation. It animates a property on an object over time, optionally looping and reversing direction at the end of each loop (making it oscillate).
 */
 function Anim(n,prop,start,end,duration) {
     this.node = n;
@@ -985,15 +1251,18 @@ function Anim(n,prop,start,end,duration) {
     
     var self = this;
     
+    //@doc Indicates if this animation has started yet
     this.isStarted = function() {
         return self.started;
     };
     
+    //@property loop  Determines if the animation will loop at the end rather than stopping.
     this.setLoop = function(loop) {
         this.loop = loop;
         return this;
     };
     
+    //@property autoReverse Determines if the animation will reverse direction when it loops. This means it will oscillate.
     this.setAutoReverse = function(r) {
         this.autoReverse = r;
         return this;
@@ -1032,6 +1301,9 @@ function Anim(n,prop,start,end,duration) {
     return true;
 }    
 
+/*
+@class PathAnim  Animates a shape along a path. The Path can be composed of lines or curves. PathAnim can optionally loop or reverse direction at the end. Create it with the node, path, and duration like this: `new PathAnim(node,path,10);`
+*/
 function PathAnim(n,path,duration) {
     this.node = n;
     this.path = path;
@@ -1039,9 +1311,11 @@ function PathAnim(n,path,duration) {
     this.loop = false;
     this.forward = true;
     var self = this;
+    //@method Returns true if the animation is currently running.
     this.isStarted = function() {
         return self.started;
     };
+    //@property loop Indicates if the animation should repeat when it reaches the end.
     this.setLoop = function(loop) {
         this.loop = loop;
         return this;
@@ -1085,9 +1359,9 @@ function PathAnim(n,path,duration) {
 
 
 
-/* The core of Amino. It redraws the screen, processes events, and
-processes animation. */
-
+/* 
+@class Runner The core of Amino. It redraws the screen, processes events, and executes animation. Create a new instance of it for your canvas, then call `start()` to start the event loop.
+*/
 function Runner() {
     this.root = "";
     this.background = "gray";
@@ -1105,16 +1379,19 @@ function Runner() {
     this.DEBUG = true;
     
     var self = this;
-    
+
+    //@property root  The root node of the scene.
     this.setRoot = function(r) {
         self.root = r;
         return self;
     };
+    //@property background The background color of the scene.  May be set to null or "" to not draw a background.
     this.setBackground = function(background) {
         self.background = background;
         return self;
     };
     
+    //@property fps  The target FPS (Frames Per Second). The system will try to hit this FPS and never go over it.
     this.setFPS = function(fps) {
         self.fps = fps;
         return self;
@@ -1128,6 +1405,7 @@ function Runner() {
         }
     };
     
+    //@property canvas  The canvas element that the scene will be placed in.
     this.setCanvas = function(canvas) {
         self.canvas = canvas;
         var _mouse_pressed = false;
@@ -1338,6 +1616,7 @@ function Runner() {
         }
     };
     
+    //@doc Start the scene. This is usually the last thing you call in your setup code.
     this.start = function() {
         //palm specific
         if (window.PalmSystem) {
@@ -1348,16 +1627,19 @@ function Runner() {
         setInterval(this.update,1000/self.fps);
     };
     
+    //@doc Add an animation to the scene.
     this.addAnim = function(anim) {
         this.anims[this.anims.length] = anim;
         return this;
     };
     
+    //@doc Add a function callback to the scene. The function will be called on every frame redraw.
     this.addCallback = function(callback) {
         this.callbacks[this.callbacks.length] = callback;
         return this;
     };
     
+    //@doc Listen to a particular type of event on a particular target. *eventTarget* may be null or "*" to listen on all nodes.
     this.listen = function(eventType, eventTarget, callback) {
         var key = "";
         if(eventTarget) {
@@ -1377,6 +1659,7 @@ function Runner() {
         //p("added listener. key = "+ key + " type = " + eventType + " = " + callback);
     };
     
+    //@doc Do the function later, when the next frame is drawn.
     this.doLater = function(callback) {
         callback.doLater = true;
         callback.done = false;
@@ -1388,7 +1671,11 @@ function Runner() {
 }
 
 
+/*
+@class Util  A class with some static utility functions.
+*/
 function Util() {
+    //@doc convert the canvas into a PNG encoded data url. Use this if your browser doesn't natively support data URLs
     this.toDataURL = function(canvas) {
 	    console.log(" $$ Canvas = " + canvas);
 	    var canWidth = canvas.width;
