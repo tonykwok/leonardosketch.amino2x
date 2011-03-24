@@ -182,12 +182,10 @@ function Bounds(x,y,w,h) {
 */
 function Buffer(w,h) {
     var self = this;    
-    console.log("creating a buffer: " + w + " x " + h);
     //@property width  The width of the buffer, set at creation time.
-    this.width = w;
-    this.getWidth = function() { return self.width; }
+    this.w = w;
+    this.getWidth = function() { return this.w; }
     
-    console.log("get width = " + this.getWidth());
     //@property height  The height of the buffer, set at creation time.
     this.h = h;
     this.getHeight = function() { return this.h; }
@@ -202,7 +200,6 @@ function Buffer(w,h) {
     //@doc Get an canvas ImageData structure.
     this.getData = function() {
         var c = this.getContext();
-        console.log("getting data for c " + self.getWidth() + " " + this.getHeight());
         var data = c.getImageData(0,0,this.getWidth(), this.getHeight());
         return data;
     };
@@ -308,15 +305,13 @@ function SaturationNode(n) {
     this.draw = function(ctx) {
         var bounds = this.node.getVisualBounds();
         if(!this.buf1) {
-            console.log("creating buffers");
             this.buf1 = new Buffer(
-                bounds.getWidth()+this.blurRadius*4
-                ,bounds.getHeight()+this.blurRadius*4
+                bounds.getWidth()
+                ,bounds.getHeight()
                 );
-            console.log("buffer width is " + this.buf1.getWidth());
             this.buf2 = new Buffer(
-                bounds.getWidth()+this.blurRadius*4
-                ,bounds.getHeight()+this.blurRadius*4
+                bounds.getWidth()
+                ,bounds.getHeight()
                 );
         }
         
@@ -327,8 +322,8 @@ function SaturationNode(n) {
             var ctx1 = this.buf1.getContext();
             ctx1.save();
             ctx1.translate(
-                -bounds.getX()+this.blurRadius*2
-                ,-bounds.getY()+this.blurRadius*2);
+                -bounds.getX()
+                ,-bounds.getY());
             this.node.draw(ctx1);
             ctx1.restore();
 
@@ -348,39 +343,15 @@ function SaturationNode(n) {
         console.log("buf = " + buf + " "+ buf.getWidth());
         var data = buf.getData();
         var s = radius*2;
-        var size = s/2;
-        for(var x = 0+size; x<buf.getWidth()-size; x++) {
-            for(var y = 0+size; y<buf.getHeight()-size; y++) {
-                var r = 0;
-                var g = 0;
-                var b = 0;
-                var a = 0;
-                for(var ix=x-size; ix<=x+size; ix++) {
-                    for(var iy=y-size;iy<=y+size;iy++) {
-                        r += buf.getR(data,ix,iy);
-                        g += buf.getG(data,ix,iy);
-                        b += buf.getB(data,ix,iy);
-                        a += buf.getA(data,ix,iy);
-                    }
-                }
-                var divisor = s*s;
-                r = r/divisor;
-                g = g/divisor;
-                b = b/divisor;
-                a = a/divisor;
-                //r = 0x00; g = 0x00; b = 0x00;
-                a// = a*this.blurOpacity;
-                buf2.setRGBA(data,x,y,r,g,b,a);                
-            }
-        }
-        
+        var size = 0;
         for(var x = 0+size; x<buf.getWidth()-size; x++) {
             for(var y=0+size; y<buf.getHeight()-size; y++) {
                 var r = buf.getR(data,x,y);
                 var g = buf.getG(data,x,y);
                 var b = buf.getB(data,x,y);
                 var a = buf.getA(data,x,y);
-                buf2.setRGBA(data,x,y,r,g,b,a);
+                var avg = (r+g+b)/3;
+                buf2.setRGBA(data,x,y,avg,avg,avg,a);
             }
         }
         /*
@@ -955,17 +926,21 @@ function ImageView(url) {
     this.getY = function() { return this.y; };
     
     var self = this;
+    
     this.img.onload = function() {
+        console.log("loaded");
         self.loaded = true;
         self.setDirty();
         self.width = self.img.width;
         self.height = self.img.height;
+        console.log("self = " + self.width + " " + self.height);
     }
     this.img.src = url;
     
     this.hasChildren = function() { return false; }
     
     this.draw = function(ctx) {
+        //self.loaded = false;
         if(self.loaded) {
             ctx.drawImage(self.img,self.x,self.y);
         } else {
@@ -981,6 +956,9 @@ function ImageView(url) {
             }
         }
         return false;
+    };
+    this.getVisualBounds = function() {
+        return new Bounds(this.x,this.y,this.width,this.height);
     };
     return true;
 };
