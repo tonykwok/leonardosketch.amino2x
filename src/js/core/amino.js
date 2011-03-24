@@ -182,11 +182,12 @@ function Bounds(x,y,w,h) {
 */
 function Buffer(w,h) {
     var self = this;    
-    
+    console.log("creating a buffer");
     //@property width  The width of the buffer, set at creation time.
-    this.w = w;
-    this.getWidth = function() { return self.w; }
+    this.width = w;
+    this.getWidth = function() { return self.width; }
     
+    console.log("get width = " + this.getWidth());
     //@property height  The height of the buffer, set at creation time.
     this.h = h;
     this.getHeight = function() { return this.h; }
