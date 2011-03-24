@@ -12,10 +12,12 @@
     runner.dirtyTrackingEnabled = false;    
     //runner.setRoot(new BufferNode(new Rect().set(30,40,50,60).setFill("red")));
     //var sn = new BlurNode(new Circle().set(100,100,25).setFill("yellow"))
-    var sn = new ShadowNode(new Circle().set(100,100,25).setFill("yellow"))
+    //var sn = new ShadowNode(new Circle().set(100,100,25).setFill("yellow"))
+    var sn = new SaturationNode(new Circle().set(100,100,25).setFill("yellow"))
     	//.setOffsetX(0)
     	//.setOffsetY(0)
-    	.setBlurRadius(3)
+    	//.setBlurRadius(3)
+    	.setSaturation(0)
     	//.setBlurOpacity(0.7)
     	;
     
