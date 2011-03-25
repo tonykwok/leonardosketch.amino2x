@@ -301,6 +301,9 @@ function SaturationNode(n) {
         this.saturation = s;
         return this;
     };
+    this.getSaturation = function() {
+        return this.saturation;
+    };
     var self = this;
     this.draw = function(ctx) {
         var bounds = this.node.getVisualBounds();
@@ -344,14 +347,19 @@ function SaturationNode(n) {
         var data = buf.getData();
         var s = radius*2;
         var size = 0;
+        var scale = 1-this.getSaturation();
         for(var x = 0+size; x<buf.getWidth()-size; x++) {
             for(var y=0+size; y<buf.getHeight()-size; y++) {
                 var r = buf.getR(data,x,y);
                 var g = buf.getG(data,x,y);
                 var b = buf.getB(data,x,y);
                 var a = buf.getA(data,x,y);
-                var avg = (r+g+b)/3;
-                buf2.setRGBA(data,x,y,avg,avg,avg,a);
+                //var avg = (r+g+b)/3;
+                var v = r*0.21+g*0.71+b*0.07;
+                r = r*(1-scale)+v*scale;
+                g = g*(1-scale)+v*scale;
+                b = b*(1-scale)+v*scale;
+                buf2.setRGBA(data,x,y,r,g,b,a);
             }
         }
         /*
