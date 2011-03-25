@@ -92,4 +92,8 @@ public abstract class Node {
         markDirty();
         return this;
     }
+
+    public Bounds getVisualBounds() {
+        return null;
+    }
 }

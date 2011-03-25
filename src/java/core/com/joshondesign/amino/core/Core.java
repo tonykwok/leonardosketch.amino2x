@@ -63,7 +63,7 @@ public class Core {
         };
         frame.add(comp);
         frame.pack();
-        frame.setSize(this.width,this.height);
+        frame.setSize(this.width,this.height+20);
         frame.setVisible(true);
         MasterListener ml = new MasterListener(comp,root);
         comp.addMouseListener(ml);
@@ -77,6 +77,7 @@ public class Core {
 
     private void drawScene(Graphics2D ctx) {
         ctx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        ctx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         //fill the background
         if(this.clearBackground) {
@@ -180,6 +181,16 @@ public class Core {
 
     public Core addAnim(Anim anim) {
         this.anims.add(anim);
+        return this;
+    }
+
+    public Core setRoot(Node root) {
+        this.root = root;
+        return this;
+    }
+
+    public Core setFPS(int fps) {
+        this.fps = fps;
         return this;
     }
 

@@ -83,4 +83,9 @@ public class Rect extends Shape {
         //console.log("returning false");
         return false;
     }
+
+    @Override
+    public Bounds getVisualBounds() {
+        return new Bounds((int)getX(),(int)getY(),(int)getWidth(),(int)getHeight());
+    }
 }
