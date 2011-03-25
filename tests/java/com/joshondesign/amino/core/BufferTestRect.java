@@ -16,12 +16,21 @@ public class BufferTestRect {
         runner.setSize(600,400);
         runner.setBackground(Color.WHITE);
 
-        BlurNode sn = new ShadowNode(new Circle().set(100,100,25).setFill(Color.YELLOW));
+        //Node sn = new SaturationNode(new Circle().set(100,100,25).setFill(Color.YELLOW));
         //Shape r2 = new Rect().set(30,40,50,60).setFill(Color.RED);
         //BufferNode bn = new BufferNode(new Rect().set(30, 40, 50, 60).setFill(Color.RED));
+        Node sn = new SaturationNode(
+                //new Circle().set(100,100,25).setFill("yellow")
+                new ImageView(BufferTestRect.class.getResource("venus_large.jpg"))
+            )
+            .setSaturation(0.5)
+            ;
+
+
         Transform t = new Transform(sn);
 
-        //runner.addAnim(new PropAnim(t,"translateX",0,90,100).setLoop(true).setAutoReverse(true));
+        runner.addAnim(new PropAnim(t,"translateX",0,90,10).setLoop(true).setAutoReverse(true));
+        runner.addAnim(new PropAnim(sn,"saturation",0.0,1.0,1).setLoop(true).setAutoReverse(true));
         runner.setRoot(t);
         runner.setBackground(Color.BLUE);
         runner.setFPS(30);
