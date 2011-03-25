@@ -24,7 +24,7 @@ public class PathTest {
                 .build();
         Node p = new PathNode().setPath(path).setFill(Color.YELLOW).setStroke(Color.MAGENTA).setStrokeWidth(5);
 
-        Shape c = new Circle().set(10,200,200).setFill(Color.BLUE);
+        Shape c = new Circle().set(200,200,10).setFill(Color.BLUE);
         PathAnim anim = new PathAnim(c,path,10.0).setLoop(true);
 
         Group g = new Group().add(p).add(c);
