@@ -23,7 +23,6 @@ public class ImageView extends Node {
 
     ImageView(URL url) throws IOException {
         this.src = url;
-        u.p("reading: " + url);
         this.img = ImageIO.read(url);
         this.loaded = true;
         this.x = 0.0;
@@ -48,5 +47,10 @@ public class ImageView extends Node {
             }
         }
         return false;
+    }
+
+    @Override
+    public Bounds getVisualBounds() {
+        return new Bounds((int)getX(),(int)getY(),this.width,this.height);
     }
 }
