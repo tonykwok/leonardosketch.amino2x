@@ -1,6 +1,7 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
+
+import java.awt.Graphics2D;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +22,7 @@ public class Circle extends Shape {
                 ,(int)(getRadius()*2));
     }
 
-    public Circle set(double radius, double x, double y) {
+    public Circle set(double x, double y, double radius) {
         this.radius = radius;
         this.setX(x);
         this.setY(y);
@@ -30,5 +31,14 @@ public class Circle extends Shape {
 
     public double getRadius() {
         return radius;
+    }
+
+    @Override
+    public Bounds getVisualBounds() {
+        return new Bounds(
+                (int)(getX()-radius),
+                (int)(getY()-radius),
+                (int)radius*2,
+                (int)radius*2);
     }
 }
