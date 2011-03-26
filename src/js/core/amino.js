@@ -57,6 +57,7 @@ can set a bunch of properties at once like this:
 @end
 */
 
+var win = window;
 //@language javascript
 var ROTATE_BACKWARDS = false;
 if (window.PalmSystem) {
@@ -206,25 +207,25 @@ function Buffer(w,h) {
     
     //@method Return the *red* component at the specified x and y.
     this.getR = function(data, x, y) {
-        var pi = x+y*this.getWidth();
+        var pi = x+y*data.width;
         return data.data[pi*4+0];
     };
     
     //@method Return the *green* component at the specified x and y.
     this.getG = function(data, x, y) {
-        var pi = x+y*this.getWidth();
+        var pi = x+y*data.width;
         return data.data[pi*4+1];
     };
     
     //@method Return the *blue* component at the specified x and y.
     this.getB = function(data, x, y) {
-        var pi = x+y*this.getWidth();
+        var pi = x+y*data.width;
         return data.data[pi*4+2];
     };
     
     //@method Return the *alpha* component at the specified x and y.
     this.getA = function(data, x, y) {
-        var pi = x+y*this.getWidth();
+        var pi = x+y*data.width;
         return data.data[pi*4+3];
     };
     
@@ -299,6 +300,7 @@ function SaturationNode(n) {
     this.saturation = 0.5;
     this.setSaturation = function(s) {
         this.saturation = s;
+        this.setDirty();
         return this;
     };
     this.getSaturation = function() {
@@ -379,6 +381,171 @@ function SaturationNode(n) {
 SaturationNode.extend(Node);
 
 
+function WorkTile(left,top,width,height, src, dst) {
+    this.left = left;
+    this.top = top;
+    this.width = width;
+    this.height = height;
+    this.src = src;
+    this.dst = dst;
+    this.srcData = null;
+    this.getData = function() {
+        if(this.srcData == null) {
+            this.srcData = this.src.getContext().getImageData(this.left,this.top,this.width,this.height);
+        }
+        return this.srcData;
+    };
+    this.getR = function(x,y) {
+        var pi = x+y*this.width;
+        return this.srcData.data[pi*4+0];
+    };
+    this.getG = function(x,y) {
+        var pi = x+y*this.width;
+        return this.srcData.data[pi*4+1];
+    };
+    this.getB = function(x,y) {
+        var pi = x+y*this.width;
+        return this.srcData.data[pi*4+2];
+    };
+    this.getA = function(x,y) {
+        var pi = x+y*this.width;
+        return this.srcData.data[pi*4+3];
+    };
+    this.saveData = function() {
+        dst.getContext().putImageData(this.srcData,this.left,this.top);
+    }        
+    return true;
+}
+
+/*
+@class BackgroundSaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
+*/
+function BackgroundSaturationNode(n) {
+    Node.call(this);
+	this.node = n;
+    this.node.setParent(this);
+    this.buf1 = null;
+    this.buf2 = null;
+    
+    //@property saturation value between 0 and 1
+    this.saturation = 0.5;
+    this.setSaturation = function(s) {
+        this.saturation = s;
+        this.setDirty();
+        return this;
+    };
+    this.getSaturation = function() {
+        return this.saturation;
+    };
+    this.inProgress = false;
+    this.workX = 0;
+    this.workY = 0;
+    this.startTime = 0;
+    
+    var self = this;
+    this.draw = function(ctx) {
+        var bounds = this.node.getVisualBounds();
+        if(!this.buf1 || bounds.getWidth() != this.buf1.getWidth()) {
+            this.buf1 = new Buffer(
+                bounds.getWidth()
+                ,bounds.getHeight()
+                );
+            this.buf2 = new Buffer(
+                bounds.getWidth()
+                ,bounds.getHeight()
+                );
+        }
+        
+        //redraw the child only if it's dirty
+        if(this.isDirty()) {
+            this.startTime = new Date().getTime();
+            //render child into first buffer
+            this.buf1.clear();
+            var ctx1 = this.buf1.getContext();
+            ctx1.save();
+            ctx1.translate(
+                -bounds.getX()
+                ,-bounds.getY());
+            this.node.draw(ctx1);
+            ctx1.restore();
+
+            //apply affect from buf1 into buf2
+            //this.buf2.clear();
+            console.log("marking in progress again");
+            this.workX = 0;
+            this.workY = 0;
+            this.inProgress = true;
+        }
+        
+        if(this.inProgress) {
+            var start = new Date().getTime();
+            while(new Date().getTime()-start < 1000/40) {
+                var workSize = 32;
+                var tile = new WorkTile(this.workX,this.workY,workSize,workSize, this.buf1, this.buf2);
+                this.applyEffect(tile);
+                this.workX+=workSize;
+                if(this.workX > this.buf1.getWidth()) {
+                    this.workX = 0;
+                    this.workY+=workSize;
+                }
+                if(this.workY > this.buf1.getHeight()) {
+                    this.inProgress = false;
+                    var endTime = new Date().getTime();
+                    if(bounds.getWidth() > 100) {
+                        //win.alert("done!: " + (endTime-this.startTime));
+                    }
+                    break;
+                }
+            }
+        }
+        ctx.save();
+        ctx.translate(bounds.getX(),bounds.getY());
+        ctx.drawImage(this.buf2.buffer,0,0);
+        ctx.restore();
+        
+        this.clearDirty();
+    };
+    
+    this.applyEffect = function(tile) {
+        var buf = tile.src;
+        var buf2 = tile.dst;
+        var workSize = tile.width;
+        var data = tile.getData();
+        var d = data.data;
+        
+        var tw = tile.width;
+        var th = tile.height;
+        
+        var scale = 1-this.getSaturation();
+        var scale1 = 1-scale;
+        var r = 0;
+        var g = 0;
+        var b = 0;
+        var a = 0;
+        for(var x=0; x<tw; x++) {
+            for(var y=0; y<th; y++) {
+                var pi = (x+y*tw)*4;
+                r = d[pi+0];
+                g = d[pi+1];
+                b = d[pi+2];
+                a = d[pi+3];
+                var v = r*0.21+g*0.71+b*0.07;
+                var vs = v*scale;
+                r = r*scale1+vs;
+                g = g*scale1+vs;
+                b = b*scale1+vs;
+                a = 0xFF;
+                d[pi+0] = r;
+                d[pi+1] = g;
+                d[pi+2] = b;
+                d[pi+3] = a;
+            }
+        }
+        tile.saveData();
+    };
+    return true;
+}
+BackgroundSaturationNode.extend(Node);
 
 /*
 @class BlurNode A parent node which blurs its child.
