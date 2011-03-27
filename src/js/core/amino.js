@@ -1497,9 +1497,7 @@ function Anim(n,prop,start,end,duration) {
         self.node.setDirty();
         
     }
-    this.tween = function(fract, start, end) {
-        return  (end-start)*fract+start;
-    };
+    this.tween = LINEAR;
     this.setTween = function(func) {
         this.tween = func;
         return this;
