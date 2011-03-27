@@ -1400,6 +1400,33 @@ function MEvent() {
 
 
 
+/* 
+    adapted from robert penner's easing equations.
+    http://www.robertpenner.com/easing/
+*/
+var LINEAR = function(t) {
+    return t;
+}
+var EASE_IN = function(t) {
+    var t2 = t*t;
+    return t2;
+};
+var EASE_OUT = function(t) {
+    t = 1-t;
+    var t2 = t*t;
+    return -t2+1;
+};
+var EASE_IN_OVER = function(t) {
+    var s = 1.70158;
+    var t2 = t*t*((s+1)*t-s);
+    return t2;
+};
+var EASE_OUT_OVER = function(t) {
+    var s = 1.70158;
+    t = 1-t;
+    var t2 = t*t*((s+1)*t-s);
+    return -t2+1;
+};
 
 
 /* 
@@ -1415,6 +1442,7 @@ function Anim(n,prop,start,end,duration) {
     this.loop = false;
     this.autoReverse = false;
     this.forward = true;
+    
     
     var self = this;
     
@@ -1460,11 +1488,22 @@ function Anim(n,prop,start,end,duration) {
         if(!self.forward) {
             fract = 1.0-fract;
         }
-        var value = (self.endValue-self.startValue)*fract + self.startValue;
+        //var value = (self.endValue-self.startValue)*fract + self.startValue;
+        //var value = self.tween(fract,self.startValue,self.endValue);
+        var tvalue = self.tween(fract);
+        value = (self.endValue-self.startValue)*tvalue + self.startValue;
+
         self.node[self.prop] = value;
         self.node.setDirty();
         
     }
+    this.tween = function(fract, start, end) {
+        return  (end-start)*fract+start;
+    };
+    this.setTween = function(func) {
+        this.tween = func;
+        return this;
+    };
     return true;
 }    
 
