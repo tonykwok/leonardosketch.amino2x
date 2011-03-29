@@ -190,7 +190,7 @@ end
 of = File.new(outfile,"w+");
 
 of.puts "<html>"
-of.puts "<head> <link rel='stylesheet' href='test.css'/> </head>"
+of.puts "<head> <link rel='stylesheet' href='doc.css'/> </head>"
 of.puts "<body>"
 
 

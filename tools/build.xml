@@ -34,6 +34,7 @@
     <target name="js-doc">
         <mkdir dir="dist/doc"/>
         <exec command="ruby tools/joshdoc.rb src/js/core/amino.js dist/doc/output.html"/>
+        <copy file="tools/doc.css" todir="dist/doc"/>
     </target>
     
 </project>
