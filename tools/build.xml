@@ -32,8 +32,8 @@
     </target>
     
     <target name="js-doc">
-        <mkdir dir="build/doc"/>
-        <exec command="ruby tools/joshdoc.rb src/js/core/amino.js build/doc/output.html"/>
+        <mkdir dir="dist/doc"/>
+        <exec command="ruby tools/joshdoc.rb src/js/core/amino.js dist/doc/output.html"/>
     </target>
     
 </project>
