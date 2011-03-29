@@ -31,4 +31,9 @@
         <delete dir="dist"/>
     </target>
     
+    <target name="js-doc">
+        <mkdir dir="build/doc"/>
+        <exec command="ruby tools/joshdoc.rb src/js/core/amino.js build/doc/output.html"/>
+    </target>
+    
 </project>
