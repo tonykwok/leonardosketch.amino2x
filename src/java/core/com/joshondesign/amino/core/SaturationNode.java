@@ -3,8 +3,9 @@ package com.joshondesign.amino.core;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-/*
+/**
 @class SaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
+@category effect
 */
 public class SaturationNode extends Node implements Parent {
     private Node node;

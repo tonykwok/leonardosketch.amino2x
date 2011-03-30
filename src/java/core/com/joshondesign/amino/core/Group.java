@@ -9,7 +9,7 @@ import java.util.List;
 @class Group A group contains an ordered list of nodes. It doesn't draw anything by itself, but draws all of it's children in the order they are added.
 @extends Node
 @implements Parent
-
+@category shape
  */
 public class Group extends Node implements Parent {
     List<Node> nodes = new ArrayList<Node>();

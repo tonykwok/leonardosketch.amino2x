@@ -17,7 +17,8 @@ class JClass
     def initialize
         @properties = {}
         @methods = []
-        @constructor = nil;
+        @constructor = nil
+        @categories = []
     end
     def setName(name)
         @name = name
@@ -42,6 +43,12 @@ class JClass
     end
     def getConstructor()
         return @constructor
+    end
+    def addCategory(s) 
+        @categories.push(s)
+    end
+    def getCategories
+        return @categories
     end
 end
 
@@ -81,7 +88,7 @@ end
 def processMarkdown(d) 
     d = d.gsub(/</,"&lt")
     d = d.gsub(/>/,"&gt")
-    d = d.gsum(/==(.+)==/,"<h2>\\2</h2>")
+    d = d.gsub(/===(.+)===/,"<h3>\\1</h3>")
     d = d.gsub(/(\*(.*)\*)/,"<b>\\2</b>")
     d = d.gsub(/(`(.*)`)/,"<code>\\2</code>")
     return d
@@ -152,8 +159,11 @@ class JoshParser
                     klass.setDoc(m2.captures[1])
                     @klasses.push(klass);
                     @inClass = true
+                when "category"
+                    #puts "    category is #{m.captures[2]}"
+                    klass.addCategory(m.captures[2])
                 when "property"
-                    puts " looking at a property line: #{m}"
+                    #puts " looking at a property line: #{m}"
                     m2 = line.match(/@property\s+(\w+)(\s+(.+))*$/)
                     name = m2.captures[0]
                     puts "        property #{name}"
@@ -172,9 +182,7 @@ class JoshParser
                     puts "        found a constructor"
                     met = JMethod.new
                     met.setDoc(line.match(/@#{m.captures[0]}(.*)/).captures[0])
-                    puts "cap = #{line.match(/@#{m.captures[0]}(.*)/).captures[0]}"
                     klass.setConstructor(met)
-                    puts " constructor set to #{klass.getConstructor().getDoc()}"
                     @inDoc = true
                 when "overview"
                     @inOverview = true
@@ -272,14 +280,38 @@ class JoshParser
         
         
         
-        of.puts "<h1>Class Overview</h1>"
-        of.puts "<ul>"
+        #of.puts "<h1>Class Overview</h1>"
+        categories = {}
         for k in @klasses
-            of.puts "<li><a href='##{k.getName()}'>#{k.getName()}</a></li>"
+            for c in k.getCategories()
+                if !categories[c]
+                    categories[c] = []
+                end
+                categories[c].push(k)
+            end
+        end
+        
+        of.puts "<h1>Classes by Category</h1>"
+        of.puts "<ul class='categories'>"
+        categories.each do |name,ks|
+            of.puts "<li><b>#{name}</b>"
+            of.puts "<ul>"
+            for k in ks
+                of.puts "<li><a href='##{k.getName()}'>#{k.getName()}</a></li>"
+            end
+            of.puts "</ul>"
+            of.puts "</li>"
         end
         of.puts "</ul>"
         
+         # of.puts "<ul>"
+        # for k in @klasses
+            # of.puts "<li><a href='##{k.getName()}'>#{k.getName()}</a></li>"
+        # end
+        # of.puts "</ul>"
+        
         for k in @klasses
+            of.puts "<div class='classdef'>"
             of.puts "<h2><a name='#{k.getName}'>#{k.getName()}</a></h2>"
             
             of.puts "<p class='description'>#{processMarkdown(k.getDoc())}</p>"
@@ -315,6 +347,7 @@ class JoshParser
                 of.puts "</ul>"
             end
         
+            of.puts "</div>"
             of.puts "\n\n\n"
         end
         

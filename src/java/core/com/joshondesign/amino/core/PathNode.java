@@ -5,6 +5,7 @@ import java.awt.geom.Path2D;
 
 /**
 @class PathNode A *Shape* that draws or fills in a path.
+@category shape
  */
 public class PathNode extends Shape {
     private Path path;

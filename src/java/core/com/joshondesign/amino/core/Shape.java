@@ -4,6 +4,7 @@ import java.awt.*;
 
 /**
 @class Shape The base class of all shape *Node*s.
+@category shape
  */
 public abstract class Shape extends Node {
     protected Color fill = Color.GRAY;

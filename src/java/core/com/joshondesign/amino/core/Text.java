@@ -2,8 +2,9 @@ package com.joshondesign.amino.core;
 
 import java.awt.*;
 
-/*
+/**
 @class Text A shape which draws text in a particular font.
+@category shape
  */
 public class Text extends Shape {
     String text = "-no text-";

@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 
 /**
 @class Node the base class for all nodes
+@category shape
  */
 public abstract class Node {
     private Parent parent = null;

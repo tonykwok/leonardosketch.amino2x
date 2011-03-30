@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 
 /**
  @class BlurNode
+ @category effect
  */
 public class BlurNode extends Node implements Parent {
     Node node;

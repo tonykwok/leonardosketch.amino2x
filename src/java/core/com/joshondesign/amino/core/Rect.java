@@ -7,6 +7,7 @@ import java.awt.geom.RoundRectangle2D;
 
 /**
 @class Rect A shape which draws a rectangle or rounded rectangle
+@category shape
  */
 public class Rect extends Shape {
     private double width;

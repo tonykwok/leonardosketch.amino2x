@@ -4,6 +4,7 @@ import java.awt.*;
 
 /**
 @class ShadowNode A node which draws a shadow underneath it's child node
+@category effect
  */
 public class ShadowNode extends BlurNode {
     private double offsetX;
