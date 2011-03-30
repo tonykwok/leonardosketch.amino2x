@@ -81,8 +81,9 @@ end
 def processMarkdown(d) 
     d = d.gsub(/</,"&lt")
     d = d.gsub(/>/,"&gt")
+    d = d.gsum(/==(.+)==/,"<h2>\\2</h2>")
     d = d.gsub(/(\*(.*)\*)/,"<b>\\2</b>")
-    d = d.gsub(/(`(.*)`)/,"<code>\\2</code>");
+    d = d.gsub(/(`(.*)`)/,"<code>\\2</code>")
     return d
 end
 
