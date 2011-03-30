@@ -6,17 +6,14 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/10/11
- * Time: 2:56 PM
- * To change this template use File | Settings | File Templates.
+@class Rect A shape which draws a rectangle or rounded rectangle
  */
 public class Rect extends Shape {
     private double width;
     private double height;
     private double corner = 0;
 
+    //@method set the x, y, width, and height of the rectangle all at once.
     public Rect set(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
@@ -26,6 +23,7 @@ public class Rect extends Shape {
     }
 
 
+    //@property corner the radius of the rectangle corners. If the *corner* is set to zero then the rectangle will not be rounded.
     public Rect setCorner(double corner) {
         this.corner = corner;
         return this;
@@ -52,6 +50,7 @@ public class Rect extends Shape {
         this.clearDirty();
     }
 
+    //@property width the width of this rectangle
     public double getWidth() {
         return width;
     }
@@ -61,6 +60,7 @@ public class Rect extends Shape {
         return this;
     }
 
+    //@property height the height of this rectangle
     public double getHeight() {
         return height;
     }

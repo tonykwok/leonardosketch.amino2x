@@ -4,11 +4,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/10/11
- * Time: 2:35 PM
- * To change this template use File | Settings | File Templates.
+@class Node the base class for all nodes
  */
 public abstract class Node {
     private Parent parent = null;
@@ -20,7 +16,9 @@ public abstract class Node {
 
     }
 
-    Parent getParent() {
+    
+    //@property parent the parent node of this node. Might be null if this is the root node
+    public Parent getParent() {
         return this.parent;
     }
     Node setParent(Parent parent) {
@@ -28,6 +26,7 @@ public abstract class Node {
         return this;
     }
 
+    //@property visible determines if the node is visible or not. Invisible nodes are not drawn and cannot receive events
     Node setVisible(boolean visible) {
         this.visible = visible;
         markDirty();
@@ -38,6 +37,7 @@ public abstract class Node {
         return visible;
     }
 
+    //@property mouseBlocked determines if the node blocks the mouse or allows mouse events to go through it to nodes underneath
     public boolean isMouseBlocked() {
         return mouseBlocked;
     }
@@ -47,30 +47,37 @@ public abstract class Node {
         return this;
     }
 
+    //@method dirty indicates if the node is dirty and should be redrawn
     public boolean isDirty() {
         return dirty;
     }
 
+    //@method mark the node as dirty. This schedules it to be completely redrawn
     public void markDirty() {
         this.dirty = true;
         if(this.getParent() != null) {
             this.getParent().markDirty();
         }
     }
+    //@method clear the dirty flag. This is should be called by a node after it draws itself
     public void clearDirty() {
         this.dirty = false;
     }
 
 
 
+    //@method returns true if the node contains the point. The point should be in local coordinates.
     public boolean contains(Point2D pt) {
         return false;
     }
 
 
+    //@method draw the node. This method is overridden by subclasses
     public abstract void draw(Graphics2D gfx);
 
+    //@property x the x coordinate of this node. Nodes may draw to the left of the 'x' coordinate.
     protected double x;
+    //@property y the y coordinate of this node. Nodes may draw to the top of the 'y' coordinate.
     protected double y;
 
     public double getX() {
@@ -93,6 +100,7 @@ public abstract class Node {
         return this;
     }
 
+    //@method get the visual bounds of this node. The node should not draw outside of these bounds.
     public Bounds getVisualBounds() {
         return null;
     }

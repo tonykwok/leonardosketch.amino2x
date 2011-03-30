@@ -4,15 +4,10 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/24/11
- * Time: 8:07 PM
- * To change this template use File | Settings | File Templates.
+ @class BlurNode
  */
 public class BlurNode extends Node implements Parent {
     Node node;
-    protected int blurRadius;
     protected Buffer buf1;
     protected Buffer buf2;
 
@@ -20,15 +15,16 @@ public class BlurNode extends Node implements Parent {
         this.node = n;
         this.buf1 = null;
         this.buf2 = null;
-
-        //@property blurRadius the radius of the blur
         this.blurRadius = 1;
     }
 
+    //@property blurRadius the radius of the blur
+    protected int blurRadius;
     public BlurNode setBlurRadius(int r) {
         this.blurRadius = r;
         return this;
     }
+    
     @Override
     public void draw(Graphics2D ctx) {
         Bounds bounds = this.node.getVisualBounds();

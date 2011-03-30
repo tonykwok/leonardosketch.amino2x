@@ -1,11 +1,7 @@
 package com.joshondesign.amino.core;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 6:53 PM
- * To change this template use File | Settings | File Templates.
+ @class Anim The base class of all animations. Use one of the subclasses.
  */
 public abstract class Anim {
     abstract boolean isStarted();

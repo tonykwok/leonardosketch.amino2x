@@ -4,18 +4,18 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 12:31 PM
- * To change this template use File | Settings | File Templates.
+@class Transform A parent node which transforms it's child with rotation, translation, and scaling.
+@extends Node
+@implements Parent
  */
 public class Transform extends Node implements Parent {
     private Node node;
+    
     private double rotation;
     private double translateX;
     private double translateY;
 
+    //@constructor create a new Transform node around the child *node* .
     public Transform(Node node) {
         this.node = node;
         node.setParent(this);
@@ -62,27 +62,30 @@ public class Transform extends Node implements Parent {
         return new Point2D.Double(x2,y2);
     }
 
+    //@property translateX the X translation of the node
     public Transform setTranslateX(double translateX) {
         this.translateX = translateX;
         return this;
     }
+    public double getTranslateX() {
+        return this.translateX;
+    }
 
+    //@property translateY the Y translation of the node
     public Transform setTranslateY(double translateY) {
         this.translateY = translateY;
         return this;
     }
+    public double getTranslateY() {
+        return this.translateY;
+    }
 
+    //@property rotation the clockwise rotation of the node in degrees
     public double getRotation() {
         return this.rotation;
     }
     public Transform setRotation(double r) {
         this.rotation = r;
         return this;
-    }
-    public double getTranslateX() {
-        return this.translateX;
-    }
-    public double getTranslateY() {
-        return this.translateY;
     }
 }

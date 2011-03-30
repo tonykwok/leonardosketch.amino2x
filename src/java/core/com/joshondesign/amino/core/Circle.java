@@ -4,11 +4,8 @@ package com.joshondesign.amino.core;
 import java.awt.Graphics2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 6:48 PM
- * To change this template use File | Settings | File Templates.
+@class Circle 
+@category shape
  */
 public class Circle extends Shape {
     private double radius;
@@ -22,6 +19,7 @@ public class Circle extends Shape {
                 ,(int)(getRadius()*2));
     }
 
+    //@method Set the center x, center y, and radius of the circle
     public Circle set(double x, double y, double radius) {
         this.radius = radius;
         this.setX(x);
@@ -29,6 +27,7 @@ public class Circle extends Shape {
         return this;
     }
 
+    //@property radius The radius of the circle.
     public double getRadius() {
         return radius;
     }

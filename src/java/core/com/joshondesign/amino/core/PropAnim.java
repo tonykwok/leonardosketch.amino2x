@@ -3,12 +3,9 @@ package com.joshondesign.amino.core;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 12:20 PM
- * To change this template use File | Settings | File Templates.
+/*
+@class PropAnim animates a property on a node. You can use a *PropAnim* to animate a coordinate, a dimension of a shape, opacity, or pretty much any other property on a Node.
+
  */
 public class PropAnim extends Anim {
     private Node node;
@@ -24,6 +21,7 @@ public class PropAnim extends Anim {
     private Method getMethod;
     private Method setMethod;
 
+    //@constructor create a new PropAnim from a node, the string name of a property, the start value, the end value, and a duration in seconds
     public PropAnim(Node n, String prop, double start, double end, double duration) throws NoSuchMethodException {
         this.node = n;
         this.prop = prop;
@@ -45,12 +43,14 @@ public class PropAnim extends Anim {
         return this.started;
     }
 
-    PropAnim setLoop(boolean loop) {
+    //@property loop determines if the animation should loop when it is finished.
+    public PropAnim setLoop(boolean loop) {
         this.loop = loop;
         return this;
     }
 
-    PropAnim setAutoReverse(boolean r) {
+    //@property autoReverse determines if the animation should reverse direction when it loops
+    public PropAnim setAutoReverse(boolean r) {
         this.autoReverse = r;
         return this;
     }

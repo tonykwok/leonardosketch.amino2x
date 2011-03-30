@@ -3,16 +3,13 @@ package com.joshondesign.amino.core;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/24/11
- * Time: 8:36 PM
- * To change this template use File | Settings | File Templates.
+@class ShadowNode A node which draws a shadow underneath it's child node
  */
 public class ShadowNode extends BlurNode {
     private double offsetX;
     private double offsetY;
 
+    //@constructor create a new ShadowNode for the child *n*
     public ShadowNode(Node n) {
         super(n);
         this.offsetX = 5.0;

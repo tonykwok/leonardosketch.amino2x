@@ -1,12 +1,9 @@
 package com.joshondesign.amino.core;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/10/11
- * Time: 3:39 PM
- * To change this template use File | Settings | File Templates.
+@class Callback  a generified callback interface, used throughout the system. This will go away once Java gets closures
  */
 public interface Callback<E> {
+    //@method call back with an object
     public void call(E e);
 }
