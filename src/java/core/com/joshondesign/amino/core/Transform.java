@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 @class Transform A parent node which transforms it's child with rotation, translation, and scaling.
 @extends Node
 @implements Parent
+@category misc
  */
 public class Transform extends Node implements Parent {
     private Node node;

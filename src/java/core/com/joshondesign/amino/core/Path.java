@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
 @class Path A *Path* is a sequence of moves, lines, arcs, and curves.  Paths can be drawn on screen or used for animation. Paths are immutable once created.
+@category resource
  */
 public class Path {
 

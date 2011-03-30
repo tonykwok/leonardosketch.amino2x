@@ -9,6 +9,7 @@ import java.net.URL;
 
 /**
 @class ImageView a node which draws an image
+@category shape
  */
 public class ImageView extends Node {
     private URL src;

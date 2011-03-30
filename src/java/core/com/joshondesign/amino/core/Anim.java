@@ -1,7 +1,7 @@
 package com.joshondesign.amino.core;
 
 /**
- @class Anim The base class of all animations. Use one of the subclasses.
+class Anim The base class of all animations. Use one of the subclasses.
  */
 public abstract class Anim {
     abstract boolean isStarted();

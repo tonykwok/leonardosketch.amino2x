@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 
 /**
 @class PathAnim animates a node along a Path.
+@category animation
  */
 public class PathAnim extends Anim {
     private Node node;

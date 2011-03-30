@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
 @class Core  the center of an Amino application.
+@category misc
  */
 public class Core {
     private Color backgroundColor;

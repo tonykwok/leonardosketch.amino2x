@@ -2,6 +2,7 @@ package com.joshondesign.amino.core;
 
 /**
  @class Bounds An immutable class representing the bounds of a node. It is usually used to represent visual bounds.
+ @category resource
  */
 public class Bounds {
     private int x;

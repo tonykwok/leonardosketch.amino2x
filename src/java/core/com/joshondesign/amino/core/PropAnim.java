@@ -3,9 +3,9 @@ package com.joshondesign.amino.core;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/*
+/**
 @class PropAnim animates a property on a node. You can use a *PropAnim* to animate a coordinate, a dimension of a shape, opacity, or pretty much any other property on a Node.
-
+@category animation
  */
 public class PropAnim extends Anim {
     private Node node;

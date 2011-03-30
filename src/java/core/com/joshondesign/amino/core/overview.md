@@ -2,7 +2,7 @@
 
 This is the Java version of Amino, a portable 2D scenegraph.
 
-== A note on Properties ==
+=== A note on Properties ===
 
 Properties in Java are implemented with getters and setters following the
 JavaBeans spec. However, they are *not* technically JavaBean properties because

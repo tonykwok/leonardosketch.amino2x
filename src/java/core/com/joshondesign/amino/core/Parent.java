@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 
 /**
 @class Parent the interface that all parents must implement.
+@category misc
  */
 public interface Parent {
     //@method mark this parent as dirty

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 /**
 @class Buffer A pixel grid you can draw into. Used for storing pixels for later, such as buffering effects to make the be faster.
+@category resource
  */
 public class Buffer {
     private int width;

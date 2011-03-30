@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 @class MEvent a mouse event. It contains the x and y coordinates of where
 the user pressed/moved/dragged the mouse, as well as the node that
 was clicked on.
+@category misc
  */
 public class MEvent {
     double x;

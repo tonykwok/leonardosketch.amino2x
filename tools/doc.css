@@ -52,25 +52,47 @@ pre {
 }
 
 /* properties */
-ul { 
+.classdef ul { 
     border: 1px solid black; padding: 0; 
     border-radius: 10px;
     background-color: #fffff0;
 }
-ul li { 
+.classdef ul li { 
     list-style-type: none; 
     padding: 0.8em;
     font-size: 100%;
     border-bottom: 1px solid #403000;
     font-family: serif;
 }
-ul li:last-child {
+.classdef ul li:last-child {
     border-width: 0px;
 }
-ul li b {
+.classdef ul li b {
     color: #403000;
 }
+
+
+/* misc */
 b.name {
     padding-right: 2em;
     font-family: monospace;
+}
+
+
+/* categories */
+
+.categories > li {
+    display: inline-block;
+    vertical-align: top;
+    padding: 0.5em 1em;
+    border: 1px solid green;
+    background-color: #fffff0;
+    border-radius: 5px;
+}
+.categories ul {
+    border: 0px solid red;
+    padding: 0;
+}
+.categories ul li {
+    list-style-type: none;
 }

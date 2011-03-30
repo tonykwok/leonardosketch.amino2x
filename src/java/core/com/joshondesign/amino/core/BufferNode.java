@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 @class BufferNode Draws its child node into a buffer
 @extends Node 
 @implements Parent BufferNode is a Parent of a single Node
+@category misc
 */
 public class BufferNode extends Node implements Parent {
     private Node node;
