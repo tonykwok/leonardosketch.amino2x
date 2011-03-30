@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/10/11
- * Time: 2:56 PM
- * To change this template use File | Settings | File Templates.
+@class Group A group contains an ordered list of nodes. It doesn't draw anything by itself, but draws all of it's children in the order they are added.
+@extends Node
+@implements Parent
+
  */
 public class Group extends Node implements Parent {
     List<Node> nodes = new ArrayList<Node>();
@@ -19,6 +18,7 @@ public class Group extends Node implements Parent {
         super();
     }
 
+    //@method add a child node
     public Group add(Node node) {
         this.nodes.add(node);
         node.setParent(this);
@@ -26,12 +26,14 @@ public class Group extends Node implements Parent {
         return this;
     }
 
+    //@method remove a child node
     public void remove(Node node) {
         this.nodes.remove(node);
         node.setParent(null);
         markDirty();
     }
 
+    //@method remove all child nodes
     public void clear() {
         for(Node n : nodes) {
             n.setParent(null);

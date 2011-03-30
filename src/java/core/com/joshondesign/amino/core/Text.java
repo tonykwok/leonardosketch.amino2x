@@ -2,12 +2,8 @@ package com.joshondesign.amino.core;
 
 import java.awt.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 11:52 AM
- * To change this template use File | Settings | File Templates.
+/*
+@class Text A shape which draws text in a particular font.
  */
 public class Text extends Shape {
     String text = "-no text-";
@@ -24,12 +20,14 @@ public class Text extends Shape {
         this.clearDirty();
     }
 
+    //@property text the text string to be drawn
     public Text setText(String text) {
         this.text = text;
         markDirty();
         return this;
     }
 
+    //@property font the Java2D font to draw the string with
     public Text setFont(Font font) {
         this.font = font;
         markDirty();

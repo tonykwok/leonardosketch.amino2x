@@ -4,16 +4,15 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/24/11
- * Time: 5:46 PM
- * To change this template use File | Settings | File Templates.
- */
+@class BufferNode Draws its child node into a buffer
+@extends Node 
+@implements Parent BufferNode is a Parent of a single Node
+*/
 public class BufferNode extends Node implements Parent {
     private Node node;
     private Buffer buf;
 
+    //@constructor create a buffer node around a particular child
     public BufferNode(Node child) {
         this.node = child;
         child.setParent(this);

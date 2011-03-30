@@ -1,11 +1,7 @@
 package com.joshondesign.amino.core;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/24/11
- * Time: 5:38 PM
- * To change this template use File | Settings | File Templates.
+ @class Bounds An immutable class representing the bounds of a node. It is usually used to represent visual bounds.
  */
 public class Bounds {
     private int x;
@@ -19,19 +15,23 @@ public class Bounds {
         this.width = width;
         this.height = height;
     }
-
+    
+    //@property x the readonly left edge of the bounds
     public int getX() {
         return x;
     }
 
+    //@property y the readonly top edge of the bounds
     public int getY() {
         return y;
     }
 
+    //@property width the readonly width of the bounds
     public int getWidth() {
         return width;
     }
 
+    //@property height the readonly height of the bounds
     public int getHeight() {
         return height;
     }

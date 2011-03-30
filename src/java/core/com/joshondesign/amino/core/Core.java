@@ -10,11 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/10/11
- * Time: 2:33 PM
- * To change this template use File | Settings | File Templates.
+@class Core  the center of an Amino application.
  */
 public class Core {
     private Color backgroundColor;
@@ -34,16 +30,19 @@ public class Core {
     private long[] tickList = new long[tickSamples];
     private List<Anim> anims = new ArrayList<Anim>();
 
+    //@method set the size of the window
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
+    //@property background The color of the scene's background
     public Core setBackground(Color white) {
         this.backgroundColor = white;
         return this;
     }
 
+    //@method start the rendering
     public void start() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -156,6 +155,7 @@ public class Core {
         //ctx.restore();
     }
 
+    //@method listen to an event based on the eventType, eventTarget, and callback
     public Core listen(String eventType, Object eventTarget, Callback callback) {
         String key = "";
         if(eventTarget != null) {
@@ -174,21 +174,25 @@ public class Core {
         return this;
     }
 
+    //@method add a callback. The callback will be called on every frame
     public Core addCallback(Callback callback) {
         this.callbacks.add(callback);
         return this;
     }
 
+    //@method add an animation
     public Core addAnim(Anim anim) {
         this.anims.add(anim);
         return this;
     }
 
+    //@property root  set the root node
     public Core setRoot(Node root) {
         this.root = root;
         return this;
     }
 
+    //@property fps set the desired FPS. Remember that this is simply a *target*
     public Core setFPS(int fps) {
         this.fps = fps;
         return this;

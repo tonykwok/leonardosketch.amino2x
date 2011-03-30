@@ -3,11 +3,7 @@ package com.joshondesign.amino.core;
 import java.awt.geom.Point2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 6:53 PM
- * To change this template use File | Settings | File Templates.
+@class PathAnim animates a node along a Path.
  */
 public class PathAnim extends Anim {
     private Node node;
@@ -19,6 +15,7 @@ public class PathAnim extends Anim {
     private boolean autoReverse = false;
     private boolean forward = true;
 
+    //@constructor create a PathAnimation for the  *node* along a *path* lasting *duration* seconds.
     public PathAnim(Node node, Path path, double duration) {
         this.node = node;
         this.path = path;
@@ -37,12 +34,14 @@ public class PathAnim extends Anim {
         return this;
     }
 
-    PathAnim setLoop(boolean loop) {
+    //@property loop indicates if the animation should loop once it's finished
+    public PathAnim setLoop(boolean loop) {
         this.loop = loop;
         return this;
     }
 
-    PathAnim setAutoReverse(boolean r) {
+    //@property autoReverse indicates if the animation should switch direction when it loops
+    public PathAnim setAutoReverse(boolean r) {
         this.autoReverse = r;
         return this;
     }

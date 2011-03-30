@@ -8,11 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 11:36 AM
- * To change this template use File | Settings | File Templates.
+@class ImageView a node which draws an image
  */
 public class ImageView extends Node {
     private URL src;
@@ -21,7 +17,9 @@ public class ImageView extends Node {
     private int height;
     private boolean loaded;
 
-    ImageView(URL url) throws IOException {
+    
+    //@constructor create an imageview from a URL
+    public ImageView(URL url) throws IOException {
         this.src = url;
         this.img = ImageIO.read(url);
         this.loaded = true;

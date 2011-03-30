@@ -4,11 +4,7 @@ import java.awt.*;
 import java.awt.geom.Path2D;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 5:36 PM
- * To change this template use File | Settings | File Templates.
+@class PathNode A *Shape* that draws or fills in a path.
  */
 public class PathNode extends Shape {
     private Path path;
@@ -24,6 +20,7 @@ public class PathNode extends Shape {
         }
     }
 
+    //@property path the path to draw/fill.
     public PathNode setPath(Path path) {
         this.path = path;
         return this;

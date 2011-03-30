@@ -1560,7 +1560,16 @@ function PathAnim(n,path,duration) {
 
 
 
-
+var ADB = {
+    dline:"",
+    avgfps:0,
+    getAverageFPS : function() {
+        return ADB.avgfps;
+    },
+    debugLine : function(s) {
+        ADB.dline = s;
+    }
+}
 
 
 /* 
@@ -1790,33 +1799,35 @@ function Runner() {
         }
         
         if(self.DEBUG) {
-        ctx.save();
-        ctx.translate(0,self.canvas.height-50);
-        ctx.fillStyle = "gray";
-        ctx.fillRect(0,-10,200,60);
-        //draw a debugging overlay
-        ctx.fillStyle = "black";
-        ctx.fillText("timestamp " + new Date().getTime(),10,0);
-        
-        //calc fps
-        var delta = time-self.lastTick;
-        self.lastTick = time;
-        if(self.tickList.length <= self.tickIndex) {
-            self.tickList[self.tickList.length] = 0;
-        }
-        self.tickSum -= self.tickList[self.tickIndex];
-        self.tickSum += delta;
-        self.tickList[self.tickIndex]=delta;
-        ++self.tickIndex;
-        if(self.tickIndex>=self.tickSamples) {
-            self.tickIndex = 0;
-        }
-        var fpsAverage = self.tickSum/self.tickSamples;
-        ctx.fillText("last msec/frame " + delta,10,10);
-        ctx.fillText("last frame msec " + (new Date().getTime()-time),10,20);
-        ctx.fillText("avg msec/frame  " + (fpsAverage).toPrecision(3),10,30);
-        ctx.fillText("avg fps = " + ((1.0/fpsAverage)*1000).toPrecision(3),10,40);
-        ctx.restore();
+            ctx.save();
+            ctx.translate(0,self.canvas.height-60);
+            ctx.fillStyle = "gray";
+            ctx.fillRect(0,-10,200,70);
+            //draw a debugging overlay
+            ctx.fillStyle = "black";
+            ctx.fillText("timestamp " + new Date().getTime(),10,0);
+            
+            //calc fps
+            var delta = time-self.lastTick;
+            self.lastTick = time;
+            if(self.tickList.length <= self.tickIndex) {
+                self.tickList[self.tickList.length] = 0;
+            }
+            self.tickSum -= self.tickList[self.tickIndex];
+            self.tickSum += delta;
+            self.tickList[self.tickIndex]=delta;
+            ++self.tickIndex;
+            if(self.tickIndex>=self.tickSamples) {
+                self.tickIndex = 0;
+            }
+            var fpsAverage = self.tickSum/self.tickSamples;
+            ctx.fillText("last msec/frame " + delta,10,10);
+            ctx.fillText("last frame msec " + (new Date().getTime()-time),10,20);
+            ctx.fillText("avg msec/frame  " + (fpsAverage).toPrecision(3),10,30);
+            ctx.fillText("avg fps = " + ((1.0/fpsAverage)*1000).toPrecision(3),10,40);
+            ctx.fillText("" + ADB.dline,10,50);
+            ctx.restore();
+            ADB.avgfps = ((1.0/fpsAverage)*1000);
         }
     };
     

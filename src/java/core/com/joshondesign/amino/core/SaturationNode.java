@@ -11,6 +11,7 @@ public class SaturationNode extends Node implements Parent {
     private Buffer buf1;
     private Buffer buf2;
 
+    //@constructor create a saturation node which draws it's single child node through a saturation / desaturation filter.
     public SaturationNode(Node node) {
         this.node = node;
         this.node.setParent(this);

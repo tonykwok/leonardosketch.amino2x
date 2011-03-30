@@ -17,6 +17,7 @@ class JClass
     def initialize
         @properties = {}
         @methods = []
+        @constructor = nil;
     end
     def setName(name)
         @name = name
@@ -35,6 +36,12 @@ class JClass
     end
     def getMethods() 
         return @methods
+    end
+    def setConstructor(c)
+        @constructor = c
+    end
+    def getConstructor()
+        return @constructor
     end
 end
 
@@ -79,187 +86,248 @@ def processMarkdown(d)
     return d
 end
 
-
-
-filename = ARGV[0];#"src/js/core/amino.js"
-outfile = ARGV[1];
-puts "using input file: #{filename}"
-puts "using output dir: #{outfile}"
-
-language = "unknown"
-inOverview = false
-inDoc = false
-inSample = false
-inClass = false
-overview = nil;
-
-
-klasses = []
-
-File.readlines(filename).each do |line|
-    m = line.match(/@(\w+)(\s(\w+))*/)
-    if m
-        case m.captures[0]
-        when "language"
-            language = m.captures[2]
-        when "class"
-            m2 = line.match(/@class\s+(\w+)(.*)$/)
-            klass = JClass.new
-            klass.setName(m2.captures[0])
-            klass.setDoc(m2.captures[1])
-            klasses.push(klass);
-            inClass = true
-        when "property"
-            m2 = line.match(/@property\s+(\w+)\s+(.+)$/)
-            #puts "m1 = #{m2.captures[0]}"
-            name = m2.captures[0]
-            if !klasses.last().getProperties()[name]
-                prop = JProp.new
-                prop.setName(name)
-                if m2 
-                    prop.setDoc(m2.captures[1])
-                else 
-                    prop.setDoc("--")
+class JoshParser
+    def initialize
+        @inOverview = false
+        @inDoc = false
+        @inSample = false
+        @inClass = false
+        @overview = nil;
+        @language = "unknown"
+        @klasses = []
+    end
+    
+    def setFilename(fn)
+        @rootfile = fn
+    end
+    def getFilename()
+        return @rootfile
+    end
+    
+    def setOutfile(fn)
+        @outfile = fn
+    end
+    def getOutfile()
+        return @outfile
+    end
+    
+    def parse()
+        if File.directory?(@rootfile)
+            puts "is a directory"
+            dir = Dir.getwd
+            Dir.chdir(@rootfile)
+            Dir.glob("**/*") do |file|
+                if file =~ /md$/
+                    parseFile(file)
                 end
-                klasses.last().getProperties()[name] = prop
+                if file =~ /java$/
+                    parseFile(file)
+                end
             end
-        when "overview"
-            inOverview = true
-            overview = Overview.new
-            m2 = line.match(/@overview\s+(.+)$/)
-            overview.setTitle(m2.captures[0])
-        when "end"
-            if inOverview
-                #puts "</p></div>"
-            end
-            if inSample
-                #puts "</code></pre>"
-            end
-            inOverview = false
-            inSample = false
-            inClass = false
-        when "doc", "method"
-            # document the thing on the next line
-            met = JMethod.new
-            met.setDoc(line.match(/@#{m.captures[0]}(.*)/).captures[0])
-            klasses.last().getMethods().push(met)
-            inDoc = true
-        when "sample"
-            inSample = true
-            #puts "<p>#{line.match(/@sample(.+)/).captures[0]}</p>"
-            #puts "<pre><code>"
+            Dir.chdir(dir)
+            outputFile(@outfile)
+        else 
+            parseFile(@rootfile)
+            outputFile(@outfile)
         end
-    else
+    end
+    
+    def parseFile(filename)
+        klass = nil;
+        met = nil
         
-        if inDoc 
-            decStr = line
-            m = line.match(/\s*this\.(\S+)\s*=\s*function\((.*)\)/) 
+        puts "--- #{filename}"
+        File.readlines(filename).each do |line|
+            m = line.match(/@(\w+)(\s(\w+))*/)
             if m
-                name = m.captures[0]
-                args = m.captures[1]
-                #puts "matched string #{name}"
-                #puts "args = #{args}"
-                decStr = "#{name}(#{args})"
-            end
-            klasses.last().getMethods().last().setDec(decStr)
-            inDoc = false
-        end
-        
-        if inSample
-            #print line
-        end
-        
-        m = line.match(/^.*class\s+(\w+)\s*\{/)
-        if m
-            #puts "started class " + m.captures[0]
-            #puts "<h2>class #{m.captures[0]}</h2"
-        end
-        
-        if inOverview
-            overview.append(line)
-            if (line =~ /^\s+$/)
-                #puts "</p>"
-                #puts "<p>"
+                case m.captures[0]
+                when "language"
+                    @language = m.captures[2]
+                when "class"
+                    m2 = line.match(/@class\s+(\w+)(.*)$/)
+                    klass = JClass.new
+                    puts "    class #{m2.captures[0]}";
+                    klass.setName(m2.captures[0])
+                    klass.setDoc(m2.captures[1])
+                    @klasses.push(klass);
+                    @inClass = true
+                when "property"
+                    puts " looking at a property line: #{m}"
+                    m2 = line.match(/@property\s+(\w+)(\s+(.+))*$/)
+                    name = m2.captures[0]
+                    puts "        property #{name}"
+                    if !@klasses.last().getProperties()[name]
+                        prop = JProp.new
+                        prop.setName(name)
+                        if m2 
+                            prop.setDoc(m2.captures[1])
+                        else 
+                            prop.setDoc("--")
+                        end
+                        @klasses.last().getProperties()[name] = prop
+                    end
+                when "constructor"
+                    # document the thing on the next line
+                    puts "        found a constructor"
+                    met = JMethod.new
+                    met.setDoc(line.match(/@#{m.captures[0]}(.*)/).captures[0])
+                    puts "cap = #{line.match(/@#{m.captures[0]}(.*)/).captures[0]}"
+                    klass.setConstructor(met)
+                    puts " constructor set to #{klass.getConstructor().getDoc()}"
+                    @inDoc = true
+                when "overview"
+                    @inOverview = true
+                    @overview = Overview.new
+                    m2 = line.match(/@overview\s+(.+)$/)
+                    @overview.setTitle(m2.captures[0])
+                when "end"
+                    @inOverview = false
+                    @inSample = false
+                    @inClass = false
+                when "doc", "method"
+                    # document the thing on the next line
+                    met = JMethod.new
+                    met.setDoc(line.match(/@#{m.captures[0]}(.*)/).captures[0])
+                    puts "        method"
+                    @klasses.last().getMethods().push(met)
+                    @inDoc = true
+                when "sample"
+                    @inSample = true
+                    #puts "<p>#{line.match(/@sample(.+)/).captures[0]}</p>"
+                    #puts "<pre><code>"
+                end
             else
-                #puts line.sub(/\*(\w+)\*/,"<em>\\1</em>")
+                
+                if @inDoc 
+                    decStr = line
+                    m = line.match(/\s*this\.(\S+)\s*=\s*function\((.*)\)/) 
+                    if m
+                        name = m.captures[0]
+                        args = m.captures[1]
+                        #puts "matched string #{name}"
+                        #puts "args = #{args}"
+                        decStr = "#{name}(#{args})"
+                    end
+                    #@klasses.last().getMethods().last().setDec(decStr)
+                    met.setDec(decStr)
+                    @inDoc = false
+                end
+                
+                if @inSample
+                    #print line
+                end
+                
+                m = line.match(/^.*class\s+(\w+)\s*\{/)
+                if m
+                    #puts "started class " + m.captures[0]
+                    #puts "<h2>class #{m.captures[0]}</h2"
+                end
+                
+                if @inOverview
+                    @overview.append(line)
+                    if (line =~ /^\s+$/)
+                        #puts "</p>"
+                        #puts "<p>"
+                    else
+                        #puts line.sub(/\*(\w+)\*/,"<em>\\1</em>")
+                    end
+                end
             end
         end
     end
-end
-
-of = File.new(outfile,"w+");
-
-of.puts "<html>"
-of.puts "<head> <link rel='stylesheet' href='doc.css'/> </head>"
-of.puts "<body>"
-
-
-
-of.puts "<h1>#{overview.getTitle()}</h1>"
-inCode = false;
-of.puts "<div class='overview'>"
-for l in overview.getText()
-    if(l.match(/^\s*$/))
-        if(inCode)
-            of.puts "</code></pre>"
-            inCode = false
+    
+    def outputFile(outfile) 
+        of = File.new(outfile,"w+");
+        
+        of.puts "<html>"
+        of.puts "<head> <link rel='stylesheet' href='doc.css'/> </head>"
+        of.puts "<body>"
+        
+        
+        of.puts "<h1>#{@overview.getTitle()}</h1>"
+        @inCode = false;
+        of.puts "<div class='overview'>"
+        for l in @overview.getText()
+            if(l.match(/^\s*$/))
+                if(@inCode)
+                    of.puts "</code></pre>"
+                    @inCode = false
+                end
+                of.puts "<p class='overview'>"
+            end
+            if(l.match(/^\s\s\s\s\S(.*)$/))
+                if(!@inCode)
+                    of.print "<pre><code>"
+                    @inCode = true
+                else
+                    if(l.length > 10)
+                        l = l.slice(4..-1)
+                    end 
+                end
+            end
+            of.puts processMarkdown(l)
         end
-        of.puts "<p class='overview'>"
-    end
-    if(l.match(/^\s\s\s\s\S(.*)$/))
-        if(!inCode)
-            of.print "<pre><code>"
-            inCode = true
-        else
-            if(l.length > 10)
-                l = l.slice(4..-1)
-            end 
-        end
-    end
-    of.puts processMarkdown(l)
-end
-of.puts "</div>"
-
-
-
-of.puts "<h1>Class Overview</h1>"
-of.puts "<ul>"
-for k in klasses
-    of.puts "<li><a href='##{k.getName()}'>#{k.getName()}</a></li>"
-end
-of.puts "</ul>"
-
-for k in klasses
-    of.puts "<h2><a name='#{k.getName}'>#{k.getName()}</a></h2>"
-    
-    of.puts "<p class='description'>#{processMarkdown(k.getDoc())}</p>"
-    
-    
-    if (k.getProperties().length > 0)
-        of.puts "<h3>Properties</h3>"
-        of.puts "<ul class='properties'>"
-        k.getProperties().each do |name,prop|
-            of.puts "<li><b class='name'>#{name}</b> #{processMarkdown(prop.getDoc())}</li>"
+        of.puts "</div>"
+        
+        
+        
+        of.puts "<h1>Class Overview</h1>"
+        of.puts "<ul>"
+        for k in @klasses
+            of.puts "<li><a href='##{k.getName()}'>#{k.getName()}</a></li>"
         end
         of.puts "</ul>"
-    end
-
-    
-    if (k.getMethods().length > 0) 
-        of.puts "<h3>Methods</h3>"
-        of.puts "<ul class='methods'>"
-        for m in k.getMethods()
-            of.puts "<li><b class='name'>"+m.getDec()+"</b>"
-            of.puts "<p>#{processMarkdown(m.getDoc())}</p></li>"
+        
+        for k in @klasses
+            of.puts "<h2><a name='#{k.getName}'>#{k.getName()}</a></h2>"
+            
+            of.puts "<p class='description'>#{processMarkdown(k.getDoc())}</p>"
+            
+            if (k.getConstructor())
+                of.puts "<h3>Constructor</h3>"
+                of.puts "<ul class='constructors'>"
+                of.puts "<li><b class='name'>#{k.getConstructor().getDec()}</b>"
+                of.puts "<p>#{k.getConstructor().getDoc()}</p></li>"
+                of.puts "</ul>"
+            end
+            
+            if (k.getProperties().length > 0)
+                of.puts "<h3>Properties</h3>"
+                of.puts "<ul class='properties'>"
+                k.getProperties().each do |name,prop|
+                    propdoc = ""
+                    if prop.getDoc()
+                        propdoc = processMarkdown(prop.getDoc())
+                    end
+                    of.puts "<li><b class='name'>#{name}</b> #{propdoc}</li>"
+                end
+                of.puts "</ul>"
+            end
+            
+            if (k.getMethods().length > 0) 
+                of.puts "<h3>Methods</h3>"
+                of.puts "<ul class='methods'>"
+                for m in k.getMethods()
+                    of.puts "<li><b class='name'>"+m.getDec()+"</b>"
+                    of.puts "<p>#{processMarkdown(m.getDoc())}</p></li>"
+                end
+                of.puts "</ul>"
+            end
+        
+            of.puts "\n\n\n"
         end
-        of.puts "</ul>"
+        
+        
+        of.puts "</body></html>"
     end
-
-    of.puts "\n\n\n"
 end
 
+p = JoshParser.new
+p.setFilename(ARGV[0])
+p.setOutfile(ARGV[1]);
+puts "using input file: #{p.getFilename()}"
+puts "using output dir: #{p.getOutfile()}"
 
+p.parse()
 
-
-of.puts "</body></html>"
 

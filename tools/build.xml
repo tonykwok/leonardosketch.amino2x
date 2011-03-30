@@ -32,9 +32,15 @@
     </target>
     
     <target name="js-doc">
-        <mkdir dir="dist/doc"/>
-        <exec command="ruby tools/joshdoc.rb src/js/core/amino.js dist/doc/output.html"/>
-        <copy file="tools/doc.css" todir="dist/doc"/>
+        <mkdir dir="dist/jsdoc"/>
+        <exec command="ruby tools/joshdoc.rb src/js/core/amino.js dist/jsdoc/docs.html"/>
+        <copy file="tools/doc.css" todir="dist/jsdoc"/>
+    </target>
+    
+    <target name="java-doc">
+        <mkdir dir="dist/javadoc"/>
+        <exec command="ruby tools/joshdoc.rb src/java/core/ dist/javadoc/docs.html"/>
+        <copy file="tools/doc.css" todir="dist/javadoc"/>
     </target>
     
 </project>

@@ -6,11 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: joshmarinacci
- * Date: 3/14/11
- * Time: 5:36 PM
- * To change this template use File | Settings | File Templates.
+@class Path A *Path* is a sequence of moves, lines, arcs, and curves.  Paths can be drawn on screen or used for animation. Paths are immutable once created.
  */
 public class Path {
 
@@ -20,12 +16,14 @@ public class Path {
         this.segments = segments;
     }
 
+    //@method *static* Move to the x and y without drawing.
     public static PathBuilder moveTo(double x, double y) {
         PathBuilder path = new PathBuilder();
         path.append(new Segment(Type.MoveTo,x,y));
         return path;
     }
 
+    //@method Convert this path to a Java2D Path2D object.
     public Path2D toPath2D() {
         Path2D pth = new Path2D.Double();
         for(Segment s : segments) {
@@ -41,6 +39,7 @@ public class Path {
         return pth;
     }
 
+    //@method return the xy point at a given T value
     public Point2D pointAtT(double fract) {
         if(fract >= 1.0 || fract < 0) return new Point2D.Double(0,0);
 
@@ -101,21 +100,25 @@ public class Path {
             segments.add(segment);
         }
 
+        //@method draw a line to the xy
         public PathBuilder lineTo(double x, double y) {
             append(new Segment(Type.LineTo,x,y));
             return this;
         }
 
+        //@method close this path. This draws a line back to the start (the most recent moveTo command)
         public PathBuilder closeTo() {
             append(new Segment(Type.CloseTo));
             return this;
         }
 
+        //@method draw a bezier path from the previous xy to the new xy given the control points
         public PathBuilder curveTo(double cx1, double cy1, double cx2, double cy2, double x2, double y2) {
             append(new Segment(Type.CurveTo,cx1,cy1,cx2,cy2,x2,y2));
             return this;
         }
 
+        //@method build the path
         public Path build() {
             return new Path(segments);
         }
