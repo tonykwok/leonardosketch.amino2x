@@ -7,13 +7,14 @@ body {
     padding: 2em;
 }
 
-div.overview {
+div.overview, div.toc {
     background-color: #fcfce0;
     border-radius: 10px;
     padding: 1em;
     font-family: Georgia, serif;
     font-size: 110%;
     line-height: 130%;
+    margin: 1em 0em;
 }
     
 .method {
@@ -28,12 +29,6 @@ h1 {
     padding: 1em;
     font-size: 250%;
     border-radius: 10px;
-}
-h2 {
-    border-bottom: 1px solid #403000;
-    margin-top: 3em;
-    color: #403000;
-    font-size: 250%;
 }
 
 h3 {
@@ -51,7 +46,27 @@ pre {
     font-family: Georgia, serif;
 }
 
+h2 {
+    color: #403000;
+    font-family: Verdana, sans-serif;
+    font-size: 250%;
+}
+
+
+.classdef h2 {
+    border-bottom: 1px solid #403000;
+    margin-top: 3em;
+    color: #403000;
+    font-size: 250%;
+}
+
 /* properties */
+/*.classdef p {
+   border: 1px solid black; padding: 0; 
+   border-radius: 10px;
+   background-color: #fffff0;
+   padding: 0.8em;
+}*/
 .classdef ul { 
     border: 1px solid black; padding: 0; 
     border-radius: 10px;
@@ -86,8 +101,16 @@ b.name {
     vertical-align: top;
     padding: 0.5em 1em;
     border: 1px solid green;
+    border: 1px dotted #c0b080;
     background-color: #fffff0;
     border-radius: 5px;
+}
+.categories a {
+    text-decoration: none;
+    color: #403000;
+}
+.categories a:hover {
+    text-decoration: underline;
 }
 .categories ul {
     border: 0px solid red;
