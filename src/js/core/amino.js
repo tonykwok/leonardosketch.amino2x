@@ -7,8 +7,7 @@ Amino takes care of all rendering, animation, and event handling
 so you can build *rich* interactive graphics with very little code.
 Using Amino is much more convenient than writing canvas code by hand.
 
-Here's a quick example:
-    
+Here's a quick example:    
 
     <canvas id="can" width="200" height="200"></canvas>
     <script>
@@ -51,8 +50,6 @@ can set a bunch of properties at once like this:
         .setStrokeWidth(5)
         .setStroke("black")
         ;
-
-
     
 @end
 */
@@ -103,6 +100,7 @@ function p(s) {
 
 /*
 @class Node The base class for all nodes. All nodes have a parent and can potentially have children if they implement *hasChildren*.
+@category shape
 */
 __node_hash_counter = 0;
 function Node() {
@@ -158,6 +156,7 @@ function Node() {
 
 /*
 @class Bounds  Represents the maximum bounds of something, usually the visible bounds of a node.
+@category resource
 */
 function Bounds(x,y,w,h) {
     this.x = x;
@@ -180,6 +179,7 @@ function Bounds(x,y,w,h) {
 
 /*
 @class Buffer An offscreen area that you can draw into. Used for special effects and caching.
+@category resource
 */
 function Buffer(w,h) {
     var self = this;    
@@ -255,6 +255,7 @@ function Buffer(w,h) {
 
 /* 
 @class BufferNode A node which draws its child into a buffer. Use it to cache children which are expensive to draw.
+@category misc
 */
 function BufferNode(n) {
 	Node.call(this);
@@ -288,6 +289,7 @@ BufferNode.extend(Node);
 
 /*
 @class SaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
+@category effect
 */
 function SaturationNode(n) {
     Node.call(this);
@@ -419,6 +421,7 @@ function WorkTile(left,top,width,height, src, dst) {
 
 /*
 @class BackgroundSaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
+@category effect
 */
 function BackgroundSaturationNode(n) {
     Node.call(this);
@@ -549,6 +552,7 @@ BackgroundSaturationNode.extend(Node);
 
 /*
 @class BlurNode A parent node which blurs its child.
+@category effect
 */
 function BlurNode(n) {
 	this.node = n;
@@ -660,6 +664,7 @@ BlurNode.extend(Node);
 
 /*
 @class ShadowNode A parent node which draws a shadow under its child. Uses a buffer internally.
+@category effect
 */
 function ShadowNode(n) {
     console.log("initing shadow node");
@@ -772,6 +777,7 @@ ShadowNode.extend(BlurNode);
 
 /*
 @class Transform Transforms the child inside of it with a translation and/or rotation.
+@category misc
 */
 function Transform(n) {
     Node.call(this);
@@ -847,6 +853,7 @@ Transform.extend(Node);
 
 /*
 @class Group A parent node which holds an ordered list of child nodes. It does not draw anything by itself, but setting visible to false will hide the children.
+@category shape
 */
 
 function Group() {
@@ -931,7 +938,8 @@ Group.extend(Node, {});
 
 
 /* 
-@class Shape The base of all shapes. Shapes are geometric shapes which have a fill, a stroke, and opacity. They may be filled or unfilled. 
+@class Shape The base of all shapes. Shapes are geometric shapes which have a *fill*, a *stroke*, and *opacity*. They may be filled or unfilled.
+@category shape
 */
 function Shape() {
     Node.call(this);
@@ -969,6 +977,7 @@ Shape.extend(Node);
 
 /* 
 @class Text A shape which draws a single line of text with the specified content (a string), font, and color.
+@category shape
 */
 function Text() {
     Shape.call(this);
@@ -1012,6 +1021,7 @@ Text.extend(Shape);
 
 /*
 @class Circle  A circle shape.
+@category shape
 */
 function Circle() {
     Shape.call(this);
@@ -1081,6 +1091,7 @@ Circle.extend(Shape);
 
 /*
 @class ImageView  A node which draws an image. Takes a string URL in it's constructor. ex: new ImageView("blah.png")
+@category shape
 */
 function ImageView(url) {
     Node.call(this);
@@ -1143,6 +1154,7 @@ ImageView.extend(Node);
 
 /*
 @class Rect A rectangular shape. May be rounded or have straight corners.
+@category shape
 */
 function Rect() {
     Shape.call(this);
@@ -1271,7 +1283,10 @@ function Segment(kind,x,y,a,b,c,d) {
     }
 };
 
-//@class Path A Path is a sequence of line and curve segments. It is used for drawing arbitrary shapes and animating.  Path objects are immutable. You should create them and then reuse them.
+/*
+@class Path A Path is a sequence of line and curve segments. It is used for drawing arbitrary shapes and animating.  Path objects are immutable. You should create them and then reuse them.
+@category resource
+*/
 function Path() {
     this.segments = [];
     
@@ -1348,6 +1363,7 @@ function getBezier(percent, C1, C2, C3, C4) {
 
 /*
 @class PathNode  Draws a path.
+@category shape
 */
 function PathNode() {
     Shape.call(this);
@@ -1385,6 +1401,7 @@ PathNode.extend(Shape);
 
 /* 
 @class MEvent The base mouse event. Has a reference to the node that the event was on (if any), and the x and y coords. Will have more functionality in the future. 
+@category misc
 */
 function MEvent() {
     this.node = null;
@@ -1431,6 +1448,7 @@ var EASE_OUT_OVER = function(t) {
 
 /* 
 @class Anim An Anim is a single property animation. It animates a property on an object over time, optionally looping and reversing direction at the end of each loop (making it oscillate).
+@category animation
 */
 function Anim(n,prop,start,end,duration) {
     this.node = n;
@@ -1507,6 +1525,7 @@ function Anim(n,prop,start,end,duration) {
 
 /*
 @class PathAnim  Animates a shape along a path. The Path can be composed of lines or curves. PathAnim can optionally loop or reverse direction at the end. Create it with the node, path, and duration like this: `new PathAnim(node,path,10);`
+@category animation
 */
 function PathAnim(n,path,duration) {
     this.node = n;
@@ -1574,6 +1593,7 @@ var ADB = {
 
 /* 
 @class Runner The core of Amino. It redraws the screen, processes events, and executes animation. Create a new instance of it for your canvas, then call `start()` to start the event loop.
+@category misc
 */
 function Runner() {
     this.root = "";
@@ -1888,6 +1908,7 @@ function Runner() {
 
 /*
 @class Util  A class with some static utility functions.
+@category misc
 */
 function Util() {
     //@doc convert the canvas into a PNG encoded data url. Use this if your browser doesn't natively support data URLs

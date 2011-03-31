@@ -89,8 +89,8 @@ def processMarkdown(d)
     d = d.gsub(/</,"&lt")
     d = d.gsub(/>/,"&gt")
     d = d.gsub(/===(.+)===/,"<h3>\\1</h3>")
-    d = d.gsub(/(\*(.*)\*)/,"<b>\\2</b>")
-    d = d.gsub(/(`(.*)`)/,"<code>\\2</code>")
+    d = d.gsub(/(\*(.*?)\*)/,"<b>\\2</b>")
+    d = d.gsub(/(`(.*?)`)/,"<code>\\2</code>")
     return d
 end
 
@@ -254,27 +254,47 @@ class JoshParser
         
         
         of.puts "<h1>#{@overview.getTitle()}</h1>"
-        @inCode = false;
         of.puts "<div class='overview'>"
+        of.puts "<h2>Overview</h2>"
+        lastWasCode = false;
         for l in @overview.getText()
-            if(l.match(/^\s*$/))
-                if(@inCode)
-                    of.puts "</code></pre>"
-                    @inCode = false
-                end
-                of.puts "<p class='overview'>"
-            end
-            if(l.match(/^\s\s\s\s\S(.*)$/))
-                if(!@inCode)
+            #puts " line = #{l}"
+            #puts "last was code = #{lastWasCode}"
+            
+            # if indented code
+            if(l.match(/^\s\s\s\s(\s*)\S(.*)$/))
+                #puts "code line"
+                if(!lastWasCode)
+                    #puts "start code"
                     of.print "<pre><code>"
-                    @inCode = true
-                else
-                    if(l.length > 10)
-                        l = l.slice(4..-1)
-                    end 
                 end
+                if(l.length > 10)
+                    l = l.slice(4..-1)
+                end 
+                lastWasCode = true;
+                of.puts processMarkdown(l)
+                next
             end
+            
+            # if whitespace
+            if(l.match(/^\s*$/))
+                #puts "only whitespace"
+                #of.puts "<p class='overview'>"
+                #of.puts processMarkdown(l)
+                of.puts ""
+                next
+            end
+            
+            
+            if lastWasCode
+                #puts "end code"
+                of.puts "</code></pre>"
+            end
+            lastWasCode = false;
             of.puts processMarkdown(l)
+        end
+        if lastWasCode
+            of.puts "</code></pre>"
         end
         of.puts "</div>"
         
@@ -291,7 +311,8 @@ class JoshParser
             end
         end
         
-        of.puts "<h1>Classes by Category</h1>"
+        of.puts "<div class='toc'>"
+        of.puts "<h2>Classes by Category</h2>"
         of.puts "<ul class='categories'>"
         categories.each do |name,ks|
             of.puts "<li><b>#{name}</b>"
@@ -303,6 +324,7 @@ class JoshParser
             of.puts "</li>"
         end
         of.puts "</ul>"
+        of.puts "</div>"
         
          # of.puts "<ul>"
         # for k in @klasses
