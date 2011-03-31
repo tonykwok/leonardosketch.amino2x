@@ -41,6 +41,7 @@
         <mkdir dir="dist/javadoc"/>
         <exec command="ruby tools/joshdoc.rb src/java/core/ dist/javadoc/docs.html"/>
         <copy file="tools/doc.css" todir="dist/javadoc"/>
+        <copy file="tools/background.png" todir="dist/javadoc"/>
     </target>
     
 </project>
