@@ -151,6 +151,10 @@ function Node() {
     this.clearDirty = function() {
         self.dirty = false;
     };
+    //@method by default nodes don't contain anything
+    this.contains = function(x,y) { return false; }
+    //@method by default nodes don't have children
+    this.hasChildren = function() { return false; }
     return true;
 }
 
@@ -430,16 +434,55 @@ function BackgroundSaturationNode(n) {
     this.buf1 = null;
     this.buf2 = null;
     
+    //@property x left edge of the node
+    this.x = 0;
+    this.setX = function(x) {
+        this.x = x;
+        return this;
+    };
+    //@property y top edge of the node
+    this.y = 0;
+    this.setY = function(y) {
+        this.y = y;
+        return this;
+    };
+    
     //@property saturation value between 0 and 1
     this.saturation = 0.5;
     this.setSaturation = function(s) {
         this.saturation = s;
+        if(this.saturation > 1.0) this.saturation = 1.0;
+        if(this.saturation < 0.0) this.saturation = 0.0;
         this.setDirty();
         return this;
     };
     this.getSaturation = function() {
         return this.saturation;
     };
+    
+    //@property brightness value between -1 and 1
+    this.brightness = 0;
+    this.setBrightness = function(b) {
+        this.brightness = b;
+        if(this.brightness < -1.0) this.brightness = -1.0;
+        if(this.brightness > 1.0) this.brightness = 1.0;
+        this.setDirty();
+        return this;
+    };
+    this.getBrightness = function() { return this.brightness; };
+
+    //@property contrast value between 0 and 10. default is 1
+    this.contrast = 0;
+    this.setContrast = function(c) {
+        this.contrast = c;
+        if(this.contrast < 0.0) this.contrast = 0.0;
+        if(this.contrast > 10.0) this.contrast = 10.0;
+        this.setDirty();
+        return this;
+    };
+    this.getContrast = function() { return this.contrast; }
+        
+    
     this.inProgress = false;
     this.workX = 0;
     this.workY = 0;
@@ -474,7 +517,7 @@ function BackgroundSaturationNode(n) {
 
             //apply affect from buf1 into buf2
             //this.buf2.clear();
-            console.log("marking in progress again");
+            //console.log("marking in progress again");
             this.workX = 0;
             this.workY = 0;
             this.inProgress = true;
@@ -502,7 +545,7 @@ function BackgroundSaturationNode(n) {
             }
         }
         ctx.save();
-        ctx.translate(bounds.getX(),bounds.getY());
+        ctx.translate(bounds.getX()+self.x,bounds.getY()+self.y);
         ctx.drawImage(this.buf2.buffer,0,0);
         ctx.restore();
         
@@ -520,6 +563,8 @@ function BackgroundSaturationNode(n) {
         var th = tile.height;
         
         var scale = 1-this.getSaturation();
+        var bright = this.getBrightness()*256;
+        var contrast = this.getContrast();
         var scale1 = 1-scale;
         var r = 0;
         var g = 0;
@@ -537,6 +582,22 @@ function BackgroundSaturationNode(n) {
                 r = r*scale1+vs;
                 g = g*scale1+vs;
                 b = b*scale1+vs;
+                //brightness
+                r += bright;
+                g += bright;
+                b += bright;
+                //contrast
+                r = (r-0x7F)*contrast+0x7F;
+                g = (g-0x7F)*contrast+0x7F;
+                b = (b-0x7F)*contrast+0x7F;
+                //clamp
+                if(r > 0xFF) r = 0xFF;
+                if(g > 0xFF) g = 0xFF;
+                if(b > 0xFF) b = 0xFF;
+                if(r < 0x00) r = 0x00;
+                if(g < 0x00) g = 0x00;
+                if(b < 0x00) b = 0x00;
+                
                 a = 0xFF;
                 d[pi+0] = r;
                 d[pi+1] = g;
@@ -966,7 +1027,6 @@ function Shape() {
     this.setStroke = function(stroke) { this.stroke = stroke; return this; }
     this.getStroke = function() { return this.stroke; }
     
-    this.contains = function() { return false; }
     return true;
 }
 Shape.extend(Node);
@@ -1719,6 +1779,7 @@ function Runner() {
         //p("findNode:" + node._hash + " " + x + " " + y);
         //console.log(node);
         //don't descend into invisible nodes
+        //p("visible = " + node.isVisible());
         if(!node.isVisible()) {
             return null;
         }
