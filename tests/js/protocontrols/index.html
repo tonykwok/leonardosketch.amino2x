@@ -1,0 +1,121 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../../src/js/core/amino.js"></script>
+<body>
+
+<canvas id="can" width="800" height="600"></canvas>
+
+<script language="JavaScript">
+
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("can")).setBackground("white").setFPS(30);
+
+    
+    function PButton(text) {
+        Node.call(this);
+        this.text = text;
+        this.x = 50;
+        this.y = 50;
+        this.pressed = false;
+        this.width = 50;
+        this.height = 50;
+        var self = this;
+        this.draw = function(ctx) {
+            var tw = ctx.measureText(self.text);
+            //this is an evil evil evil hack to be replaced with something better later.
+            var th = ctx.measureText("M").width* 1.1;
+            ctx.fillStyle = "#c0f0f0";
+            if(self.pressed) {
+                ctx.fillStyle = "#506060";
+            }
+            ctx.fillRect(self.x,self.y,tw.width+10,th+10);
+            ctx.strokeStyle = "#a0c0c0";
+            ctx.strokeRect(self.x+0.5,self.y+0.5,tw.width+10,th+10);
+            ctx.fillStyle = "black";
+            ctx.fillText(self.text,self.x+5,self.y+th+5);
+            self.width = tw.width+10;
+            self.height = th+10;
+        };
+        this.contains = function(x,y) {
+            if(x >= self.x && x <= self.x + self.width) {
+                if(y >= self.y && y<=self.y + self.height) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        this.hasChildren = function() {
+            return false;
+        };
+        this.setPressed = function(pressed) {
+            self.pressed = pressed;
+            self.setDirty(true);
+        };
+        runner.listen("MOUSE_PRESS",self,function(e) {
+            if(e.getNode() == self) {
+                self.setPressed(true);
+            }
+        });
+        runner.listen("MOUSE_RELEASE",self,function(e) {
+            if(e.getNode() == self) {
+                self.setPressed(false);
+                if(self.f) {
+                    self.f();
+                }
+            }
+        });
+        this.set = function(x,y) {
+            self.x = x;
+            self.y = y;
+            return self;
+        };
+        this.f = null;
+        this.onClick = function(f) {
+            self.f = f;
+            return self;
+        }
+    }
+    PButton.extend(Node);
+    
+
+    var sat = new BackgroundSaturationNode(
+            new ImageView("../venus_large.jpg")
+        )
+    	.setSaturation(0.5)
+    	.setBrightness(0)
+    	.setContrast(1.0)
+    	.setX(0).setY(0)
+    	;
+    
+    runner.setRoot(new Group()
+        .add(sat)
+        .add(new Text().setText("Saturation").setX(10).setY(30).setFill("white").setFont("10pt Arial"))
+        .add(new PButton("less")
+            .set(100,17)
+            .onClick(function(){sat.setSaturation(sat.getSaturation()-0.1);}))
+        .add(new PButton("more")
+            .set(150,17)
+            .onClick(function(){sat.setSaturation(sat.getSaturation()+0.1);}))
+        .add(new Text().setText("Brightness").setX(10).setY(60).setFill("white").setFont("10pt Arial"))
+        .add(new PButton("less")
+            .set(100,47)
+            .onClick(function(){sat.setBrightness(sat.getBrightness()-0.1);}))
+        .add(new PButton("more")
+            .set(150,47)
+            .onClick(function(){sat.setBrightness(sat.getBrightness()+0.1);}))
+        .add(new Text().setText("Contrast").setX(10).setY(90).setFill("white").setFont("10pt Arial"))
+        .add(new PButton("less")
+            .set(100,77)
+            .onClick(function(){sat.setContrast(sat.getContrast()-0.1);}))
+        .add(new PButton("more")
+            .set(150,77)
+            .onClick(function(){sat.setContrast(sat.getContrast()+0.1);}))
+        )
+    ;
+
+    runner.dirtyTrackingEnabled = false;
+    runner.start();
+</script>
+
+</body>
+</html>
