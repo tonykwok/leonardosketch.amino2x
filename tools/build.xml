@@ -35,6 +35,7 @@
         <mkdir dir="dist/jsdoc"/>
         <exec command="ruby tools/joshdoc.rb src/js/core/amino.js dist/jsdoc/docs.html"/>
         <copy file="tools/doc.css" todir="dist/jsdoc"/>
+        <copy file="tools/background.png" todir="dist/jsdoc"/>
     </target>
     
     <target name="java-doc">
