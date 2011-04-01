@@ -19,18 +19,16 @@ public class BufferTestRect {
         //Node sn = new SaturationNode(new Circle().set(100,100,25).setFill(Color.YELLOW));
         //Shape r2 = new Rect().set(30,40,50,60).setFill(Color.RED);
         //BufferNode bn = new BufferNode(new Rect().set(30, 40, 50, 60).setFill(Color.RED));
-        Node sn = new SaturationNode(
-                //new Circle().set(100,100,25).setFill("yellow")
-                new ImageView(BufferTestRect.class.getResource("venus_large.jpg"))
-            )
-            .setSaturation(0.5)
-            ;
+        Node iv = new ImageView(BufferTestRect.class.getResource("venus_large.jpg"));
+        //Node sn = new SaturationNode(iv).setSaturation(0.5);
+        //Node sn = new ShadowNode(iv).setBlurRadius(3);
+        Node sn = new BlurNode(iv).setBlurRadius(1);
 
 
         Transform t = new Transform(sn);
 
         runner.addAnim(new PropAnim(t,"translateX",0,90,10).setLoop(true).setAutoReverse(true));
-        runner.addAnim(new PropAnim(sn,"saturation",0.0,1.0,1).setLoop(true).setAutoReverse(true));
+        //runner.addAnim(new PropAnim(sn,"saturation",0.0,1.0,1).setLoop(true).setAutoReverse(true));
         runner.setRoot(t);
         runner.setBackground(Color.BLUE);
         runner.setFPS(30);
