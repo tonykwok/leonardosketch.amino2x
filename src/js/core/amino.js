@@ -530,11 +530,11 @@ function BackgroundSaturationNode(n) {
                 var tile = new WorkTile(this.workX,this.workY,workSize,workSize, this.buf1, this.buf2);
                 this.applyEffect(tile);
                 this.workX+=workSize;
-                if(this.workX > this.buf1.getWidth()) {
+                if(this.workX+workSize > this.buf1.getWidth()) {
                     this.workX = 0;
                     this.workY+=workSize;
                 }
-                if(this.workY > this.buf1.getHeight()) {
+                if(this.workY+workSize > this.buf1.getHeight()) {
                     this.inProgress = false;
                     var endTime = new Date().getTime();
                     if(bounds.getWidth() > 100) {
