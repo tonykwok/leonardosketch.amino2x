@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
-@class Core  the center of an Amino application.
+@class Core  The center of an Amino application.
 @category misc
  */
 public class Core {
@@ -31,19 +31,19 @@ public class Core {
     private long[] tickList = new long[tickSamples];
     private List<Anim> anims = new ArrayList<Anim>();
 
-    //@method set the size of the window
+    //@method Set the size of the window. This will be replaced once we have a proper *Frame* class.
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
-    //@property background The color of the scene's background
+    //@property background The color of the scene's background.
     public Core setBackground(Color white) {
         this.backgroundColor = white;
         return this;
     }
 
-    //@method start the rendering
+    //@method Start the rendering. If this isn't called then you won't see anything on the screen.
     public void start() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -156,7 +156,7 @@ public class Core {
         //ctx.restore();
     }
 
-    //@method listen to an event based on the eventType, eventTarget, and callback
+    //@method Register an event listener. It will listen to events based on the eventType and eventTarget.  When events happen they will be sent to the *callback*.
     public Core listen(String eventType, Object eventTarget, Callback callback) {
         String key = "";
         if(eventTarget != null) {
@@ -175,13 +175,13 @@ public class Core {
         return this;
     }
 
-    //@method add a callback. The callback will be called on every frame
+    //@method Add a frame callback. The callback will be called on every frame.
     public Core addCallback(Callback callback) {
         this.callbacks.add(callback);
         return this;
     }
 
-    //@method add an animation
+    //@method Add an animation. The animation will begin immediately.
     public Core addAnim(Anim anim) {
         this.anims.add(anim);
         return this;

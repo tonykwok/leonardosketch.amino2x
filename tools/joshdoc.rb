@@ -19,6 +19,7 @@ class JClass
         @methods = []
         @constructor = nil
         @categories = []
+        @language = ""
     end
     def setName(name)
         @name = name
@@ -50,6 +51,13 @@ class JClass
     def getCategories
         return @categories
     end
+    def setLanguage(l)
+        @language = l
+    end
+    def getLanguage()
+        return @language
+    end
+        
 end
 
 class JMethod 
@@ -91,6 +99,16 @@ def processMarkdown(d)
     d = d.gsub(/===(.+)===/,"<h3>\\1</h3>")
     d = d.gsub(/(\*(.*?)\*)/,"<b>\\2</b>")
     d = d.gsub(/(`(.*?)`)/,"<code>\\2</code>")
+    return d
+end
+
+def processDec(lang,d)
+    if lang == "java"
+        v = d.match(/^\s*(.*?)(\w+)\s*\((.*?)\)(.*)([;|\{]*)\s*$/)
+        #puts "- #{v.captures[0]} ---- #{v.captures[1]} ---- #{v.captures[2]} -"
+        d = "#{v.captures[0]}  <b>#{v.captures[1]}</b> (<i>#{v.captures[2]}</i>)";
+        #puts "final = " + d
+    end
     return d
 end
 
@@ -143,19 +161,23 @@ class JoshParser
     def parseFile(filename)
         klass = nil;
         met = nil
+        language = "javascript"
         
         puts "--- #{filename}"
+        if filename =~ /java$/
+            language = "java"
+        end
+        
         File.readlines(filename).each do |line|
             m = line.match(/@(\w+)(\s(\w+))*/)
             if m
                 case m.captures[0]
-                when "language"
-                    @language = m.captures[2]
                 when "class"
                     m2 = line.match(/@class\s+(\w+)(.*)$/)
                     klass = JClass.new
                     puts "    class #{m2.captures[0]}";
                     klass.setName(m2.captures[0])
+                    klass.setLanguage(language)
                     klass.setDoc(m2.captures[1])
                     @klasses.push(klass);
                     @inClass = true
@@ -341,7 +363,7 @@ class JoshParser
             if (k.getConstructor())
                 of.puts "<h3>Constructor</h3>"
                 of.puts "<ul class='constructors'>"
-                of.puts "<li><b class='name'>#{k.getConstructor().getDec()}</b>"
+                of.puts "<li><span class='name'>#{processDec(k.getLanguage(),k.getConstructor().getDec())}</span>"
                 of.puts "<p>#{k.getConstructor().getDoc()}</p></li>"
                 of.puts "</ul>"
             end
@@ -363,7 +385,7 @@ class JoshParser
                 of.puts "<h3>Methods</h3>"
                 of.puts "<ul class='methods'>"
                 for m in k.getMethods()
-                    of.puts "<li><b class='name'>"+m.getDec()+"</b>"
+                    of.puts "<li><span class='name'>"+processDec(k.getLanguage(),m.getDec())+"</span>"
                     of.puts "<p>#{processMarkdown(m.getDoc())}</p></li>"
                 end
                 of.puts "</ul>"
