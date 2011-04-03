@@ -4,7 +4,7 @@ package com.joshondesign.amino.core;
 import java.awt.Graphics2D;
 
 /**
-@class Circle 
+@class Circle A basic circle shape, *centered* around it's X and Y coordinates.
 @category shape
  */
 public class Circle extends Shape {

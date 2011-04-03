@@ -1471,7 +1471,14 @@ function MEvent() {
     //@method Get the node that this mouse event actually happened on.
     this.getNode = function() {
         return this.node;
-    }
+    };
+    this.getX = function() {
+        return this.x;
+    };
+    this.getY = function() {
+        return this.y;
+    };
+    return true;
 }
 
 

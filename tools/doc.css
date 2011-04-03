@@ -31,10 +31,6 @@ h1 {
     border-radius: 10px;
 }
 
-h3 {
-    margin-top: 1.5em;
-    color: #403000;
-}
     
 pre {
     background-color: #fff0a0;
@@ -55,26 +51,31 @@ h2 {
 
 .classdef h2 {
     border-bottom: 1px solid #403000;
-    margin-top: 3em;
+    margin-top: 2em;
     color: #403000;
     font-size: 250%;
 }
 
-/* properties */
-/*.classdef p {
-   border: 1px solid black; padding: 0; 
-   border-radius: 10px;
-   background-color: #fffff0;
-   padding: 0.8em;
-}*/
-.classdef ul { 
-    border: 1px solid black; padding: 0; 
+h3 {
+    margin: 0;
+    margin-top: 1em;
+    color: #403000;
+}
+
+/* properties and methods and constructors */
+.classdef ul, .classdef .description { 
+    border: 1px solid black; 
+    padding: 0;
     border-radius: 10px;
     background-color: #fffff0;
+    margin-top: 0.5em;
+}
+.classdef .description {
+    padding: 0.8em;
 }
 .classdef ul li { 
+    padding: 0.5em;
     list-style-type: none; 
-    padding: 0.8em;
     font-size: 100%;
     border-bottom: 1px solid #403000;
     font-family: serif;
@@ -82,13 +83,12 @@ h2 {
 .classdef ul li:last-child {
     border-width: 0px;
 }
-.classdef ul li b {
-    color: #403000;
-}
-
+.classdef .name {  color: #403000; }
+.classdef p { margin: 0em 0.5em;}
+.classdef .description { margin: 0; }
 
 /* misc */
-b.name {
+.name {
     padding-right: 2em;
     font-family: monospace;
 }
