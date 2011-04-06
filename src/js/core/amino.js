@@ -1125,6 +1125,9 @@ function Circle() {
         ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, true); 
         ctx.closePath();
         ctx.fill();
+        ctx.strokeStyle = self.getStroke();
+        ctx.lineWidth = self.strokeWidth;
+        ctx.stroke();
         this.clearDirty();
     };
     this.contains = function(x,y) {
@@ -1511,13 +1514,22 @@ var EASE_OUT_OVER = function(t) {
     var t2 = t*t*((s+1)*t-s);
     return -t2+1;
 };
-
+/*
+//x(t) = x0 cos(sqrt(k/m)*t)
+//k = spring constant (stiffness)
+//m = mass 
+var SPRING = function(t) {
+    var k = 0.01;
+    var m = 1;
+    return Math.cos(t*Math.PI*2);//Math.sqrt(k/m)*t);
+};
+*/
 
 /* 
-@class Anim An Anim is a single property animation. It animates a property on an object over time, optionally looping and reversing direction at the end of each loop (making it oscillate).
+@class PropAnim A PropAnim is a single property animation. It animates a property on an object over time, optionally looping and reversing direction at the end of each loop (making it oscillate).
 @category animation
 */
-function Anim(n,prop,start,end,duration) {
+function PropAnim(n,prop,start,end,duration) {
     this.node = n;
     this.prop = prop;
     this.started = false;
@@ -1850,7 +1862,9 @@ function Runner() {
         }
         
         //draw the scene
-        self.root.draw(ctx);
+        if(self.root) {
+            self.root.draw(ctx);
+        }
     }        
     
     this.update = function() {
@@ -1867,7 +1881,7 @@ function Runner() {
         var ctx = self.canvas.getContext("2d");
         
         if(self.dirtyTrackingEnabled) {
-            if(self.root.isDirty()) {
+            if(self.root && self.root.isDirty()) {
                 self.drawScene(ctx);
             }
         } else {
