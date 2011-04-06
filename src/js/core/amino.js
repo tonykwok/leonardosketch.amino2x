@@ -1719,21 +1719,40 @@ function Runner() {
         }
     };
     
+    this.calcLocalXY = function(canvas,event) {
+        var docX = -1;
+        var docY = -1;
+        if (event.pageX == null) {
+            // IE case
+            var d= (document.documentElement && document.documentElement.scrollLeft != null) ?
+                 document.documentElement : document.body;
+             docX= event.clientX + d.scrollLeft;
+             docY= event.clientY + d.scrollTop;
+        } else {
+            // all other browsers
+            docX= event.pageX;
+            docY= event.pageY;
+        }        
+        docX -= canvas.offsetLeft;
+        docY -= canvas.offsetTop;
+        return [docX,docY];
+    };
     //@property canvas  The canvas element that the scene will be placed in.
     this.setCanvas = function(canvas) {
         self.canvas = canvas;
         var _mouse_pressed = false;
         var _drag_target = null;
         attachEvent(canvas,'mousedown',function(e){
+            var xy = self.calcLocalXY(canvas,e);
             _mouse_pressed = true;
             //send target node event first
-            var node = self.findNode(self.root,e.offsetX,e.offsetY);
+            var node = self.findNode(self.root,xy[0],xy[1]);
             //p("---------- found node --------");
             //console.log(node);
             var evt = new MEvent();
             evt.node = node;
-            evt.x = e.offsetX;
-            evt.y = e.offsetY;
+            evt.x = xy[0];
+            evt.y = xy[1];
             if(node) {
                 var start = node;
                 _drag_target = node;
@@ -1750,7 +1769,8 @@ function Runner() {
         });
         attachEvent(canvas,'mousemove',function(e){
             if(_mouse_pressed) {
-                var node = self.findNode(self.root,e.offsetX,e.offsetY);
+                var xy = self.calcLocalXY(canvas,e);
+                var node = self.findNode(self.root,xy[0],xy[1]);
                 var evt = new MEvent();
                 
                 //redirect events to current drag target, if applicable
@@ -1758,8 +1778,8 @@ function Runner() {
                     node = _drag_target;
                 }
                 evt.node = node;
-                evt.x = e.offsetX;
-                evt.y = e.offsetY;
+                evt.x = xy[0];
+                evt.y = xy[1];
                 if(node) {
                     var start = node;
                     while(start) {
@@ -1776,12 +1796,13 @@ function Runner() {
             _mouse_pressed = false;
             _drag_target = false;
             //send target node event first
-            var node = self.findNode(self.root,e.offsetX,e.offsetY);
+            var xy = self.calcLocalXY(canvas,e);
+            var node = self.findNode(self.root,xy[0],xy[1]);
             //console.log(node);
             var evt = new MEvent();
             evt.node = node;
-            evt.x = e.offsetX;
-            evt.y = e.offsetY;
+            evt.x = xy[0];
+            evt.y = xy[1];
             if(node) {
                 var start = node;
                 while(start) {
@@ -1814,7 +1835,7 @@ function Runner() {
             indent();
             //descend from front to back
             for(var i=node.childCount()-1; i>=0; i--) {
-                //p("looking at child: " + node.getChild(i));
+                //p("looking at child: " + node.getChild(i)._hash);
                 //console.log(node.getChild(i));
                 var n = self.findNode(node.getChild(i),nc[0],nc[1]);
                 if(n) {
