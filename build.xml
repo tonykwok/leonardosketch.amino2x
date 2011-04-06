@@ -56,18 +56,21 @@
         <copy file="tools/background.png" todir="dist/javadoc"/>
     </target>
     
-    <target name="gallery">
+    <target name="gallery" depends="build-js">
         <mkdir dir="dist/gallery"/>
-        <!--
+        <antcall target="build-gallery-app"><param name="appname" value="AngleButtons"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="BasicParticles"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
+    </target>
+    <target name="build-gallery-app">    
         <copy todir="dist/gallery">
             <fileset dir="samples/js/">
-                <include name="AngleButtons/**"/>
+                <include name="${appname}/**"/>
             </fileset>
         </copy>
-        -->
         <copy todir="dist/gallery">
             <fileset dir="samples/js/">
-                <include name="AngleButtons/index.html"/>
+                <include name="${appname}/index.html"/>
             </fileset>
             <filterchain>
                 <tokenfilter>
