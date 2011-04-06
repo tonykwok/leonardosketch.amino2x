@@ -1125,9 +1125,11 @@ function Circle() {
         ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, true); 
         ctx.closePath();
         ctx.fill();
-        ctx.strokeStyle = self.getStroke();
-        ctx.lineWidth = self.strokeWidth;
-        ctx.stroke();
+        if(self.getStrokeWidth() > 0) {
+            ctx.strokeStyle = self.getStroke();
+            ctx.lineWidth = self.getStrokeWidth();
+            ctx.stroke();
+        }
         this.clearDirty();
     };
     this.contains = function(x,y) {
