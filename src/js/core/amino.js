@@ -844,7 +844,6 @@ function Transform(n) {
     Node.call(this);
     this.node = n;
     this.node.setParent(this);
-    this.rotate = 0;
     var self = this;
     
     //@property translateX translate in the X direction
@@ -865,13 +864,44 @@ function Transform(n) {
         this.setDirty();
         return this;
     };
+    this.getTranslateY = function() {
+        return this.translateY;
+    };
+    
+    //@property scaleX scale in the X direction
+    this.scaleX = 1;
+    this.setScaleX = function(sx) {
+        this.scaleX = sx;
+        this.setDirty();
+        return this;
+    };
+    this.getScaleX = function() {
+        return this.scaleX;
+    };
+        
+        
+    //@property scaleY scale in the X direction
+    this.scaleY = 1;
+    this.setScaleY = function(sy) {
+        this.scaleY = sy;
+        this.setDirty();
+        return this;
+    };
+    this.getScaleY = function() {
+        return this.scaleY;
+    };
     
     //@property rotate set the rotation, in degrees
+    this.rotate = 0;
     this.setRotate = function(rotate) {
         this.rotate = rotate;
         this.setDirty();
         return this;
     };
+    this.getRotate = function() {
+        return this.rotate;
+    };
+    
     this.contains = function(x,y) {
         return false;
     };
@@ -884,14 +914,18 @@ function Transform(n) {
     this.getChild = function(n) {
         return this.node;
     };
+    
     this.convertToChildCoords = function(x,y) {
         var x1 = x-this.translateX;
         var y1 = y-this.translateY;
         var a = -this.rotate * Math.PI/180;
         var x2 = x1*Math.cos(a) - y1*Math.sin(a);
         var y2 = x1*Math.sin(a) + y1*Math.cos(a);
+        x2 = x2/this.scaleX;
+        y2 = y2/this.scaleY;
         return [x2,y2];
     };
+    
     this.draw = function(ctx) {
         ctx.save();
         ctx.translate(self.translateX,this.translateY);
@@ -900,6 +934,9 @@ function Transform(n) {
             r = 360-r;
         }
         ctx.rotate(r*Math.PI/180.0,0,0);
+        if(self.scaleX != 1 || self.scaleY != 1) {
+            ctx.scale(self.scaleX,self.scaleY);
+        }
         this.node.draw(ctx);
         ctx.restore();
         this.clearDirty();

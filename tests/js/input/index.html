@@ -1,0 +1,68 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../../src/js/core/amino.js"></script>
+    <style>
+    canvas { border: 0px solid black; margin: 0px;  padding:0px; }
+    </style>
+<body>
+<canvas id="can" width="500" height="300"></canvas>
+
+<script language="JavaScript">
+var r = new Runner();
+
+function Button(txt) {
+    Shape.call(this);
+    this.txt = txt;
+    this.rect = new Rect().set(0,0,80,30).setFill("red");
+    this.draw = function(c) {
+        this.rect.draw(c);
+        c.fillStyle = "black";
+        c.fillText(this.txt,5,20);
+    };
+    var self = this;
+    r.listen("MOUSE_PRESS",this,function(e) {
+        if(self.rect.getFill() == "red") {
+            self.rect.setFill("cyan");
+        } else {
+            self.rect.setFill("red");
+        }
+        self.setDirty();
+    });
+    this.contains = function(x,y) {
+        return this.rect.contains(x,y);
+    }
+    return this;
+}
+Button.extend(Shape);
+
+
+
+var b1 = new Button("no trans");
+
+var tran = new Transform(new Button("tx = 100")).setTranslateX(100);
+var tran2 = new Transform(new Button("100,100, rot45")).setTranslateX(100).setTranslateY(100).setRotate(45);
+var tran3 = new Transform(
+    new Transform(new Button("nested trans"))
+        .setTranslateX(50)
+        .setTranslateY(50)
+        .setRotate(30)
+        )
+    .setTranslateX(200)
+    .setTranslateY(50).setRotate(30);
+var tran4 = new Transform(new Button("scale"))
+    .setTranslateX(300)
+    .setTranslateY(50)
+    .setScaleX(1.5).setScaleY(0.5);
+    
+var group1 = new Group().add(new Button("in group")).setX(20).setY(150);
+
+r.setCanvas(document.getElementById("can")).setBackground("green").setFPS(30);
+r.setRoot(new Group().add(b1)
+    .add(tran).add(tran2).add(tran3).add(tran4).add(group1)
+    );
+
+r.start();
+</script>
+
+</body>
+</html>
