@@ -61,7 +61,10 @@
         <antcall target="build-gallery-app"><param name="appname" value="AngleButtons"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="BasicParticles"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="PhotoAdjust"/></antcall>
     </target>
+    
+    
     <target name="build-gallery-app">    
         <copy todir="dist/gallery">
             <fileset dir="samples/js/">
