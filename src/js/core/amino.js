@@ -2044,6 +2044,11 @@ function Runner() {
         return self;
     };
     
+    //@method gets the drawing context of the canvas. You *must* have already called _setCanvas()_ first.
+    this.getContext = function() {
+        return self.canvas.getContext('2d');
+    };
+    
     return true;
 }
 
