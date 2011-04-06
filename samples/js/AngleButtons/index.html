@@ -1,0 +1,29 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../../src/js/core/amino.js"></script>
+    <style>
+        canvas { border: 1px solid cyan; }
+        body { background-color: black; }
+    </style>
+<body>
+
+<canvas id="can" width="800" height="400"></canvas>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("can")).setBackground("black").setFPS(30);
+    
+    
+    var button = new Rect().set(0,0,100,50).setFill("cyan");
+    var trans = new Transform(button).setTranslateX(400).setTranslateY(100);
+    
+    var anim = new PropAnim(trans,"rotate",0,360,3).setTween(EASE_OUT_OVER).setLoop(true);
+    
+    runner.addAnim(anim);
+    runner.setRoot(trans);
+    
+    runner.start();
+</script>
+
+</body>
+</html>

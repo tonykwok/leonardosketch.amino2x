@@ -11,7 +11,7 @@
         </tstamp>
         <echo message="timestamp = ${TIMESTAMP}"/>
 
-        <property  name="publish.dir" value="published/foo"/>
+        <property  name="publish.dir" value="blah"/>
         <echo message="publish dir = ${publish.dir}"/>
         <echo message="build.number = ${build.number}"/>
         <mkdir dir="dist"/>
@@ -56,14 +56,34 @@
         <copy file="tools/background.png" todir="dist/javadoc"/>
     </target>
     
+    <target name="gallery">
+        <mkdir dir="dist/gallery"/>
+        <!--
+        <copy todir="dist/gallery">
+            <fileset dir="samples/js/">
+                <include name="AngleButtons/**"/>
+            </fileset>
+        </copy>
+        -->
+        <copy todir="dist/gallery">
+            <fileset dir="samples/js/">
+                <include name="AngleButtons/index.html"/>
+            </fileset>
+            <filterchain>
+                <tokenfilter>
+                    <filetokenizer/>
+                    <replaceregex pattern="src=&quot;(.*)/amino.js&quot;" flags="s" replace="src='../../amino-${version}.js'"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+    </target>
     
-    <target name="publish" depends="init-build, all">
+    
+    <target name="publish" depends="init-build, all, gallery">
         <copy todir="${publish.dir}">
             <fileset dir="dist/">
             </fileset>
         </copy>
-        
-    
     </target>
     
 </project>
