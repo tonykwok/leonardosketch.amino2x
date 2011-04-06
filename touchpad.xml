@@ -36,7 +36,8 @@
         "type": "web",
         "main": "index.html",
         "title": "Amino ${appname}",
-        "icon": "icon.png"
+        "icon": "icon.png",
+        "uiRevision" : 2
 }        </echo>
 
 
