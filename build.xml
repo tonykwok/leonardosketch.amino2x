@@ -3,6 +3,17 @@
 
     <target name="init-build">
         <property name="version" value="0.01"/>
+        
+        <echo message="basedir = ${basedir}"/>
+        <buildnumber/>
+        <tstamp>
+            <format property="TIMESTAMP" pattern="yyyy-MM-dd_kk-mm"/>
+        </tstamp>
+        <echo message="timestamp = ${TIMESTAMP}"/>
+
+        <property  name="publish.dir" value="published/foo"/>
+        <echo message="publish dir = ${publish.dir}"/>
+        <echo message="build.number = ${build.number}"/>
         <mkdir dir="dist"/>
     </target>
     
@@ -43,6 +54,16 @@
         <exec command="ruby tools/joshdoc.rb src/java/core/ dist/javadoc/docs.html"/>
         <copy file="tools/doc.css" todir="dist/javadoc"/>
         <copy file="tools/background.png" todir="dist/javadoc"/>
+    </target>
+    
+    
+    <target name="publish" depends="init-build, all">
+        <copy todir="${publish.dir}">
+            <fileset dir="dist/">
+            </fileset>
+        </copy>
+        
+    
     </target>
     
 </project>
