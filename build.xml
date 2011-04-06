@@ -65,6 +65,7 @@
     <target name="build-gallery-app">    
         <copy todir="dist/gallery">
             <fileset dir="samples/js/">
+                <exclude name="${appname}/index.html"/>
                 <include name="${appname}/**"/>
             </fileset>
         </copy>
