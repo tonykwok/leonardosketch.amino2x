@@ -6,7 +6,7 @@
 
     <target name="init">
         <property name="tests.dir" value="samples/js"/>
-        <property name="amino.path" value="src/js/core/amino.js"/>
+        <property name="amino.path" value="dist/amino-0.01.js"/>
         <mkdir dir="build/webos/tests"/>
     </target>
     
@@ -29,7 +29,14 @@
                 <include name="**"/>
             </fileset>
         </copy>
-        <copy todir="${appdir}" file="${amino.path}"/>
+        
+        <replaceregexp file="${appdir}/index.html"
+            match='"(.+)/amino.js"'
+            replace="'amino.js'"
+            byline="true"
+        />
+        
+        <copy tofile="${appdir}/amino.js" file="${amino.path}"/>
 
         <echo file="${appdir}/appinfo.json">
 {
