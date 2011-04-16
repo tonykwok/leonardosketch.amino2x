@@ -17,8 +17,8 @@
     var MAX_HEIGHT = 500;
     var count = 0;
     runner.addCallback(function() {
-        if(ADB.getAverageFPS()>=30 && count % 100 == 0) {
-            for(var j=0;j<50;j++) {
+        if(ADB.getAverageFPS()>=20 && count % 100 == 0) {
+            for(var j=0;j<20;j++) {
                 var r = new Circle().setFill("white").setStrokeWidth(0);
                 r.vx = (0.5+Math.random())/1.0;
                 r.vy = (0.5+Math.random())/1.0;

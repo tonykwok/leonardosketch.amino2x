@@ -107,8 +107,8 @@
             this.setDirty();
             return this;
         }
-        this.width = 100;
-        this.height = 20;
+        this.width = 150;
+        this.height = 40;
         
         var self = this;
         
@@ -165,9 +165,9 @@
     
     runner.setRoot(new Group()
         .add(sat)
-        .add(new PSlider(sat,"saturation",1,0,1).setX(10).setY(10))
-        .add(new PSlider(sat,"contrast",1,0,5).setX(10).setY(30))
-        .add(new PSlider(sat,"brightness",0,-1,1).setX(10).setY(50))
+        .add(new PSlider(sat,"saturation",1,0,1).setX(10).setY(350))
+        .add(new PSlider(sat,"contrast",1,0,5).setX(10).setY(400))
+        .add(new PSlider(sat,"brightness",0,-1,1).setX(10).setY(450))
         )
     ;
 

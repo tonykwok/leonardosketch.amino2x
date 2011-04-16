@@ -33,7 +33,9 @@
     </target>
     
     <target name="build-js" depends="init-build">
-        <copy tofile="dist/amino-${version}.js" file="src/js/core/amino.js"/>
+        <concat destfile="dist/amino-${version}.js">
+            <fileset dir="src/js/core/"/>
+        </concat>
     </target>
     
     
