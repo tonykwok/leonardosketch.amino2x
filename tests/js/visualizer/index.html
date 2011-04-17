@@ -1,0 +1,82 @@
+<html>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<script src="amino.js"></script>
+<style type="text/css">
+body { border: 0px solid black; margin: 0; padding: 0}
+</style>
+<body>
+<canvas id="canvas" width="1024" height="768"></canvas>
+
+<script language="JavaScript">
+    var w = 341;//256;//341;
+    var h = 256;//192;//256;
+    var scale = 3;
+    if (window.PalmSystem) {
+        window.PalmSystem.enableFullScreenMode(true);
+    }
+
+    var runner = new Runner();
+    runner.clearBackground = false;
+    runner.setCanvas(document.getElementById("canvas"));
+    
+    var buffer = null;
+    var buffer2 = null;
+    var currentx = 0;
+    var currenty = 0;
+    runner.root = new Shape();
+    var tick = 0;
+    runner.root.draw = function(ctx) {
+        if(!buffer) {
+            //console.log('creating');
+            buffer = document.createElement("canvas");
+            buffer.width = w;
+            buffer.height = h;
+            
+            buffer2 = document.createElement("canvas");
+            buffer2.width = w;
+            buffer2.height = h;
+        }
+        
+        var bctx = buffer.getContext('2d');
+        var bctx2 = buffer2.getContext('2d');
+        
+        //draw canvas to buffer
+        bctx2.drawImage(buffer,0,0);
+        bctx2.fillStyle = "red";
+        tick = (tick + 6) % 255;
+        bctx2.strokeStyle = "rgb("+tick+","+(tick+20)%255+","+(255-tick/2)+")";
+        bctx2.beginPath();
+        bctx2.moveTo(w/2-30+Math.random()*10,h/2-30+Math.random()*60);
+        bctx2.lineTo(w/2+30+Math.random()*10,h/2-30+Math.random()*60);
+        bctx2.stroke();
+        
+        bctx2.save();
+        bctx2.translate(currentx,currenty);
+        console.log("c = " + currentx + " " + currenty);
+        bctx2.beginPath();
+        bctx2.moveTo(0,0);
+        bctx2.lineTo(10,0);
+        bctx2.lineTo(10,10);
+        bctx2.lineTo(0,10);
+        bctx2.closePath();
+        bctx2.fill();
+        bctx2.restore();
+        
+        //draw more onto buffer
+        bctx.drawImage(buffer2, 0,0,w,h,  -5,-5, w+10,h+10);
+        //draw buffer back to canvas
+        ctx.drawImage(buffer,0,0,w*scale,h*scale);
+    };
+
+    runner.fps = 20;
+    runner.listen("MOUSE_DRAG", null, function(e) {
+        //+console.log("x = " + e.x);
+        currentx = e.x/scale;
+        currenty = e.y/scale;
+    });
+    runner.start();
+    
+</script>
+
+</body>
+</html>

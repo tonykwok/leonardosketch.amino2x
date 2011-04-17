@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<project default="all">
+
+    <target name="init-build">
+        <property name="version" value="0.01"/>
+        
+        <echo message="basedir = ${basedir}"/>
+        <buildnumber/>
+        <tstamp>
+            <format property="TIMESTAMP" pattern="yyyy-MM-dd_kk-mm"/>
+        </tstamp>
+        <echo message="timestamp = ${TIMESTAMP}"/>
+
+        <property  name="publish.dir" value="blah"/>
+        <echo message="publish dir = ${publish.dir}"/>
+        <echo message="build.number = ${build.number}"/>
+        <mkdir dir="dist"/>
+    </target>
+    
+    <target name="all" depends="build-java, build-js"/>
+    
+    
+    <target name="build-java" depends="init-build">
+        <mkdir dir="build/classes/"/>
+        <javac destdir="build/classes">
+            <src path="src/java/core"/>
+        </javac>        
+        
+        <jar destfile="dist/amino-${version}.jar">
+            <fileset dir="build/classes"/>
+        </jar>
+        
+    </target>
+    
+    <target name="build-js" depends="init-build">
+        <copy tofile="dist/amino-${version}.js" file="src/js/core/amino.js"/>
+    </target>
+    
+    
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="dist"/>
+    </target>
+    
+    <target name="js-doc">
+        <mkdir dir="dist/jsdoc"/>
+        <exec command="ruby tools/joshdoc.rb src/js/core/amino.js dist/jsdoc/docs.html"/>
+        <copy file="tools/doc.css" todir="dist/jsdoc"/>
+        <copy file="tools/background.png" todir="dist/jsdoc"/>
+    </target>
+    
+    <target name="java-doc">
+        <mkdir dir="dist/javadoc"/>
+        <exec command="ruby tools/joshdoc.rb src/java/core/ dist/javadoc/docs.html"/>
+        <copy file="tools/doc.css" todir="dist/javadoc"/>
+        <copy file="tools/background.png" todir="dist/javadoc"/>
+    </target>
+    
+    <target name="gallery" depends="build-js">
+        <mkdir dir="dist/gallery"/>
+        <antcall target="build-gallery-app"><param name="appname" value="AngleButtons"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="BasicParticles"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="PhotoAdjust"/></antcall>
+    </target>
+    
+    
+    <target name="build-gallery-app">    
+        <copy todir="dist/gallery">
+            <fileset dir="samples/js/">
+                <exclude name="${appname}/index.html"/>
+                <include name="${appname}/**"/>
+            </fileset>
+        </copy>
+        <copy todir="dist/gallery">
+            <fileset dir="samples/js/">
+                <include name="${appname}/index.html"/>
+            </fileset>
+            <filterchain>
+                <tokenfilter>
+                    <filetokenizer/>
+                    <replaceregex pattern="src=&quot;(.*)/amino.js&quot;" flags="s" replace="src='../../amino-${version}.js'"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+    </target>
+    
+    
+    <target name="publish" depends="init-build, all, gallery">
+        <copy todir="${publish.dir}">
+            <fileset dir="dist/">
+            </fileset>
+        </copy>
+    </target>
+    
+</project>
