@@ -63,7 +63,7 @@
 <!--        <antcall target="build-gallery-app"><param name="appname" value="AngleButtons"/></antcall> -->
         <antcall target="build-gallery-app"><param name="appname" value="basicparticles"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
-        <antcall target="build-gallery-app"><param name="appname" value="photodjust"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="photoadjust"/></antcall>
     </target>
     
     
@@ -88,7 +88,7 @@
     </target>
     
     
-    <target name="publish" depends="init-build, all, gallery">
+    <target name="publish" depends="init-build, all, js-doc, java-doc, gallery">
         <copy todir="${publish.dir}">
             <fileset dir="dist/">
             </fileset>
