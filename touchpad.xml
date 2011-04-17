@@ -5,28 +5,38 @@
     </target>
 
     <target name="init">
-        <property name="tests.dir" value="tests/js"/>
-        <property name="amino.path" value="src/js/core/amino.js"/>
+        <property name="tests.dir" value="samples/js"/>
+        <property name="amino.path" value="dist/amino-0.01.js"/>
         <mkdir dir="build/webos/tests"/>
+    </target>
+    
+    <target name="clean" depends="init">
+        <delete dir="build/webos/samples"/>
     </target>
 
     <target name="build-apps">
-        <antcall target="build-app"><param name="appname" value="visualizer"/></antcall>
-        <antcall target="build-app"><param name="appname" value="clock"/></antcall>
+        <antcall target="build-app"><param name="appname" value="photoadjust"/></antcall>
+        <antcall target="build-app"><param name="appname" value="basicparticles"/></antcall>
         <antcall target="build-app"><param name="appname" value="blocks"/></antcall>
-        <antcall target="build-app"><param name="appname" value="dragtest"/></antcall>
     </target>
 
 
     <target name="build-app" depends="init">
-        <property name="appdir" value="build/webos/tests/${appname}"/>
+        <property name="appdir" value="build/webos/samples/${appname}"/>
         <mkdir dir="${appdir}"/>
         <copy todir="${appdir}">
             <fileset dir="${tests.dir}/${appname}">
                 <include name="**"/>
             </fileset>
         </copy>
-        <copy todir="${appdir}" file="${amino.path}"/>
+        
+        <replaceregexp file="${appdir}/index.html"
+            match='"(.+)/amino.js"'
+            replace="'amino.js'"
+            byline="true"
+        />
+        
+        <copy tofile="${appdir}/amino.js" file="${amino.path}"/>
 
         <echo file="${appdir}/appinfo.json">
 {
@@ -41,8 +51,8 @@
 }        </echo>
 
 
-        <exec command="palm-package ${appname}" dir="build/webos/tests"/>
-        <exec command="palm-install com.joshondesign.amino.${appname}_0.0.1_all.ipk" dir="build/webos/tests"/>
+        <exec command="palm-package ${appname}" dir="build/webos/samples"/>
+        <exec command="palm-install com.joshondesign.amino.${appname}_0.0.1_all.ipk" dir="build/webos/samples"/>
     </target>
 
     <target name="run-app" depends="init">
