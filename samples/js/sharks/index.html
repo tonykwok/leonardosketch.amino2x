@@ -1,0 +1,113 @@
+<html>
+
+<head>
+ <script src="../../../dist/amino.js"></script>
+<!-- <script src="amino-0.01.js"></script>-->
+
+
+<style type="text/css">
+canvas { border: 1px solid black; }
+</style>
+</head>
+
+<body>
+<canvas id="can" width="800" height="600"></canvas>
+<script language="JavaScript">
+
+var runner = new Runner();
+runner.setCanvas(document.getElementById("can")).setBackground("white").setFPS(30);
+
+
+var sharkUnit = new PathNode()
+    .setPath(new Path()
+        .moveTo(-20,30)
+        .lineTo(0,-30)
+        .lineTo(20,30)
+        .closeTo(0,0).build())
+    .setFill("black");
+//var shark = new Circle().set(100,100,60,60).setFill("cyan");
+sharkUnit.setStrokeWidth(3).setStroke("black");
+
+var shark = new Transform(sharkUnit)
+    .setTranslateX(100)
+    .setTranslateY(100)
+    .setRotate(45);
+var g = new Group();
+g.add(shark);
+
+runner.setRoot(g);
+runner.start();
+
+
+var sx = 0;
+var sy = 0;
+var ex = 0;
+var ey = 0;
+var l = new PathNode();
+l.setPath(new Path().moveTo(10,10).lineTo(200,100).build());
+l.setStrokeWidth(3)
+    .setStroke("black")
+    .setVisible(false);
+g.add(l);
+var target = new Circle().set(0,0,80)
+    .setFill("rgba(255,128,128,0.5)")
+    .setStroke("black")
+    .setStrokeWidth(0)
+    .setVisible(false);
+g.add(target);
+
+runner.listen("MOUSE_PRESS",null,function(e) {
+        sx = shark.getTranslateX();
+        sy = shark.getTranslateY();
+        l.setVisible(true);
+        l.setPath(new Path().moveTo(sx,sy).lineTo(sx,sy).build());
+        target.setVisible(true);
+        target.setX(sx);
+        target.setY(sy);
+});
+runner.listen("MOUSE_DRAG",null,function(e) {
+        ex = e.getX();
+        ey = e.getY();
+        if(ex < sx) {
+            l.setPath(new Path()
+                .moveTo(sx,sy)
+                .curveTo(sx-30,sy,  ex+30,sy, ex,ey)
+                .build());
+        } else {
+            l.setPath(new Path()
+                .moveTo(sx,sy)
+                .curveTo(sx+30,sy,  ex-30,sy, ex,ey)
+                .build());
+        }
+        target.setX(ex);
+        target.setY(ey);        
+});
+
+
+function calcAngle(x1,y1, x2,y2) {
+    return Math.atan2(x2-x1,y2-y1);
+}
+/*
+function calcPoint(x,y,angle, double dist) {
+        return new Point2D.Double(
+                point.getX()+Math.sin(Math.toRadians(angle))*dist,
+                point.getY()+Math.cos(Math.toRadians(angle))*dist
+        );
+    }
+*/
+
+runner.listen("MOUSE_RELEASE",null,function(e) {
+        l.setVisible(false);
+        runner.addAnim(new PathAnim(shark,l.getPath(),2).setTween(EASE_OUT));
+        var a = calcAngle(sx, sy, ex, ey);
+        a = a*360/(Math.PI*2.0);
+        console.log("a = " + a);
+        shark.setRotate(180-a);
+        target.setVisible(false);
+});
+
+
+
+</script>
+</body>
+</html>
