@@ -120,6 +120,7 @@ function Circle() {
     };*/
     
     this.draw = function(ctx) {
+        if(!this.isVisible()) return;
         ctx.fillStyle = self.fill;
         ctx.beginPath();
         ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, true); 
@@ -289,6 +290,7 @@ function Segment(kind,x,y,a,b,c,d) {
 */
 function Path() {
     this.segments = [];
+    this.closed = false;
     
     //@doc jump directly to the x and y. This is usually the first thing in your path.
     this.moveTo = function(x,y) { this.segments.push(new Segment(SEGMENT_MOVETO,x,y)); return this; };
@@ -297,7 +299,11 @@ function Path() {
     this.lineTo = function(x,y) { this.segments.push(new Segment(SEGMENT_LINETO,x,y)); return this; };
     
     //@doc close the path. It will draw a line from the last x,y to the first x,y if needed.
-    this.closeTo = function(x,y) { this.segments.push(new Segment(SEGMENT_CLOSETO,x,y)); return this; };
+    this.closeTo = function(x,y) {
+        this.segments.push(new Segment(SEGMENT_CLOSETO,x,y)); 
+        this.closed = true;
+        return this;
+    };
     
     //@doc draw a beizer curve from the previous x,y to a new point (x2,y2) using the four control points (cx1,cy1,cx2,cy2).
     this.curveTo = function(cx1,cy1,cx2,cy2,x2,y2) {
@@ -371,19 +377,31 @@ function PathNode() {
     this.path = null;
     this.setPath = function(path) {
         this.path = path;
+        this.setDirty();
         return this;
     };
+    this.getPath = function() {
+        return this.path;
+    };
+    
     this.draw = function(ctx) {
+        if(!this.isVisible()) return;
         ctx.fillStyle = this.fill;
         ctx.beginPath();
         for(var i=0; i<this.path.segments.length; i++) {
             var s = this.path.segments[i];
-            if(s.kind == SEGMENT_MOVETO) ctx.moveTo(s.x,s.y);
-            if(s.kind == SEGMENT_LINETO) ctx.lineTo(s.x,s.y);
-            if(s.kind == SEGMENT_CURVETO) ctx.bezierCurveTo(s.cx1,s.cy1,s.cx2,s.cy2,s.x,s.y);
-            if(s.kind == SEGMENT_CLOSETO) ctx.closePath();
+            if(s.kind == SEGMENT_MOVETO) 
+                ctx.moveTo(s.x,s.y);
+            if(s.kind == SEGMENT_LINETO) 
+                ctx.lineTo(s.x,s.y);
+            if(s.kind == SEGMENT_CURVETO)
+                ctx.bezierCurveTo(s.cx1,s.cy1,s.cx2,s.cy2,s.x,s.y);
+            if(s.kind == SEGMENT_CLOSETO)
+                ctx.closePath();
         }
-        ctx.fill();
+        if(this.path.closed) {
+            ctx.fill();
+        }
         if(this.strokeWidth > 0) {
             ctx.strokeStyle = this.stroke;
             ctx.lineWidth = this.strokeWidth;
