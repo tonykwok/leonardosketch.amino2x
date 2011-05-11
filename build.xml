@@ -36,6 +36,9 @@
         <concat destfile="dist/amino-${version}.js">
             <fileset dir="src/js/core/"/>
         </concat>
+        <concat destfile="dist/amino.js">
+            <fileset dir="src/js/core/"/>
+        </concat>
     </target>
     
     

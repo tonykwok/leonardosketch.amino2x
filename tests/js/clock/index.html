@@ -1,7 +1,7 @@
 <html>
 <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
-<!--<script src="../../../src/js/core/amino.js"></script>-->
-<script src="amino.js"></script>
+<script src="../../../dist/amino.js"></script>
+<!-- <script src="amino.js"></script> -->
 <style type="text/css">
 body { border: 0px solid black; margin: 0; padding: 0}
 #canvas {
@@ -29,7 +29,7 @@ body { border: 0px solid black; margin: 0; padding: 0}
             .setTranslateY(360)
             .setRotate(0);    
         var m = now.getMinutes()*360/60;
-        runner.addAnim(new Anim(mht,"rotate",m+180,m+360+180,40/*60*60*/).setLoop(true));
+        runner.addAnim(new PropAnim(mht,"rotate",m+180,m+360+180,40/*60*60*/).setLoop(true));
         g.add(mht);
         
         var hh = new Rect()
@@ -41,7 +41,7 @@ body { border: 0px solid black; margin: 0; padding: 0}
             .setTranslateY(360)
             .setRotate(0);    
         var h = now.getHours()*360/12 + now.getMinutes()*360/60/12;
-        runner.addAnim(new Anim(hht,"rotate",h+180,h+360+180,12*60*60).setLoop(true));
+        runner.addAnim(new PropAnim(hht,"rotate",h+180,h+360+180,12*60*60).setLoop(true));
         g.add(hht);
         
         var center = new ImageView("images/center.png")
@@ -206,22 +206,30 @@ body { border: 0px solid black; margin: 0; padding: 0}
     runner.listen("MOUSE_RELEASE",null,function(e) {
         panl.setVisible(false);
         panr.setVisible(false);
-        if(panc.getTranslateX()< -512) {
-            panc.setTranslateX(-1024);
-            panr.setTranslateX(0);
+        var threshold = 200;
+        if(panc.getTranslateX()< -threshold) {
+            //panc.setTranslateX(-1024);
+            //panr.setTranslateX(0);
             panl.setTranslateX(1024);
+            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),0,0.5));
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),-1024,0.5));
             var t = panl;
             panl = panc; panc = panr; panr = t;
-        } else if(panc.getTranslateX() > 512) {
-            panc.setTranslateX(1024);
-            panl.setTranslateX(0);
+        } else if(panc.getTranslateX() > threshold) {
+            //panc.setTranslateX(1024);
+            //panl.setTranslateX(0);
             panr.setTranslateX(-1024);
+            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),0,0.5));
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),1024,0.5));
             var t = panr;
             panr = panc; panc = panl; panl = t;
         } else {
-            panc.setTranslateX(0);
-            panl.setTranslateX(-1024);
-            panr.setTranslateX(1024);
+            //panc.setTranslateX(0);
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),0,0.5));
+            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),1024,0.5));
+            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),-1024,0.5));
+            //panl.setTranslateX(-1024);
+            //panr.setTranslateX(1024);
         }
     });
     
