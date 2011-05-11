@@ -736,6 +736,11 @@ function PathAnim(n,path,duration) {
         this.loop = loop;
         return this;
     };
+    this.tween = LINEAR;
+    this.setTween = function(func) {
+        this.tween = func;
+        return this;
+    };
     this.start = function(time) {
         self.started = true;
         self.startTime = time;
@@ -763,9 +768,18 @@ function PathAnim(n,path,duration) {
             fract = 1.0-fract;
         }
 
-        var pt = self.path.pointAtT(fract);
-        self.node.setX(pt[0]);
-        self.node.setY(pt[1]);
+        var tvalue = self.tween(fract);
+        //value = (self.endValue-self.startValue)*tvalue + self.startValue;
+        var pt = self.path.pointAtT(tvalue);
+        if(self.node.setX){
+            console.log("setting x");
+            self.node.setX(pt[0]);
+            self.node.setY(pt[1]);
+        }
+        if(self.node.setTranslateX) {
+            self.node.setTranslateX(pt[0]);
+            self.node.setTranslateY(pt[1]);
+        }
         self.node.setDirty();
     }
     return true;
@@ -1158,6 +1172,7 @@ function Util() {
         var url = "data:image/png;base64,"+p.getBase64();
         return url;
     };
+    
     return true;
 };
 

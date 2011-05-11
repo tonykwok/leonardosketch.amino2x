@@ -63,11 +63,10 @@
     
     <target name="gallery" depends="build-js">
         <mkdir dir="dist/gallery"/>
-        <antcall target="build-gallery-app"><param name="appname" value="AngleButtons"/></antcall>
-        <antcall target="build-gallery-app"><param name="appname" value="BasicParticles"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="basicparticles"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
-        <antcall target="build-gallery-app"><param name="appname" value="PhotoAdjust"/></antcall>
-	<antcall target="build-gallery-app"><param name="appname" value="touchclock"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="touchclock"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="photoadjust"/></antcall>
     </target>
     
     
@@ -92,7 +91,7 @@
     </target>
     
     
-    <target name="publish" depends="init-build, all, gallery">
+    <target name="publish" depends="init-build, all, js-doc, java-doc, gallery">
         <copy todir="${publish.dir}">
             <fileset dir="dist/">
             </fileset>
