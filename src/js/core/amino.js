@@ -646,6 +646,7 @@ function PropAnim(n,prop,start,end,duration) {
     this.loop = false;
     this.autoReverse = false;
     this.forward = true;
+    this.dead = false;
     
     
     var self = this;
@@ -673,6 +674,12 @@ function PropAnim(n,prop,start,end,duration) {
         self.node[self.prop] = self.startValue;
     };
     
+    this.setValue = function(tvalue) {
+        value = (self.endValue-self.startValue)*tvalue + self.startValue;
+        self.node[self.prop] = value;
+        self.node.setDirty();
+    };
+    
     this.update = function(time) {
         var elapsed = time-self.startTime;
         var fract = 0.0;
@@ -685,6 +692,9 @@ function PropAnim(n,prop,start,end,duration) {
                 }
                 fract = 0.0;
             } else {
+                //set the final value
+                self.setValue(1.0);
+                self.dead = true;
                 return;
             }
         }
@@ -695,11 +705,7 @@ function PropAnim(n,prop,start,end,duration) {
         //var value = (self.endValue-self.startValue)*fract + self.startValue;
         //var value = self.tween(fract,self.startValue,self.endValue);
         var tvalue = self.tween(fract);
-        value = (self.endValue-self.startValue)*tvalue + self.startValue;
-
-        self.node[self.prop] = value;
-        self.node.setDirty();
-        
+        self.setValue(tvalue);
     }
     this.tween = LINEAR;
     this.setTween = function(func) {
@@ -719,6 +725,7 @@ function PathAnim(n,path,duration) {
     this.duration = duration;
     this.loop = false;
     this.forward = true;
+    this.dead = false;
     var self = this;
     //@method Returns true if the animation is currently running.
     this.isStarted = function() {
@@ -747,6 +754,7 @@ function PathAnim(n,path,duration) {
                 }
                 fract = 0.0;
             } else {
+                self.dead = true;
                 return;
             }
         }
@@ -1000,6 +1008,7 @@ function Runner() {
         //process animation
         for(i=0;i<self.anims.length; i++) {
             var a = self.anims[i];
+            if(a.dead) continue;
             if(!a.isStarted()) {
                 a.start(time);
                 continue;
