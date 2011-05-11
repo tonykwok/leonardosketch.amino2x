@@ -1,0 +1,179 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../../src/js/core/amino.js"></script>
+<body>
+
+<canvas id="can" width="800" height="600"></canvas>
+
+<script language="JavaScript">
+
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("can")).setBackground("white").setFPS(30);
+
+    /*
+    function PButton(text) {
+        Node.call(this);
+        this.text = text;
+        this.x = 50;
+        this.y = 50;
+        this.pressed = false;
+        this.width = 50;
+        this.height = 50;
+        var self = this;
+        this.draw = function(ctx) {
+            var tw = ctx.measureText(self.text);
+            //this is an evil evil evil hack to be replaced with something better later.
+            var th = ctx.measureText("M").width* 1.1;
+            ctx.fillStyle = "#c0f0f0";
+            if(self.pressed) {
+                ctx.fillStyle = "#506060";
+            }
+            ctx.fillRect(self.x,self.y,tw.width+10,th+10);
+            ctx.strokeStyle = "#a0c0c0";
+            ctx.strokeRect(self.x+0.5,self.y+0.5,tw.width+10,th+10);
+            ctx.fillStyle = "black";
+            ctx.fillText(self.text,self.x+5,self.y+th+5);
+            self.width = tw.width+10;
+            self.height = th+10;
+        };
+        this.contains = function(x,y) {
+            if(x >= self.x && x <= self.x + self.width) {
+                if(y >= self.y && y<=self.y + self.height) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        this.hasChildren = function() {
+            return false;
+        };
+        this.setPressed = function(pressed) {
+            self.pressed = pressed;
+            self.setDirty(true);
+        };
+        runner.listen("MOUSE_PRESS",self,function(e) {
+            if(e.getNode() == self) {
+                self.setPressed(true);
+            }
+        });
+        runner.listen("MOUSE_RELEASE",self,function(e) {
+            if(e.getNode() == self) {
+                self.setPressed(false);
+                if(self.f) {
+                    self.f();
+                }
+            }
+        });
+        this.set = function(x,y) {
+            self.x = x;
+            self.y = y;
+            return self;
+        };
+        this.f = null;
+        this.onClick = function(f) {
+            self.f = f;
+            return self;
+        }
+        return true;
+    }
+    PButton.extend(Node);
+    */
+    
+    function PSlider(node, propname, value, min, max) {
+        this.node = node;
+        this.propname = propname;
+        this.min = min;
+        this.max = max;
+        
+        this.value = value;
+        this.setValue = function(v) {
+            this.value = v;
+            if(this.value < this.min) this.value = this.min;
+            if(this.value > this.max) this.value = this.max;
+            this.setDirty();
+            this.node["set"+propname.substring(0,1).toUpperCase()+propname.substring(1,propname.length)](this.value);
+            return this;
+        };
+        
+        this.x = 0;
+        this.setX = function(x) {
+            this.x = x;
+            this.setDirty();
+            return this;
+        }
+        this.y = 0;
+        this.setY = function(y) {
+            this.y = y;
+            this.setDirty();
+            return this;
+        }
+        this.width = 150;
+        this.height = 40;
+        
+        var self = this;
+        
+        this.contains = function(x,y) {
+            if(x >= self.x && x <= self.x + self.width) {
+                if(y >= self.y && y<=self.y + self.height) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        this.hasChildren = function() {
+            return false;
+        };
+        this.draw = function(ctx) {
+            ctx.translate(self.x,self.y);
+            ctx.fillStyle = "#303030";
+            ctx.fillRect(0,0,self.width,self.height);
+            
+            var val = (self.value - self.min) / (self.max-self.min) * self.width;
+            ctx.fillStyle = "#707070";
+            ctx.fillRect(val-3,0,6,self.height);
+            
+            ctx.fillStyle = "white";
+            ctx.fillText(self.propname+" = "+self.value.toFixed(3),6,15);
+            
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(0.5,0.5,self.width,self.height);
+            ctx.translate(-self.x,-self.y);
+        };
+        runner.listen("MOUSE_DRAG",self,function(e) {
+            if(e.getNode() == self) {
+                var range = self.max-self.min;
+                var fract = (e.getX()-self.x)/self.width;
+                var newval = range*fract + self.min;
+                //console.log("range = " + range + " " + fract + " " + newval);
+                self.setValue(newval);
+            }
+        });
+        return true;
+    }
+    PSlider.extend(Node);
+    
+
+    var sat = new BackgroundSaturationNode(
+            new ImageView("finch.jpg")
+            //new Circle().set(150,150,150)
+        )
+    	.setSaturation(1)
+    	.setBrightness(0)
+    	.setContrast(1.0)
+    	.setX(0).setY(0)
+    	;
+    
+    runner.setRoot(new Group()
+        .add(sat)
+        .add(new PSlider(sat,"saturation",1,0,1).setX(10).setY(350))
+        .add(new PSlider(sat,"contrast",1,0,5).setX(10).setY(400))
+        .add(new PSlider(sat,"brightness",0,-1,1).setX(10).setY(450))
+        )
+    ;
+
+    runner.dirtyTrackingEnabled = false;
+    runner.start();
+</script>
+
+</body>
+</html>
