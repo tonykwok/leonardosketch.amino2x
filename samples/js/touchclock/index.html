@@ -207,28 +207,27 @@ body { border: 0px solid black; margin: 0; padding: 0}
         panl.setVisible(false);
         panr.setVisible(false);
         var threshold = 200;
-        var len = 0.4;
         if(panc.getTranslateX()< -threshold) {
             //panc.setTranslateX(-1024);
             //panr.setTranslateX(0);
             panl.setTranslateX(1024);
-            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),0,len));
-            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),-1024,len));
+            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),0,0.5));
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),-1024,0.5));
             var t = panl;
             panl = panc; panc = panr; panr = t;
         } else if(panc.getTranslateX() > threshold) {
             //panc.setTranslateX(1024);
             //panl.setTranslateX(0);
             panr.setTranslateX(-1024);
-            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),0,len));
-            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),1024,len));
+            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),0,0.5));
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),1024,0.5));
             var t = panr;
             panr = panc; panc = panl; panl = t;
         } else {
             //panc.setTranslateX(0);
-            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),0,len));
-            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),1024,len));
-            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),-1024,len));
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),0,0.5));
+            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),1024,0.5));
+            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),-1024,0.5));
             //panl.setTranslateX(-1024);
             //panr.setTranslateX(1024);
         }

@@ -67,6 +67,7 @@
         <antcall target="build-gallery-app"><param name="appname" value="BasicParticles"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="PhotoAdjust"/></antcall>
+	<antcall target="build-gallery-app"><param name="appname" value="touchclock"/></antcall>
     </target>
     
     
