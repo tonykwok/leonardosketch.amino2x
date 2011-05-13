@@ -8,12 +8,13 @@ import java.awt.*;
  */
 public class Text extends Shape {
     String text = "-no text-";
-    Font font = new Font("Verdana",20,Font.PLAIN);
+    Font font = new Font("Verdana",Font.PLAIN,20);
 
     @Override
     public void draw(Graphics2D ctx) {
+        if(!isVisible()) return;
         Font f = ctx.getFont();
-        u.p("drawing " + this.text + " " + this.font + " " + this.fill);
+        //u.p("drawing " + this.text + " " + this.font + " " + this.fill + " " + this.x + " " + this.y);
         ctx.setFont(this.font);
         ctx.setPaint(this.fill);
         ctx.drawString(this.text, (int) this.x, (int) this.y);

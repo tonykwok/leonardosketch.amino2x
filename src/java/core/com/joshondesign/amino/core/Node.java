@@ -28,7 +28,7 @@ public abstract class Node {
     }
 
     //@property visible determines if the node is visible or not. Invisible nodes are not drawn and cannot receive events
-    Node setVisible(boolean visible) {
+    public Node setVisible(boolean visible) {
         this.visible = visible;
         markDirty();
         return this;
