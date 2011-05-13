@@ -2,6 +2,7 @@ package com.joshondesign.amino.core;
 
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 
 /**
 @class Circle A basic circle shape, *centered* around it's X and Y coordinates.
@@ -9,23 +10,41 @@ import java.awt.*;
  */
 public class Circle extends Shape {
     private double radius;
+    private boolean intAlign = false;
 
     @Override
     public void draw(Graphics2D gfx) {
-        gfx.setPaint(getFill());
-        gfx.fillOval((int)(getX()-getRadius())
-                ,(int)(getY()-getRadius())
-                ,(int)(getRadius()*2)
-                ,(int)(getRadius()*2));
-        if(getStrokeWidth() > 0) {
-            gfx.setPaint(getStroke());
-            Stroke s = gfx.getStroke();
-            gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
-            gfx.drawOval((int) (getX() - getRadius())
-                    , (int) (getY() - getRadius())
-                    , (int) (getRadius() * 2)
-                    , (int) (getRadius() * 2));
-            gfx.setStroke(s);
+
+        if(intAlign) {
+            gfx.setPaint(getFill());
+            gfx.fillOval((int)(getX()-getRadius())
+                    ,(int)(getY()-getRadius())
+                    ,(int)(getRadius()*2)
+                    ,(int)(getRadius()*2));
+            if(getStrokeWidth() > 0) {
+                gfx.setPaint(getStroke());
+                Stroke s = gfx.getStroke();
+                gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
+                gfx.drawOval((int) (getX() - getRadius())
+                        , (int) (getY() - getRadius())
+                        , (int) (getRadius() * 2)
+                        , (int) (getRadius() * 2));
+                gfx.setStroke(s);
+            }
+        } else {
+            gfx.setPaint(getFill());
+            Ellipse2D.Double shape = new Ellipse2D.Double(getX() - getRadius()
+                    , (getY() - getRadius())
+                    , (getRadius() * 2)
+                    , (getRadius() * 2));
+            gfx.fill(shape);
+            if(getStrokeWidth() > 0) {
+                gfx.setPaint(getStroke());
+                Stroke s = gfx.getStroke();
+                gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
+                gfx.draw(shape);
+                gfx.setStroke(s);
+            }
         }
     }
 

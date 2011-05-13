@@ -30,6 +30,7 @@ public class Core {
     private int tickSamples = 30;
     private long[] tickList = new long[tickSamples];
     private List<Anim> anims = new ArrayList<Anim>();
+    private boolean smoothStrokes = false;
 
     //@method Set the size of the window. This will be replaced once we have a proper *Frame* class.
     public void setSize(int width, int height) {
@@ -79,6 +80,9 @@ public class Core {
 
     private void drawScene(Graphics2D ctx) {
         ctx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        if(isSmoothStrokes()) {
+            ctx.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        }
         ctx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         //fill the background
@@ -198,6 +202,15 @@ public class Core {
     //@property fps set the desired FPS. Remember that this is simply a *target*
     public Core setFPS(int fps) {
         this.fps = fps;
+        return this;
+    }
+
+    public boolean isSmoothStrokes() {
+        return smoothStrokes;
+    }
+
+    public Core setSmoothStrokes(boolean s) {
+        this.smoothStrokes = s;
         return this;
     }
 

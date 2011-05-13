@@ -591,6 +591,10 @@ function MEvent() {
     return true;
 }
 
+function KEvent() {
+    this.key = 0;
+}
+
 
 
 
@@ -940,6 +944,16 @@ function Runner() {
             }
             //send general events next
             self.fireEvent("MOUSE_RELEASE",null,evt);
+        });
+        attachEvent(document, 'keydown', function(e) {
+            var evt = new KEvent();
+            evt.key = e.keyCode;
+            self.fireEvent("KEY_PRESSED",null,evt);
+        });
+        attachEvent(document, 'keyup', function(e) {
+            var evt = new KEvent();
+            evt.key = e.keyCode;
+            self.fireEvent("KEY_RELEASED",null,evt);
         });
         return self;
     };
