@@ -1,7 +1,7 @@
 package com.joshondesign.amino.core;
 
 
-import java.awt.Graphics2D;
+import java.awt.*;
 
 /**
 @class Circle A basic circle shape, *centered* around it's X and Y coordinates.
@@ -17,6 +17,16 @@ public class Circle extends Shape {
                 ,(int)(getY()-getRadius())
                 ,(int)(getRadius()*2)
                 ,(int)(getRadius()*2));
+        if(getStrokeWidth() > 0) {
+            gfx.setPaint(getStroke());
+            Stroke s = gfx.getStroke();
+            gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
+            gfx.drawOval((int) (getX() - getRadius())
+                    , (int) (getY() - getRadius())
+                    , (int) (getRadius() * 2)
+                    , (int) (getRadius() * 2));
+            gfx.setStroke(s);
+        }
     }
 
     //@method Set the center x, center y, and radius of the circle

@@ -68,11 +68,13 @@ public class Core {
         MasterListener ml = new MasterListener(comp,root);
         comp.addMouseListener(ml);
         comp.addMouseMotionListener(ml);
+        comp.addKeyListener(ml);
         new Timer(1000/60,new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 comp.repaint();
             }
         }).start();
+        comp.requestFocus();
     }
 
     private void drawScene(Graphics2D ctx) {
@@ -199,7 +201,7 @@ public class Core {
         return this;
     }
 
-    private class MasterListener implements MouseListener, MouseMotionListener {
+    private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;
         private Node root;
@@ -317,7 +319,7 @@ public class Core {
             return null;
         }
 
-        private void fireEvent(String type, Object key, MEvent e) {
+        private void fireEvent(String type, Object key, Object e) {
             //u.p("firing event for key: " + key + " type = " + type);
             String k = "";
             if(key != null) {
@@ -337,5 +339,19 @@ public class Core {
             comp.repaint();
         }
 
+        public void keyTyped(KeyEvent keyEvent) {
+        }
+
+        public void keyPressed(KeyEvent keyEvent) {
+            KEvent evt = new KEvent();
+            evt.key = keyEvent.getKeyCode();
+            fireEvent("KEY_PRESSED", null, evt);
+        }
+
+        public void keyReleased(KeyEvent keyEvent) {
+            KEvent evt = new KEvent();
+            evt.key = keyEvent.getKeyCode();
+            fireEvent("KEY_RELEASED", null, evt);
+        }
     }
 }
