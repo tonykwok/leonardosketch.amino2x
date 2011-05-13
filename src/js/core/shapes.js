@@ -57,6 +57,7 @@ function Text() {
     
     
     this.draw = function(ctx) {
+        if(!this.isVisible()) return;
         var f = ctx.font;
         ctx.font = this.font;
         ctx.fillStyle = this.fill;
