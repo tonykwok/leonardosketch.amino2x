@@ -19,6 +19,7 @@
         <antcall target="build-app"><param name="appname" value="basicparticles"/></antcall>
         <antcall target="build-app"><param name="appname" value="blocks"/></antcall>
         <antcall target="build-app"><param name="appname" value="touchclock"/></antcall>
+        <antcall target="build-app"><param name="appname" value="planetrover"/></antcall>
     </target>
 
 

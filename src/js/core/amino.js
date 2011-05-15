@@ -423,11 +423,18 @@ function Group() {
         self.x = x;
         return self;
     };
+    this.getX = function() {
+        return self.x;
+    };
+    
     //@property y set the y coordinate of the group.
     this.y = 0;
     this.setY = function(y) {
         self.y = y;
         return self;
+    };
+    this.getY = function() {
+        return self.y;
     };
     
     this.opacity = 1.0;
