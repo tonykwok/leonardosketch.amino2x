@@ -246,12 +246,14 @@ function Rect() {
             ctx.closePath();
             ctx.fill();
             if(this.strokeWidth > 0) {
+                ctx.strokeStyle = this.getStroke();
                 ctx.lineWidth = this.strokeWidth;
                 ctx.stroke();
             }
         } else {
             ctx.fillRect(this.x,this.y,this.width,this.height);
             if(this.strokeWidth > 0) {
+                ctx.strokeStyle = this.getStroke();
                 ctx.lineWidth = this.strokeWidth;
                 ctx.strokeRect(this.x,this.y,this.width,this.height);
             }
