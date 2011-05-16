@@ -3,14 +3,14 @@
     <script src="../../../src/js/core/amino.js"></script>
 <body>
 
-<canvas id="can" width="800" height="600"></canvas>
+<canvas id="can" width="300" height="300"></canvas>
 
 <script language="JavaScript">
 
     var runner = new Runner();
     runner.setCanvas(document.getElementById("can")).setBackground("white").setFPS(30);
 
-    /*
+    
     function PButton(text) {
         Node.call(this);
         this.text = text;
@@ -77,7 +77,7 @@
         return true;
     }
     PButton.extend(Node);
-    */
+    
     
     function PSlider(node, propname, value, min, max) {
         this.node = node;
@@ -165,9 +165,20 @@
     
     runner.setRoot(new Group()
         .add(sat)
-        .add(new PSlider(sat,"saturation",1,0,1).setX(10).setY(350))
-        .add(new PSlider(sat,"contrast",1,0,5).setX(10).setY(400))
-        .add(new PSlider(sat,"brightness",0,-1,1).setX(10).setY(450))
+        .add(new PSlider(sat,"saturation",1,0,1).setX(10).setY(100))
+        .add(new PSlider(sat,"contrast",1,0,5).setX(10).setY(150))
+        .add(new PSlider(sat,"brightness",0,-1,1).setX(10).setY(200))
+        .add(new PButton("Save").set(10,70).onClick(function(){
+                var can = document.getElementById('can');
+                console.log("can = " + can);
+                var data = can.toDataURL("image/png");
+                console.log("len = " + data.length);
+                //console.log("data = " + data);
+                var img = document.getElementById('image');
+                console.log("img = " + img);
+                img.src = data;
+                console.log("done");
+        }))
         )
     ;
 
@@ -175,5 +186,6 @@
     runner.start();
 </script>
 
+<img id="image" width="300" height="300" border="1"/>
 </body>
 </html>
