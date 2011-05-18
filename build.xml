@@ -109,6 +109,7 @@
         <antcall target="build-touchpad-app"><param name="appname" value="blocks"/></antcall>
         <antcall target="build-touchpad-app"><param name="appname" value="touchclock"/></antcall>
         <antcall target="build-touchpad-app"><param name="appname" value="planetrover"/></antcall>
+        <antcall target="build-touchpad-app"><param name="appname" value="fish"/></antcall>
     </target>
     
     <target name="build-touchpad-app" depends="init, build-js">

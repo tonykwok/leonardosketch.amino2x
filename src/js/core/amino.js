@@ -962,6 +962,12 @@ function Runner() {
             evt.key = e.keyCode;
             self.fireEvent("KEY_RELEASED",null,evt);
         });
+        attachEvent(window, 'onUnload', function(e) {
+            console.log("got Unload");
+        });
+        attachEvent(window, 'onunload', function(e) {
+            console.log("got unload");
+        });
         return self;
     };
     
@@ -1038,82 +1044,41 @@ function Runner() {
         }
     }        
     
+    
+    
     this.update = function() {
         var time = new Date().getTime();
-        //process animation
-        for(i=0;i<self.anims.length; i++) {
-            var a = self.anims[i];
-            if(a.dead) continue;
-            if(!a.isStarted()) {
-                a.start(time);
-                continue;
-            }
-            a.update(time);
-        }
+        self.processInput(time);
+        self.processAnims(time);
+        self.processCallbacks(time);
         var ctx = self.canvas.getContext("2d");
         
-        if(self.dirtyTrackingEnabled) {
-            if(self.root && self.root.isDirty()) {
-                self.drawScene(ctx);
-            }
-        } else {
-            self.drawScene(ctx);
-        }
+        self.processRepaint(time, ctx);
+        self.processDebugOverlay(time, ctx);
         
-        //process callbacks
-        for(i=0;i<self.callbacks.length;i++) {
-            var cb = self.callbacks[i];
-            if(!cb.done) {
-                cb();
-            }
-            if(cb.doLater) {
-                cb.doLater = false;
-                cb.done = true;
-            }
-        }
-        
-        if(self.DEBUG) {
-            ctx.save();
-            ctx.translate(0,self.canvas.height-60);
-            ctx.fillStyle = "gray";
-            ctx.fillRect(0,-10,200,70);
-            //draw a debugging overlay
-            ctx.fillStyle = "black";
-            ctx.fillText("timestamp " + new Date().getTime(),10,0);
-            
-            //calc fps
-            var delta = time-self.lastTick;
-            self.lastTick = time;
-            if(self.tickList.length <= self.tickIndex) {
-                self.tickList[self.tickList.length] = 0;
-            }
-            self.tickSum -= self.tickList[self.tickIndex];
-            self.tickSum += delta;
-            self.tickList[self.tickIndex]=delta;
-            ++self.tickIndex;
-            if(self.tickIndex>=self.tickSamples) {
-                self.tickIndex = 0;
-            }
-            var fpsAverage = self.tickSum/self.tickSamples;
-            ctx.fillText("last msec/frame " + delta,10,10);
-            ctx.fillText("last frame msec " + (new Date().getTime()-time),10,20);
-            ctx.fillText("avg msec/frame  " + (fpsAverage).toPrecision(3),10,30);
-            ctx.fillText("avg fps = " + ((1.0/fpsAverage)*1000).toPrecision(3),10,40);
-            ctx.fillText("" + ADB.dline,10,50);
-            ctx.restore();
-            ADB.avgfps = ((1.0/fpsAverage)*1000);
-        }
     };
     
+    this.interv = -1;
     //@doc Start the scene. This is usually the last thing you call in your setup code.
     this.start = function() {
         //palm specific
         if (window.PalmSystem) {
             window.PalmSystem.stageReady();
         }        
-        
         self.lastTick = new Date().getTime();
-        setInterval(this.update,1000/self.fps);
+        self.interv = setInterval(this.update,1000/self.fps);
+    };
+    
+    this.stop = function() {
+        clearInterval(self.interv);
+        console.log("stopped the repaint");
+    };
+    this.cleanup = function() {
+        console.log("cleaning up stuff");
+        self.anims = [];
+        self.callbacks = [];
+        self.listeners = [];
+        self.root = null;
     };
     
     //@doc Add an animation to the scene.
@@ -1160,6 +1125,82 @@ function Runner() {
     this.getContext = function() {
         return self.canvas.getContext('2d');
     };
+    
+    
+    this.processInput = function() {
+    };
+    this.processAnims = function(time) {
+        //process animation
+        for(i=0;i<self.anims.length; i++) {
+            var a = self.anims[i];
+            if(a.dead) continue;
+            if(!a.isStarted()) {
+                a.start(time);
+                continue;
+            }
+            a.update(time);
+        }
+    };
+    
+    this.processCallbacks = function(time) {
+        //process callbacks
+        for(i=0;i<self.callbacks.length;i++) {
+            var cb = self.callbacks[i];
+            if(!cb.done) {
+                cb();
+            }
+            if(cb.doLater) {
+                cb.doLater = false;
+                cb.done = true;
+            }
+        }
+    };
+    
+    this.processRepaint = function(time, ctx) {
+        if(self.dirtyTrackingEnabled) {
+            if(self.root && self.root.isDirty()) {
+                self.drawScene(ctx);
+            }
+        } else {
+            self.drawScene(ctx);
+        }
+    };
+    
+    this.processDebugOverlay = function(time, ctx) {
+        if(self.DEBUG) {
+            ctx.save();
+            ctx.translate(0,self.canvas.height-60);
+            ctx.fillStyle = "gray";
+            ctx.fillRect(0,-10,200,70);
+            //draw a debugging overlay
+            ctx.fillStyle = "black";
+            ctx.fillText("timestamp " + new Date().getTime(),10,0);
+            
+            //calc fps
+            var delta = time-self.lastTick;
+            self.lastTick = time;
+            if(self.tickList.length <= self.tickIndex) {
+                self.tickList[self.tickList.length] = 0;
+            }
+            self.tickSum -= self.tickList[self.tickIndex];
+            self.tickSum += delta;
+            self.tickList[self.tickIndex]=delta;
+            ++self.tickIndex;
+            if(self.tickIndex>=self.tickSamples) {
+                self.tickIndex = 0;
+            }
+            var fpsAverage = self.tickSum/self.tickSamples;
+            ctx.fillText("last msec/frame " + delta,10,10);
+            ctx.fillText("last frame msec " + (new Date().getTime()-time),10,20);
+            ctx.fillText("avg msec/frame  " + (fpsAverage).toPrecision(3),10,30);
+            ctx.fillText("avg fps = " + ((1.0/fpsAverage)*1000).toPrecision(3),10,40);
+            ctx.fillText("" + ADB.dline,10,50);
+            ctx.restore();
+            ADB.avgfps = ((1.0/fpsAverage)*1000);
+        }
+        
+    };
+
     
     return true;
 }
