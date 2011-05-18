@@ -72,6 +72,7 @@
         <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="touchclock"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="photoadjust"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="fish"/></antcall>
     </target>
     
     
