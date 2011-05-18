@@ -4,8 +4,12 @@
 <style type="text/css">
 #canvas { position: absolute; border: 0px solid black; top: 0; left: 0; }
 body {
+    width: 750px;
     background-color: #8888ff;
+    background-image: url(background.png);
     color: white;
+    margin:0;
+    padding:0;
     font-family: serif;
 }
 
@@ -14,6 +18,15 @@ h2 { font-size: 80%; text-align: center; margin-top: 0; }
 p { margin: 50px auto 5px auto; border: 0px solid black; width: 14em; font-size: 250%;line-height: 1.5em;}
 
 </style>
+
+	<link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8">
+	<style type="text/css" media="screen">
+		h1 {font: 70px/80px 'SortsMillGoudyRegular', Arial, sans-serif;letter-spacing: 0;}
+		p {font: 36px/42px 'SortsMillGoudyRegular', Arial, sans-serif;}
+		p.style2 {font: 18px/27px 'SortsMillGoudyItalic', Arial, sans-serif;}
+		
+	</style>
+
 <body>
 
 
@@ -33,9 +46,11 @@ into the sea we will ride.<br/>
 
 
 
-<canvas id="canvas" width="1000" height="700"></canvas>
+<canvas id="canvas" width="750" height="1000"></canvas>
 
 <script language="JavaScript">
+
+
 var fishnode = 
     new PathNode()
       .setPath(
@@ -63,47 +78,104 @@ var fishnode =
           .closeTo()
           .build()
       )
-        .setStrokeWidth(1.0)
-        .setStroke("blue")
-        .setFill('rgba(100,150,200,0.7)')
+        .setStrokeWidth(3.0)
+        .setStroke("rgba(100,200,255,0.9)")
+        .setFill('rgba(150,200,255,0.6)')
         ;
 
-    var runner = new Runner();
-    runner.setCanvas(document.getElementById("canvas"));
-    runner.transparentBackground = true;
-    runner.clearBackground = true;
-    //runner.setBackground("rgba(0,0,0,0)");
-    var g = new Group();
-    runner.setRoot(g);
-    runner.fps = 30;
-    runner.DEBUG = false;
+
+var runner = new Runner();
+runner.setCanvas(document.getElementById("canvas"));
+runner.transparentBackground = true;
+runner.clearBackground = true;
+//runner.setBackground("rgba(0,0,0,0)");
+var g = new Group();
+runner.setRoot(g);
+runner.fps = 20;
+runner.DEBUG = false;
     
-    var fish = [];
-    var tick = 0;
-    runner.addCallback(function() {
-        tick++;
-        if(tick%50 == 0 && fish.length < 20) {
-            //var c = new Circle().set(0,Math.random()*500,20).setFill("blue");
-            var scale = 0.1+Math.random()*0.5;
-            var c = new Transform(fishnode)
-                .setScaleX(scale).setScaleY(scale)
-                .setTranslateX(-200)
-                .setTranslateY(Math.random()*500);
-            g.add(c);
-            fish.push(c);
+
+function ParticleEmitter() {
+    Group.call(this)
+    this.rate = 50;
+    this.max = 10;    
+    this.tick = 0;
+    this.create = function(){};
+    this.update = function(p){};
+    this.destroy = function(p){};
+    this.parts = [];
+    var self = this;
+    
+    this.process = function() {
+        self.tick++;
+        if(self.tick%self.rate == 0 && self.parts.length < self.max) {
+            var c = self.create();
+            self.add(c);
+            self.parts.push(c);
         }
-        for(var i=0; i<fish.length; i++) {
-            var c = fish[i];
-            if(c) {
-                c.setTranslateX(c.getTranslateX()+2.5);
-                if(c.getTranslateX() > 1000) {
-                    c.setTranslateX(-200);
-                }
-            }
+        for(var i=0; i<self.parts.length; i++) {
+            var c = self.parts[i];
+            self.update(c);
         }
-        
-    });
-    runner.start();
+    };
+    return true;
+}
+ParticleEmitter.extend(Group);
+
+
+
+var em = new ParticleEmitter();
+em.rate = 80;
+em.max = 10;
+em.create = function() {
+    var scale = 0.1+Math.random()*0.5;
+    var c = new Transform(fishnode)
+        .setScaleX(scale)
+        .setScaleY(scale)
+        .setTranslateX(-200)
+        .setTranslateY(Math.random()*800);
+    c.rate = 1+Math.random()*3;
+    return c;
+};
+em.update = function(c) {
+    if(c) {
+        c.setTranslateX(c.getTranslateX()+c.rate);
+        if(c.getTranslateX() > 1000) {
+            c.setTranslateX(-200);
+        }
+    }
+}
+
+g.add(em);
+runner.addCallback(em.process);
+
+var bubbles = new ParticleEmitter();
+bubbles.rate = 30;
+bubbles.max = 15;
+bubbles.create = function() {
+    var bubble = new Circle().set(
+        Math.random()*600
+        ,1100
+        ,3+Math.random()*10)
+    .setFill("rgba(255,255,255,0.5)")
+    .setStroke("white")
+    .setStrokeWidth(3);
+    bubble.dx = Math.random();
+    return bubble;
+};
+bubbles.update = function(p) {
+    p.setY(p.getY()-3);
+    p.setX(p.getX()+p.dx);
+    if(p.getY()<-20) {
+        p.setX(Math.random()*600);
+        p.setY(1100);
+    }
+};
+
+g.add(bubbles);
+runner.addCallback(bubbles.process);
+
+runner.start();
 </script>
 </body>
 </html>
