@@ -241,11 +241,7 @@ var left = false;
 var right = false;
 
 function update() {
-    var y = player.getY();
-    player.setY(player.getY() + player.dyv);
-    player.dyv += gravity;
     player.dxv = 0;
-    
     //go left and right
     if(left) {
         player.dxv = -speed;
@@ -253,38 +249,53 @@ function update() {
     if(right) {
         player.dxv =  speed;
     }
-    player.setX(player.getX()+player.dxv);
+    var x = player.getX()+player.dxv;
+    if(player.getX() != x) {
+        player.setX(x);
+    }
     
-    
+    var y = player.getY();
+
     
     //check if intersects with platforms
-    if(intersectsGround(ground,player)) {
-        player.setY(y);
+    
+    var ret = intersectsGround(ground,player);
+    if(ret.intersected) {
+        y = ret.node.getY()-player.getRadius();
         player.dyv = 0;
         player.onGround = true;
+    } else {
+        player.dyv += gravity;
+        y += player.dyv;
     }
     
     //jump
     if(player.onGround && up) {
         player.dyv = jump_impulse;
         player.onGround = false;
+        y += player.dyv;
     }
     
     
     //check dead
     if(player.getY() > 2000) {
         player.setX(100);
-        player.setY(100);
+        y = 100;
+    }
+    
+    if(player.getY() != y) {
+        player.setY(y);
     }
 
     //check for win
-    if(intersectsRect(winSpot,player)) {
+    if(intersectsRect(winSpot,player).intersected) {
         overlay.setText("Level "+levelNumber+" ... complete!");
         overlay.setVisible(true);
         
         //do later
         nextLevel();
     }
+    
     
     //scroll the camera
     if(player.getX()+pan.getX() > cameraBounds.getX()+cameraBounds.getWidth()) {
@@ -321,11 +332,12 @@ function setPanX(v) {
 function intersectsGround(ground, circle) {
     for(var i=0; i<ground.childCount(); i++) {
         var ground_part = ground.getChild(i);
-        if(intersectsRect(ground_part,circle)) {
-            return true;
+        var ret = intersectsRect(ground_part,circle);
+        if(ret.intersected) {
+            return ret;
         }
     }
-    return false;
+    return {intersected:false};
 }
 
 function intersectsRect(ground, circle) {
@@ -335,20 +347,26 @@ function intersectsRect(ground, circle) {
     //between top and bottom
     if(y >= ground.getY() && y <= ground.getY()+ground.getHeight()) {
         if(between(left,ground.getX(),ground.getX()+ground.getWidth())) {
-            return true;
+            return { intersected: true, node: ground };
         }
         if(between(right,ground.getX(),ground.getX()+ground.getWidth())) {
-            return true;
+            return { intersected: true, node: ground };
         }
-        return false;
+        return { intersected: false };
     }
-    return false;
+    return { intersected: false };
 }
 
 function between(v1,left, right) {
     if(v1 >= left && v1 <= right) return true;
     return false;
 }
+
+window.onunload = function() {
+    console.log("unloading!");
+    runner.stop();
+    runner.cleanup();
+};
 </script>
 
 </body>

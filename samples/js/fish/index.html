@@ -1,0 +1,110 @@
+<html>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<script src="../../../dist/amino.js"></script>
+<style type="text/css">
+#canvas { position: absolute; border: 0px solid black; top: 0; left: 0; }
+body {
+    background-color: #8888ff;
+    color: white;
+    font-family: serif;
+}
+
+h1 { font-size: 400%; text-align: center; margin-bottom: 0; }
+h2 { font-size: 80%; text-align: center; margin-top: 0; }
+p { margin: 50px auto 5px auto; border: 0px solid black; width: 14em; font-size: 250%;line-height: 1.5em;}
+
+</style>
+<body>
+
+
+
+<h1>Big Fish, Little Fish</h1>
+<h2>by josh</h2>
+
+<p>Oh big fish, Oh little fish,<br/>
+Oh where do you hide?<br/>
+<br/>
+Above the clouds, below the sea<br/>
+or beyond the ocean wide?<br/>
+<br/>
+When we fish, with a fish dish<br/>
+into the sea we will ride.<br/>
+</p>
+
+
+
+<canvas id="canvas" width="1000" height="700"></canvas>
+
+<script language="JavaScript">
+var fishnode = 
+    new PathNode()
+      .setPath(
+        new Path()
+          .moveTo(270.5,61.0)
+          .curveTo(266.48384893499855,61.0,262.58922902102665,61.560362613511764,258.8798780183454,62.61244717563876)
+          .lineTo(258.8798927408447,62.61244717563876)
+          .curveTo(264.207258667021,66.73050664589489,268.79592282639425,72.92139645393638,272.24013418012663,80.53362901627736)
+          .lineTo(272.2401341521028,80.53362901627736)
+          .curveTo(240.3254309581555,82.64361194218532,211.9516183439392,90.88411309708349,191.34399556621162,102.98985797449718)
+          .curveTo(174.1045989810349,87.07869872126713,148.53737723840692,77.0,120.0,77.0)
+          .curveTo(107.15607956631095,77.0,94.91381241019593,79.04160426211675,83.76165580801285,82.73768441306665)
+          .lineTo(83.76167867324705,82.73768441306665)
+          .curveTo(114.72185440263593,94.92595128683826,136.0,120.2435692561273,136.0,149.5)
+          .curveTo(136.0,180.4657275161149,112.16288624628828,207.01894982905299,78.23833175306163,218.26231970947737)
+          .lineTo(78.23833179868541,218.26231970947737)
+          .curveTo(90.81945427437228,223.2151995505037,104.99939190500652,226.0,120.0,226.0)
+          .curveTo(149.2714985493846,226.0,175.41806210665607,215.39608436197588,192.65781652942363,198.77069589026934)
+          .lineTo(192.65781655478938,198.77069589026934)
+          .curveTo(216.64427259219315,212.4542048473226,250.710639638004,221.0,288.5,221.0)
+          .curveTo(361.1254446027493,221.0,420.0,189.43607486307093,420.0,150.5)
+          .curveTo(420.0,114.92397402492432,370.84834213027546,85.5026167120366,306.96576407494797,80.68963153457318)
+          .lineTo(306.9657001419154,80.68963153457318)
+          .curveTo(298.66854077196206,68.73708810232313,285.4232781998676,61.0,270.5,61.0)
+          .closeTo()
+          .build()
+      )
+        .setStrokeWidth(1.0)
+        .setStroke("blue")
+        .setFill('rgba(100,150,200,0.7)')
+        ;
+
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    runner.transparentBackground = true;
+    runner.clearBackground = true;
+    //runner.setBackground("rgba(0,0,0,0)");
+    var g = new Group();
+    runner.setRoot(g);
+    runner.fps = 30;
+    runner.DEBUG = false;
+    
+    var fish = [];
+    var tick = 0;
+    runner.addCallback(function() {
+        tick++;
+        if(tick%50 == 0 && fish.length < 20) {
+            //var c = new Circle().set(0,Math.random()*500,20).setFill("blue");
+            var scale = 0.1+Math.random()*0.5;
+            var c = new Transform(fishnode)
+                .setScaleX(scale).setScaleY(scale)
+                .setTranslateX(-200)
+                .setTranslateY(Math.random()*500);
+            g.add(c);
+            fish.push(c);
+        }
+        for(var i=0; i<fish.length; i++) {
+            var c = fish[i];
+            if(c) {
+                c.setTranslateX(c.getTranslateX()+2.5);
+                if(c.getTranslateX() > 1000) {
+                    c.setTranslateX(-200);
+                }
+            }
+        }
+        
+    });
+    runner.start();
+</script>
+</body>
+</html>
+
