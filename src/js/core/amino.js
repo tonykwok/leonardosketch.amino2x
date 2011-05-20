@@ -1046,6 +1046,20 @@ function Runner() {
     
     
     
+    this.doNext = function() {
+        if(window.webkitRequestAnimationFrame) {
+            window.webkitRequestAnimationFrame(self.update);
+            return;
+        }
+        if(window.mozRequestAnimationFrame) {
+            window.mozRequestAnimationFrame(self.update);
+            return;
+        }
+        console.log("can't repaint! not webkit");
+        setTimeout(self.update,1000/self.fps);
+        return;
+    };
+
     this.update = function() {
         var time = new Date().getTime();
         self.processInput(time);
@@ -1055,7 +1069,7 @@ function Runner() {
         
         self.processRepaint(time, ctx);
         self.processDebugOverlay(time, ctx);
-        
+        self.doNext();
     };
     
     this.interv = -1;
@@ -1066,8 +1080,10 @@ function Runner() {
             window.PalmSystem.stageReady();
         }        
         self.lastTick = new Date().getTime();
-        self.interv = setInterval(this.update,1000/self.fps);
+        self.doNext();
+        //self.interv = setInterval(this.update,1000/self.fps);
     };
+    
     
     this.stop = function() {
         clearInterval(self.interv);
