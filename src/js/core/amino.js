@@ -820,6 +820,7 @@ function Runner() {
     this.anims = [];
     this.callbacks = [];
     this.listeners = {};
+    this.masterListeners = [];
     this.tickIndex = 0;
     this.tickSum = 0;
     this.tickSamples = 30;
@@ -850,6 +851,7 @@ function Runner() {
     };
     
     function attachEvent(node,name,func) {
+        self.masterListeners.push(func);
         if(node.addEventListener) {
             node.addEventListener(name,func,false);
         } else if(node.attachEvent) {
@@ -1059,8 +1061,9 @@ function Runner() {
         setTimeout(self.update,1000/self.fps);
         return;
     };
-
+    
     this.update = function() {
+        
         var time = new Date().getTime();
         self.processInput(time);
         self.processAnims(time);
@@ -1069,16 +1072,31 @@ function Runner() {
         
         self.processRepaint(time, ctx);
         self.processDebugOverlay(time, ctx);
-        self.doNext();
+        //drop to 4fps if in bg
+        if(self.inBackground) {
+            setTimeout(function() { self.doNext(); }, 1000);
+        } else {
+            self.doNext();
+        }
     };
     
     this.interv = -1;
+    this.inBackground = false;
     //@doc Start the scene. This is usually the last thing you call in your setup code.
     this.start = function() {
         //palm specific
         if (window.PalmSystem) {
             window.PalmSystem.stageReady();
-        }        
+            Mojo = {
+                stageActivated: function() {
+                    self.inBackground = false;
+                },
+                stageDeactivated: function() {
+                    self.inBackground = true;
+                },
+            };
+        }
+        
         self.lastTick = new Date().getTime();
         self.doNext();
         //self.interv = setInterval(this.update,1000/self.fps);
@@ -1093,8 +1111,17 @@ function Runner() {
         console.log("cleaning up stuff");
         self.anims = [];
         self.callbacks = [];
+        
+        for(var i=0; i<self.listeners.length; i++) {
+            self.listeners[i] = [];
+        }
         self.listeners = [];
         self.root = null;
+        for(var i=0; i<self.masterListeners.length; i++) {
+            console.log("removing master listener");
+            self.canvas.removeEventListener(self.masterListeners[i]);
+        }
+        self.canvas = null;
     };
     
     //@doc Add an animation to the scene.
