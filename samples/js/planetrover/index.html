@@ -10,6 +10,49 @@ body, canvas { border: 0px solid black; padding: 0; margin: 0;}
 <canvas id="canvas" width="1024" height="730"></canvas>
 
 <script language="JavaScript">
+function Planet() {
+    Node.call(this);
+    var self = this;
+    this.x = 0;
+    this.y = 0;
+    this.radius = 100;
+    this.gravityRadius = 200;
+    this.setX = function(x) {
+        this.x = x;
+        this.setDirty();
+        return this;
+    };
+    this.getX = function() { return this.x; }
+    this.setY = function(y) {
+        self.y = y;
+        this.setDirty();
+        return this;
+    };
+    this.getY = function() { return this.y; }
+    this.getRadius = function() { return this.radius; }
+    this.draw = function(ctx) {
+        ctx.fillStyle = "rgba(200,200,200,0.5)";
+        ctx.beginPath();
+        ctx.arc(self.x, self.y, self.gravityRadius, 0, Math.PI*2, true); 
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.beginPath();
+        ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, true); 
+        ctx.closePath();
+        ctx.fill();
+    };
+    this.set = function(x,y,rad,grad) {
+        self.x = x;
+        self.y = y;
+        self.radius = rad;
+        self.gravityRadius = grad;
+        return self;
+    };
+}
+Planet.extend(Node);
+
+
 
 function Player() {
     Node.call(this);
@@ -24,36 +67,31 @@ function Player() {
     
     this.setDXV = function(dxv) {
         this.dxv = dxv;
-    /*
-    if(left) {
-        player.dxv = -speed;
-    }
-    if(right) {
-        player.dxv =  speed;
-    }
-    }*/
         if(this.dxv < 0 && this.angle > -180) {
             this.angle -= 10;
         }
         if(this.dxv > 0 && this.angle < 0) {
             this.angle += 10;
         }
-        
         return this;
     }
+    
     this.setX = function(x) {
         this.x = x;
         this.setDirty();
         return this;
     };
     this.getX = function() { return this.x; }
+    
     this.setY = function(y) {
         self.y = y;
         this.setDirty();
         return this;
     };
     this.getY = function() { return this.y; }
+    
     this.getRadius = function() { return this.radius; }
+    
     this.draw = function(ctx) {
         ctx.fillStyle = "red";
         //ctx.fillRect(this.x-this.radius,this.y-this.radius,this.radius*2,this.radius*2);
@@ -101,6 +139,7 @@ function Player() {
 
     };
 }
+
 Player.extend(Node);
 
 var runner = new Runner();
@@ -111,15 +150,10 @@ runner.setBackground("white");
 
 var pan = new Group();
 
+var gravity = 0.7;
 
 
-//platforms
-var platform_color = "rgb(170,250,210)";//new Color(170,250,210);
-var platform_stroke_color = "rgb(0,255,100)";//new Color(0,255,100);
-
-
-var winSpot = new Rect()
-    .set(50,-1250,50,50);
+var winSpot = new Rect().set(50,-1250,50,50);
 winSpot.setFill("red");
 winSpot.setStroke("rgb(200,0,0)");
 winSpot.setStrokeWidth(3);
@@ -128,9 +162,6 @@ pan.add(winSpot);
 // player
 var player = new Player();
 player.setX(100).setY(400);
-//player.setFill("#aaaaaa");
-//player.setStroke("#888888");
-//player.setStrokeWidth(3);
 
 pan.add(player);
 var ground = new Group()
@@ -144,7 +175,7 @@ var background2 = new Group(); //full speed
 
 
 function cg(x,y,w,h) {
-    return new Rect().set(x,y,w,h).setFill(platform_color).setStroke(platform_stroke_color).setStrokeWidth(3);
+    return new Rect().set(x,y,w,h).setFill("rgb(170,250,210)").setStroke("rgb(0,255,100)").setStrokeWidth(3);
 }
 function cg2(x,y,w,h) {
     return new Rect().set(x,y,w,h).setFill("#003366").setStroke("#002244").setStrokeWidth(3);
@@ -194,7 +225,7 @@ function setupSkyLevel() {
     ghost.setY(-200);
     runner.addAnim(new PropAnim(ghost,"x",0,100,2).setLoop(true).setAutoReverse(true));
     */
-//    background1.add(ghost);
+    //    background1.add(ghost);
     ground
         .add(cg(0,     500,  400, 100))
         .add(cg(500,   400,  400, 100))
@@ -225,7 +256,10 @@ function setupSpaceLevel() {
     background0.add(new Circle().set(150,200,50).setFill("#cccccc"));
     background2.add(new Text().setText("spaceward").setFill("white").setX(100).setY(200));
     background2.add(new Text().setText("just keep on going").setFill("white").setX(1400).setY(100));
-    background2.add(new Text().setText("Sorry. I haven't built this part yet.").setFill("white").setX(1400).setY(1000));
+    
+    //player and initial platforms.
+    player.setX(-100).setY(200);
+        
     ground.add(cg2(-300,500,400,600));
     ground.add(cg2(0,400,400,600));
     ground.add(cg2(450,300,100,600));
@@ -233,13 +267,68 @@ function setupSpaceLevel() {
     ground.add(cg2(850,300,100,600));
     ground.add(cg2(1050,300,100,600));
     ground.add(cg2(1250,300,100,600));
-    player.setX(-100).setY(200);
+    
+    //ending part
+    background2.add(new Text().setText("Welcome. You're going to have to rethink gravity where you are going.").setFill("white").setX(1400).setY(1000));
+    ground.add(cg2(1600,1200,2500,50));
+    winSpot.setX(3800).setY(1100);
 }
 
+function setupPlanetLevel() {
+    //black bg
+    background0.add(new Rect().set(0,0,1024,730).setFill("black"));
+    
+    //basic flat platform    
+    //ground.add(cg2(-300,500,800,500));
+    
+    var p1 = new Planet();
+    p1.x = 0;
+    p1.y = 500;
+    p1.gravityRadius = 300;
+    ground.add(p1);
+    
+    gravity = 0.1;
+    
+    var p2 = new Planet();
+    p2.x = 800;
+    p2.y = 500;
+    p2.radius = 200;
+    p2.gravityRadius = 300;
+    ground.add(p2);
+    
+    ground.add(new Planet().set(1000,0, 100,200));
+    ground.add(new Planet().set(400,-400, 100,200));
+    ground.add(new Planet().set(700,-1100, 150,400));
+    ground.add(new Planet().set(0,-1200, 100,200));
+    
+    
+    //start player at 0,0
+    player.setX(0).setY(-100);
+    player.dxv = 0;
+    player.dyv = 0;
+    winSpot.setX(-25).setY(-1350);
+}
+
+function setupEndLevel() {
+    //black bg
+    background0.add(new Rect().set(0,0,1024,730).setFill("red"));
+    background2.add(new Text().setText("That's all he wrote... for now.").setFill("white").setX(0).setY(0));
+    
+    ground.add(cg2(-300,200,800,500));
+    //start player at 0,0
+    player.setX(0).setY(-500);
+    player.dxv = 0;
+    player.dyv = 0;
+    winSpot.setX(-25).setY(-1350);
+}
+
+
 var levels = [];
-levels[0] = setupGrassLevel;
-levels[1] = setupSkyLevel;
-levels[2] = setupSpaceLevel;
+levels.push(setupGrassLevel);
+levels.push(setupSkyLevel);
+levels.push(setupSpaceLevel);
+levels.push(setupPlanetLevel);
+levels.push(setupEndLevel);
 
 var levelNumber = 0;
 levels[levelNumber]();
@@ -356,7 +445,6 @@ runner.listen("KEY_RELEASED",null, function(e) {
 });
 
 
-var gravity = 0.7;
 var speed = 6;
 var jump_impulse = -13;
 
@@ -365,53 +453,12 @@ var left = false;
 var right = false;
 
 function update() {
-    //player.dxv = 0;
-    //go left and right
-    if(left) {
-        player.setDXV(-speed);
-    } else if(right) {
-        player.setDXV(speed);
-    } else {
-        player.setDXV(0);
-    }
-    var x = player.getX()+player.dxv;
-    if(player.getX() != x) {
-        player.setX(x);
-    }
-    
-    var y = player.getY();
-
-    
-    //check if intersects with platforms
-    
-    var ret = intersectsGround(ground,player);
+    var ret = intersectsPlanets(ground,player);
     if(ret.intersected) {
-        y = ret.node.getY()-player.getRadius();
-        player.dyv = 0;
-        player.onGround = true;
+        planetUpdate(ret.node);
     } else {
-        player.dyv += gravity;
-        y += player.dyv;
+        platformUpdate();
     }
-    
-    //jump
-    if(player.onGround && up) {
-        player.dyv = jump_impulse;
-        player.onGround = false;
-        y += player.dyv;
-    }
-    
-    
-    //check dead
-    if(player.getY() > 2000) {
-        player.setX(100);
-        y = 100;
-    }
-    
-    if(player.getY() != y) {
-        player.setY(y);
-    }
-
     //check for win
     if(intersectsRect(winSpot,player).intersected) {
         overlay.setText("Level "+levelNumber+" ... complete!");
@@ -441,6 +488,109 @@ function update() {
     }
 }
 
+var jump_time = 0;
+function planetUpdate(plan) {
+    var angle = Math.atan2(plan.getX()-player.getX(),plan.getY()-player.getY());
+    //console.log("angle = " + (angle*180/Math.PI));
+    //    player.dvx = Math.cos(angle)*-10;
+    
+    var dist = distance(player.getX(),player.getY(),plan.getX(),plan.getY());
+    dist = dist - player.getRadius();
+    if(dist > plan.radius) {
+        if(player.getX() < plan.getX()) {
+            player.dxv += Math.sin(angle)*0.1;
+        } else {
+            player.dxv += Math.sin(angle)*0.1;
+        }
+        
+        if(player.getY() < plan.getY()) {
+            player.dyv += Math.cos(angle)*0.1;
+        } else {
+            player.dyv += Math.cos(angle)*0.1;
+        }
+    } else {
+        player.dxv = 0;
+        player.dyv = 0;
+        player.onGround = true;
+    }
+    
+    var ji = 0.5;
+    if(player.onGround) {
+        jump_time = 0;
+    }
+    if(up) {
+        jump_time++;
+        if(jump_time < 20) {
+            player.dxv += Math.sin(angle)*-ji;
+            player.dyv += Math.cos(angle)*-ji;
+        }
+        player.onGround = false;
+    }
+    if(player.onGround && right) {
+        player.dxv += Math.sin(angle-Math.PI/2.0)*-3;
+        player.dyv += Math.cos(angle-Math.PI/2.0)*-3;
+        player.onGround = false;
+    }
+    if(player.onGround && left) {
+        player.dxv += Math.sin(angle+Math.PI/2.0)*-3;
+        player.dyv += Math.cos(angle+Math.PI/2.0)*-3;
+        player.onGround = false;
+    }
+    player.setX(player.getX()+player.dxv);
+    player.setY(player.getY()+player.dyv);
+}
+
+function platformUpdate() {
+    //go left and right
+    if(left) {
+        player.setDXV(-speed);
+    } else if(right) {
+        player.setDXV(speed);
+    } else {
+        player.setDXV(0);
+    }
+    var x = player.getX()+player.dxv;
+    if(player.getX() != x) {
+        player.setX(x);
+    }
+    
+    var y = player.getY();
+
+    
+    //check if intersects with platforms    
+    var ret = intersectsGround(ground,player);
+    if(ret.intersected) {
+        y = ret.node.getY()-player.getRadius();
+        player.dyv = 0;
+        player.onGround = true;
+    } else {
+        player.dyv += gravity;
+        y += player.dyv;
+    }
+    
+    
+    //jump
+    if(player.onGround && up) {
+        player.dyv = jump_impulse;
+        player.onGround = false;
+        y += player.dyv;
+    }
+    
+    
+    //check dead
+    if(player.getY() > 2000) {
+        player.setX(0);
+        player.dxv = 0;
+        player.dyv = 0;
+        y = 100;
+    }
+    
+    if(player.getY() != y) {
+        player.setY(y);
+    }
+
+}
+
 
 function setPanY(v) {
     pan.setY(v);
@@ -454,21 +604,39 @@ function setPanX(v) {
     background2.setX(v);
 }
 
-function intersectsGround(ground, circle) {
+function intersectsGround(ground, player) {
     for(var i=0; i<ground.childCount(); i++) {
         var ground_part = ground.getChild(i);
-        var ret = intersectsRect(ground_part,circle);
-        if(ret.intersected) {
-            return ret;
+        if(ground_part instanceof Rect) {
+            var ret = intersectsRect(ground_part,player);
+            if(ret.intersected) {
+                return ret;
+            }
         }
     }
     return {intersected:false};
 }
 
-function intersectsRect(ground, circle) {
-    var y = circle.getY()+circle.getRadius();
-    var left = circle.getX()-circle.getRadius();
-    var right = circle.getX()+circle.getRadius();
+function intersectsPlanets(ground, player) {
+    for(var i=0; i<ground.childCount(); i++) {
+        var ground_part = ground.getChild(i);
+        if(ground_part instanceof Planet) {
+            var dist = distance(player.getX(),player.getY(),ground_part.getX(),ground_part.getY());
+            if(dist < player.getRadius() + ground_part.gravityRadius) {
+                return {
+                    intersected: true,
+                    node: ground_part,
+                }
+            }
+        }
+    }
+    return {intersected:false};
+}
+
+function intersectsRect(ground, player) {
+    var y = player.getY()+player.getRadius();
+    var left = player.getX()-player.getRadius();
+    var right = player.getX()+player.getRadius();
     //between top and bottom
     if(y >= ground.getY() && y <= ground.getY()+ground.getHeight()) {
         if(between(left,ground.getX(),ground.getX()+ground.getWidth())) {
@@ -482,6 +650,24 @@ function intersectsRect(ground, circle) {
     return { intersected: false };
 }
 
+function intersectsCircle(ground, player) {
+    var dist = distance(player.getX(),player.getY(),ground.getX(),ground.getY());
+    //console.log("dist = " + dist);
+    if(dist < player.getRadius() + ground.getRadius()) {
+        return {
+            intersected: true,
+            node: ground,
+        }
+    }
+    return { intersected: false };
+}
+
+
+function distance(x1, y1, x2, y2) {
+    var dx = x2-x1;
+    var dy = y2-y1;
+    return Math.sqrt(dx*dx + dy*dy);
+}
 function between(v1,left, right) {
     if(v1 >= left && v1 <= right) return true;
     return false;
