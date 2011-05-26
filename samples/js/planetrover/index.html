@@ -1,6 +1,6 @@
 <html>
 <head>
-<script src="../leonardosketch-amino2x/dist/amino.js" language="JavaScript"></script>
+<script src="../../../dist/amino.js" language="JavaScript"></script>
 <script src="characters.js" language="JavaScript"></script>
 <style type="text/css">
 body, canvas { border: 0px solid black; padding: 0; margin: 0;}
@@ -12,12 +12,96 @@ body, canvas { border: 0px solid black; padding: 0; margin: 0;}
 <script language="JavaScript">
 
 function Player() {
-    Circle.call(this);
+    Node.call(this);
     this.dxv = 0.0;
     this.dyv = 2.0;
     this.onGround = false;
+    this.x = 0;
+    this.y = 0;
+    this.radius = 20;
+    this.angle = 0;
+    var self = this;
+    
+    this.setDXV = function(dxv) {
+        this.dxv = dxv;
+    /*
+    if(left) {
+        player.dxv = -speed;
+    }
+    if(right) {
+        player.dxv =  speed;
+    }
+    }*/
+        if(this.dxv < 0 && this.angle > -180) {
+            this.angle -= 10;
+        }
+        if(this.dxv > 0 && this.angle < 0) {
+            this.angle += 10;
+        }
+        
+        return this;
+    }
+    this.setX = function(x) {
+        this.x = x;
+        this.setDirty();
+        return this;
+    };
+    this.getX = function() { return this.x; }
+    this.setY = function(y) {
+        self.y = y;
+        this.setDirty();
+        return this;
+    };
+    this.getY = function() { return this.y; }
+    this.getRadius = function() { return this.radius; }
+    this.draw = function(ctx) {
+        ctx.fillStyle = "red";
+        //ctx.fillRect(this.x-this.radius,this.y-this.radius,this.radius*2,this.radius*2);
+        
+        ctx.fillStyle = "#aaaaaa";
+        ctx.beginPath();
+        ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, true); 
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+        
+        
+        ctx.translate(this.x,this.y);
+        for(var i=0; i<16; i++) {
+            ctx.save();
+            ctx.rotate(Math.PI/8.0*i - Math.PI/64*(this.x%32));
+            ctx.fillStyle = "#666666";
+            ctx.beginPath();
+            ctx.moveTo(18,-2);
+            ctx.lineTo(23,-2);
+            ctx.lineTo(23,2);
+            ctx.lineTo(18,2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+        ctx.translate(-this.x,-this.y);
+        
+        ctx.save();
+        ctx.fillStyle = "#3333aa";
+        ctx.translate(this.x,this.y);
+        ctx.rotate(this.angle*Math.PI/180.0);
+        ctx.beginPath();
+        ctx.moveTo(-8,-5);
+        ctx.lineTo(33,-5);
+        ctx.lineTo(33,5);
+        ctx.lineTo(-8,5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+        
+        this.clearDirty();
+        
+
+    };
 }
-Player.extend(Circle);
+Player.extend(Node);
 
 var runner = new Runner();
 runner.setCanvas(document.getElementById("canvas"));
@@ -43,10 +127,10 @@ pan.add(winSpot);
 
 // player
 var player = new Player();
-player.set(100, 400, 20);
-player.setFill("#aaaaaa");
-player.setStroke("#888888");
-player.setStrokeWidth(3);
+player.setX(100).setY(400);
+//player.setFill("#aaaaaa");
+//player.setStroke("#888888");
+//player.setStrokeWidth(3);
 
 pan.add(player);
 var ground = new Group()
@@ -203,6 +287,46 @@ runner.listen("MOUSE_RELEASE",jumpButton,function() { up = false; });
 buttons.add(jumpButton);
 buttons.setX(20).setY(580);
 
+/*
+var canvas = document.getElementById("canvas");
+canvas.ontouchstart = function(e) {
+    console.log("start : " + e.changedTouches.length);
+    for(var i=0; i<e.changedTouches.length; i++) {
+        var touch = e.changedTouches[i];
+        if(leftButton.contains(touch.clientX-20,touch.clientY-580)) {
+            left = true;
+            right = false;
+        }
+        if(rightButton.contains(touch.clientX-20,touch.clientY-580)) {
+            left = false;
+            right = true;
+        }
+        if(jumpButton.contains(touch.clientX-20,touch.clientY-580)) {
+            up = true;
+        }
+    }
+}
+canvas.ontouchmove = function(e) {
+    console.log("move : " + e.changedTouches.length);
+}
+canvas.ontouchend = function(e) {
+    console.log("end : " + e.changedTouches.length);
+    for(var i=0; i<e.changedTouches.length; i++) {
+        var touch = e.changedTouches[i];
+        if(leftButton.contains(touch.clientX-20,touch.clientY-580)) {
+            left = false;
+            right = false;
+        }
+        if(rightButton.contains(touch.clientX-20,touch.clientY-580)) {
+            left = false;
+            right = false;
+        }
+        if(jumpButton.contains(touch.clientX-20,touch.clientY-580)) {
+            up = false;
+        }
+    }
+}
+*/
 
 runner.setRoot(new Group()
     .add(background0)
@@ -241,13 +365,14 @@ var left = false;
 var right = false;
 
 function update() {
-    player.dxv = 0;
+    //player.dxv = 0;
     //go left and right
     if(left) {
-        player.dxv = -speed;
-    }
-    if(right) {
-        player.dxv =  speed;
+        player.setDXV(-speed);
+    } else if(right) {
+        player.setDXV(speed);
+    } else {
+        player.setDXV(0);
     }
     var x = player.getX()+player.dxv;
     if(player.getX() != x) {
