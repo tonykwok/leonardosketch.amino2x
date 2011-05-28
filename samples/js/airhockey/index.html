@@ -8,14 +8,8 @@ body {font-size: 500%; }
 </style>
 </head>
 <body>
-<!--
-<canvas id="canvas" width="100" height="100"></canvas>
--->
-<div id="foo">foo</div>
-
-hello
+<canvas id="canvas" width="1000" height="700"></canvas>
 <script language="JavaScript">
-/*
 function distance(x1,y1,x2,y2) {
     var x = x2-x1;
     var y = y2-y1;
@@ -52,15 +46,17 @@ puck.ay = 0.999;
 board.add(puck);
 
 
-var paddle1 = new Circle().set(100,350,40).setFill("green");
-var paddle2 = new Circle().set(1024-100,350,40).setFill("green");
-board.add(paddle1);
-board.add(paddle2);        
+var paddles = [];
+paddles[0] = new Circle().set(100,350,40).setFill("green");
+paddles[1] = new Circle().set(1024-100,350,40).setFill("green");
+board.add(paddles[0]);
+board.add(paddles[1]);        
 
 runner.addCallback(function() {
     var x = puck.getX();
     var y = puck.getY();
     //console.log("radius = " + puck.getRadius());
+    //collide with borders
     if(x + puck.getRadius() > right.getX()) {
         puck.vx = -puck.vx;
     }
@@ -74,6 +70,10 @@ runner.addCallback(function() {
         puck.vy = -puck.vy;
     }
     
+    //collide with paddles
+    comparePaddle(paddles[0],puck);
+    comparePaddle(paddles[1],puck);
+    
     puck.vx *= puck.ax;
     puck.vy *= puck.ay;
     x += puck.vx;
@@ -83,55 +83,95 @@ runner.addCallback(function() {
     puck.setY(y);
 });
 
+function comparePaddle(pad, puck) {
+    if(distance(puck.getX(),puck.getY(),pad.getX(),pad.getY()) <
+            puck.getRadius() + pad.getRadius()) {
+        if(puck.getX() < pad.getX()) {
+            puck.vx = -20;
+        } else {
+            puck.vx = 20;
+        }
+    }
+}
 runner.start();
-*/
-if (window.PalmSystem) {
-    window.PalmSystem.stageReady();
-}        
-/*
 var canvas = document.getElementById("canvas");
-console.log("canvas = " + canvas);
 canvas.ontouchstart = function(e) {
-    console.log("touchstart canvas");
+    console.log("=== start ====");
+    console.log("target = " + e.targetTouches.length  
+        +  " changed = " + e.changedTouches.length);
+    for(var p=0; p<paddles.length; p++) {
+        var pad = paddles[p];
+        for(var i=0; i<e.changedTouches.length; i++) {
+            var touch = e.changedTouches[i];
+            console.log(" comparing: " + pad.getX() + " " + pad.getY()
+                + " to " + touch.clientX + " " + touch.clientY + " " + touch.identifier);
+            var dist = distance(pad.getX(),pad.getY(),touch.clientX,touch.clientY);
+            console.log("   dist = " + dist);
+            if(dist < 50) {
+                pad.active = true;
+                pad.touchid = touch.identifier;
+                console.log("started touch: " + touch.identifier);
+            }
+        }
+    }
 }
-var foo = document.getElementById("foo");
-console.log("foo = " + foo);
-document.ontouchstart = function(e) {
-    console.log("touchstart foo");
-};
-document.ontouchmove = function(e) {
-    console.log("touchstart foo");
-};
-document.ontouchend = function(e) {
-    console.log("touchstart foo");
-};
-	document.ongesturechange = function () {
-		return false;
-	}
-*/
-window.onload = function () {
-    console.log("on load");
-    /*
-    var foo = document.getElementById("foo");
-    console.log("foo = " + foo);
-    foo.ontouchstart = function(e) {
-        console.log("touchstart foo");
-    };
-    document.ontouchstart = function(e) {
-        console.log("touchstart foo");
-    };
-    document.ongesturechange = function () {
-        return false;
-    };
-    */
-    console.log("anim frame = " + window.webkitRequestAnimationFrame);
-    function step(timestamp) {
-        console.log("stepping: " + timestamp)
-        window.webkitRequestAnimationFrame(step);
-    };
-    window.webkitRequestAnimationFrame(step);
+function dump(e) {
+    console.log("touch event type = " + e.type);
+    for(var i=0; i<e.targetTouches.length; i++) {
+        var touch = e.targetTouches[i];
+        console.log("   touch " + i
+            + " " + touch.clientX + " " + touch.clientY);
+    }
+}
+canvas.ontouchmove = function(e) {
+    console.log("==== move ====");
+    console.log(" touches " + e.touches.length
+        +  " target = " + e.targetTouches.length  
+        +  " changed = " + e.changedTouches.length);
+    for(var i=0; i<e.touches.length; i++) {
+        var touch = e.touches[i];
+        console.log("touch id = " + touch.identifier);
+    }
+    for(var i=0; i<e.targetTouches.length; i++) {
+        var touch = e.targetTouches[i];
+        console.log("target touch id = " + touch.identifier);
+    }
+    for(var i=0; i<e.changedTouches.length; i++) {
+        var touch = e.changedTouches[i];
+        console.log("changed id = " + touch.identifier);
+    }
     
-}
+    for(var p=0; p<paddles.length; p++) {
+        var pad = paddles[p];
+        if(pad.active) {
+            for(var i=0; i<e.changedTouches.length; i++) {
+                var touch = e.changedTouches[i];
+                var dist = distance(pad.getX(),pad.getY(),touch.clientX,touch.clientY);
+                console.log("   dist = " + dist);
+                if(dist < 100) {
+                    pad.setX(touch.clientX);
+                    pad.setY(touch.clientY);
+                }
+            }
+        }
+    }
+};
+canvas.ontouchend = function(e) {
+    /*
+    console.log("end " + " count = " + e.targetTouches.length) ;
+    console.log("end " + " count = " + e.changedTouches.length) ;
+    for(var p=0; p<paddles.length; p++) {
+        var pad = paddles[p];
+        for(var i=0; i<e.changedTouches.length; i++) {
+            var touch = e.changedTouches[i];
+            if(touch.identifier == pad.touchid) {
+                pad.active = false;
+                console.log("disable");
+            }
+        }
+    }*/
+};
+
 </script>
 
 </body>
