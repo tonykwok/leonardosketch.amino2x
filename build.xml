@@ -74,6 +74,7 @@
         <antcall target="build-gallery-app"><param name="appname" value="photoadjust"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="fish"/></antcall>
         <antcall target="build-gallery-app"><param name="appname" value="planetrover"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="linechart"/></antcall>
     </target>
     
     
