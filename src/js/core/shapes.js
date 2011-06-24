@@ -100,7 +100,7 @@ function Circle() {
     //@property radius The radius of the circle
     this.radius = 10.0;
     this.getRadius = function() { return this.radius; };
-    
+    this.setRadius = function() { this.radius = radius; this.setDirty(); return this; }; 
     var self = this;
     
     //@method Set the x, y, and radius of the circle all in one step
