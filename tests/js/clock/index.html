@@ -1,0 +1,249 @@
+<html>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<script src="../../../dist/amino.js"></script>
+<!-- <script src="amino.js"></script>-->
+<style type="text/css">
+body { border: 0px solid black; margin: 0; padding: 0}
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+</style>
+<body>
+<img src="standard.png"/>
+<canvas id="canvas" width="1024" height="768"></canvas>
+<script language="JavaScript">
+    
+    function initStandardClock(g) {
+        var now = new Date();
+        var iv = new ImageView("standard.png");
+        g.add(iv)
+        
+        var mh = new Rect()
+            .set(-10,-10,20,200)
+            .setFill("#2d2d2d")
+            .setStrokeWidth(1);
+        var mht= new Transform(mh)
+            .setTranslateX(528)
+            .setTranslateY(360)
+            .setRotate(0);    
+        var m = now.getMinutes()*360/60;
+        runner.addAnim(new PropAnim(mht,"rotate",m+180,m+360+180,40/*60*60*/).setLoop(true));
+        g.add(mht);
+        
+        var hh = new Rect()
+            .set(-10,-10,20,100)
+            .setFill("#2d2d2d")
+            .setStrokeWidth(1);
+        var hht= new Transform(hh)
+            .setTranslateX(528)
+            .setTranslateY(360)
+            .setRotate(0);    
+        var h = now.getHours()*360/12 + now.getMinutes()*360/60/12;
+        runner.addAnim(new PropAnim(hht,"rotate",h+180,h+360+180,12*60*60).setLoop(true));
+        g.add(hht);
+        
+        var center = new ImageView("images/center.png")
+            .setX(492)
+            .setY(320);
+        g.add(center);
+    }
+    
+    
+    
+    function initTronClock(g) {
+        g.add(new Rect().set(0,0,1024,768).setFill("black"));
+        var centerX = 310;
+        var centerY = 350;
+        var seconds_radius = 270;
+        var minutes_radius = 200;
+        var hours_radius = 130;
+        var gap = Math.PI/15;
+        var arc1 = new Shape();
+        arc1.draw = function(c) {
+            var seconds = new Date().getSeconds();
+            var seconds_angle = seconds/60*Math.PI*2 - Math.PI/2;
+            c.lineWidth = 20;
+            c.beginPath();
+            c.arc(centerX,centerY,seconds_radius, seconds_angle-gap, seconds_angle+gap, true);            
+            c.strokeStyle = "#007586";
+            c.stroke();
+        };
+        g.add(arc1);
+        var arc2 = new Shape();
+        arc2.draw = function(c) {
+            var minutes = new Date().getMinutes();
+            var minutes_angle = minutes/60*Math.PI*2 - Math.PI/2;
+            c.lineWidth = 20;
+            c.beginPath();
+            c.arc(centerX,centerY,minutes_radius, minutes_angle-gap, minutes_angle+gap, true);
+            c.strokeStyle = "#00a8c1";
+            c.stroke();
+        };
+        g.add(arc2);
+        var arc3 = new Shape();
+        arc3.draw = function(c) {
+            var hours = new Date().getHours();
+            var hours_angle = hours/12*Math.PI*2 - Math.PI/2;
+            c.lineWidth = 20;
+            c.beginPath();
+            c.arc(centerX, centerY, hours_radius, hours_angle-gap,hours_angle+gap,true);
+            c.strokeStyle = "#00dafa";
+            c.stroke();
+        };
+        g.add(arc3);
+        var text = new Shape();
+        text.draw = function(c) {
+            var hours = new Date().getHours() % 12;
+            var minutes = new Date().getMinutes();
+            var f = c.font;
+            c.font = "bold 96pt sans-serif";
+            c.fillStyle = "#00d1f0";
+            var tx = 649;
+            var ty = 400;
+            c.fillText(parseInt(hours)+":"+parseInt(minutes), tx,ty);
+            c.fillText(parseInt(hours)+":"+parseInt(minutes), tx+2,ty);
+            c.fillText(parseInt(hours)+":"+parseInt(minutes), tx,ty+2);
+            c.fillText(parseInt(hours)+":"+parseInt(minutes), tx+2,ty+2);
+            c.fillStyle = "#007586";
+            c.fillText(parseInt(hours)+":"+parseInt(minutes), tx+1,ty+1);
+            c.font = f;
+        };
+        g.add(text);
+    }
+    
+    function initNixieClock(g) {
+        g.add(new Rect().set(0,0,1024,768).setFill("black"));
+        
+        var digits = [];
+        for(var i=0; i<=9; i++) {
+            digits[i] = new ImageView("nixi_"+i+".png");
+        }
+        var bg = new ImageView("nixi.png");
+        
+        function Digit() {
+            Group.call(this);
+            var self = this;
+            this.setDigit = function(n) {
+                self.clear();
+                self.add(bg);
+                self.add(new Transform(digits[n]).setTranslateX(53).setTranslateY(125));
+                self.setDirty();
+                return self;
+            };
+        }
+        Digit.extend(Group);
+        var nixies = [];
+        var xo = 70;
+        nixies[0] = new Digit().setX(xo).setY(150).setDigit(1);
+        nixies[1] = new Digit().setX(xo+200).setY(150).setDigit(2);
+        nixies[2] = new Digit().setX(xo+500).setY(150).setDigit(4);
+        nixies[3] = new Digit().setX(xo+700).setY(150).setDigit(8);
+        
+        for(var i=0; i<nixies.length; i++) {
+            g.add(nixies[i]);
+        }
+        var anim = new Shape();
+        anim.draw = function(c) {
+            var hours = new Date().getHours() % 12;
+            var minutes = new Date().getMinutes();
+            var seconds = new Date().getSeconds();
+            nixies[0].setDigit(Math.floor(hours/10));
+            nixies[1].setDigit(hours%10);
+            nixies[2].setDigit(Math.floor(minutes/10));
+            nixies[3].setDigit(minutes%10);
+        };
+        g.add(anim);
+    }
+    
+    
+    
+    if (window.PalmSystem) {
+        window.PalmSystem.enableFullScreenMode(true);
+    }
+    
+    
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    //runner.transparentBackground = true;
+    //runner.clearBackground = false;
+    //runner.setBackground("rgba(0,0,0,0)");
+
+
+    var standardClock = new Group();    
+    initStandardClock(standardClock);
+    
+    
+    var tronClock = new Group();
+    initTronClock(tronClock);
+    var t3 = new Group();
+    initNixieClock(t3);
+    
+    var panl = new Transform(standardClock);
+    var panc = new Transform(t3);
+    var panr = new Transform(tronClock);
+    panl.setTranslateX(-1024);
+    panl.setVisible(false);
+    panc.setTranslateX(0);
+    panc.setVisible(true);
+    panr.setTranslateX(1024);
+    panr.setVisible(false);
+    var sx = 0;
+    var stx = 0;
+    runner.listen("MOUSE_PRESS",null,function(e) {
+        sx = e.x;
+        stx = panc.getTranslateX();
+        panl.setVisible(true);
+        panr.setVisible(true);
+    });
+    runner.listen("MOUSE_DRAG",null,function(e) {
+        var dx = e.x-sx;
+        panc.setTranslateX(stx+dx);
+        panr.setTranslateX(panc.getTranslateX()+1024);
+        panl.setTranslateX(panc.getTranslateX()-1024);
+    });
+    runner.listen("MOUSE_RELEASE",null,function(e) {
+        panl.setVisible(false);
+        panr.setVisible(false);
+        var threshold = 200;
+        var len = 0.4;
+        if(panc.getTranslateX()< -threshold) {
+            //panc.setTranslateX(-1024);
+            //panr.setTranslateX(0);
+            panl.setTranslateX(1024);
+            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),0,len));
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),-1024,len));
+            var t = panl;
+            panl = panc; panc = panr; panr = t;
+        } else if(panc.getTranslateX() > threshold) {
+            //panc.setTranslateX(1024);
+            //panl.setTranslateX(0);
+            panr.setTranslateX(-1024);
+            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),0,len));
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),1024,len));
+            var t = panr;
+            panr = panc; panc = panl; panl = t;
+        } else {
+            //panc.setTranslateX(0);
+            runner.addAnim(new PropAnim(panc,"translateX",panc.getTranslateX(),0,len));
+            runner.addAnim(new PropAnim(panr,"translateX",panr.getTranslateX(),1024,len));
+            runner.addAnim(new PropAnim(panl,"translateX",panl.getTranslateX(),-1024,len));
+            //panl.setTranslateX(-1024);
+            //panr.setTranslateX(1024);
+        }
+    });
+    
+    var root = new Group();
+    root.add(panl);
+    root.add(panc);
+    root.add(panr);
+    runner.root = root;
+    runner.fps = 15;
+    runner.DEBUG = false;
+    runner.start();
+    
+</script>
+
+</body>
+</html>

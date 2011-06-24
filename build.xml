@@ -1,0 +1,159 @@
+<?xml version="1.0" ?>
+<project default="all">
+
+    <target name="init">
+        <property name="tests.dir" value="samples/js"/>
+        <property name="amino.path" value="dist/amino-1.0b1.js"/>
+        <mkdir dir="build/webos/tests"/>
+        
+        <property name="version" value="1.0b1"/>
+        
+        <echo message="basedir = ${basedir}"/>
+        <buildnumber/>
+        <tstamp>
+            <format property="TIMESTAMP" pattern="yyyy-MM-dd_kk-mm"/>
+        </tstamp>
+        <echo message="timestamp = ${TIMESTAMP}"/>
+
+        <property  name="publish.dir" value="blah"/>
+        <echo message="publish dir = ${publish.dir}"/>
+        <echo message="build.number = ${build.number}"/>
+        <mkdir dir="dist"/>
+    </target>
+    
+    <target name="all" depends="build-java, build-js"/>
+    
+    
+    <target name="build-java" depends="init">
+        <mkdir dir="build/classes/"/>
+        <javac destdir="build/classes">
+            <src path="src/java/core"/>
+        </javac>        
+        
+        <jar destfile="dist/amino-${version}.jar">
+            <fileset dir="build/classes"/>
+        </jar>
+        
+    </target>
+    
+    <target name="build-js" depends="init">
+        <concat destfile="dist/amino-${version}.js">
+            <fileset dir="src/js/core/"/>
+        </concat>
+        <concat destfile="dist/amino.js">
+            <fileset dir="src/js/core/"/>
+        </concat>
+    </target>
+    
+    
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="dist"/>
+        <delete dir="build/webos/samples"/>
+    </target>
+    
+    <target name="js-doc">
+        <mkdir dir="dist/jsdoc"/>
+        <exec command="ruby tools/joshdoc.rb src/js/core/amino.js dist/jsdoc/docs.html"/>
+        <copy file="tools/doc.css" todir="dist/jsdoc"/>
+        <copy file="tools/background.png" todir="dist/jsdoc"/>
+    </target>
+    
+    <target name="java-doc">
+        <mkdir dir="dist/javadoc"/>
+        <exec command="ruby tools/joshdoc.rb src/java/core/ dist/javadoc/docs.html"/>
+        <copy file="tools/doc.css" todir="dist/javadoc"/>
+        <copy file="tools/background.png" todir="dist/javadoc"/>
+    </target>
+    
+    <target name="gallery" depends="build-js">
+        <mkdir dir="dist/gallery"/>
+        <antcall target="build-gallery-app"><param name="appname" value="basicparticles"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="blocks"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="touchclock"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="photoadjust"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="fish"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="planetrover"/></antcall>
+        <antcall target="build-gallery-app"><param name="appname" value="linechart"/></antcall>
+    </target>
+    
+    
+    <target name="build-gallery-app">    
+        <copy todir="dist/gallery">
+            <fileset dir="samples/js/">
+                <exclude name="${appname}/index.html"/>
+                <include name="${appname}/**"/>
+            </fileset>
+        </copy>
+        <copy todir="dist/gallery">
+            <fileset dir="samples/js/">
+                <include name="${appname}/index.html"/>
+            </fileset>
+            <filterchain>
+                <tokenfilter>
+                    <filetokenizer/>
+                    <replaceregex pattern="src=&quot;(.*)/amino.js&quot;" flags="s" replace="src='../../amino-${version}.js'"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+    </target>
+    
+    
+    <target name="publish" depends="init, all, js-doc, java-doc, gallery">
+        <copy todir="${publish.dir}">
+            <fileset dir="dist/">
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="build-touchpad-apps">
+        <antcall target="build-touchpad-app"><param name="appname" value="photoadjust"/></antcall>
+        <antcall target="build-touchpad-app"><param name="appname" value="basicparticles"/></antcall>
+        <antcall target="build-touchpad-app"><param name="appname" value="blocks"/></antcall>
+        <antcall target="build-touchpad-app"><param name="appname" value="touchclock"/></antcall>
+        <antcall target="build-touchpad-app"><param name="appname" value="planetrover"/></antcall>
+        <antcall target="build-touchpad-app"><param name="appname" value="fish"/></antcall>
+    </target>
+    
+    <target name="build-touchpad-app" depends="init, build-js">
+        <property name="appdir" value="build/webos/samples/${appname}"/>
+        <mkdir dir="${appdir}"/>
+        <copy todir="${appdir}">
+            <fileset dir="${tests.dir}/${appname}">
+                <include name="**"/>
+            </fileset>
+        </copy>
+        
+        <replaceregexp file="${appdir}/index.html"
+            match='"(.+)/amino.js"'
+            replace="'amino.js'"
+            byline="true"
+        />
+        
+        <copy tofile="${appdir}/amino.js" file="${amino.path}"/>
+
+        <echo file="${appdir}/appinfo.json">
+{
+        "id": "com.joshondesign.amino.${appname}",
+        "version": "0.0.1",
+        "vendor": "Josh Marinacci",
+        "type": "web",
+        "main": "index.html",
+        "title": "Amino ${appname}",
+        "icon": "icon.png",
+        "uiRevision" : 2,
+        "dockMode": true        
+}        </echo>
+
+
+        <exec command="palm-package ${appname}" dir="build/webos/samples"/>
+        <exec command="palm-install com.joshondesign.amino.${appname}_0.0.1_all.ipk" dir="build/webos/samples"/>
+    </target>
+
+    <target name="run-touchpad-app" depends="init">
+        <antcall target="build-app"/>
+        <!--<param name="appname" value="visualizer"/></antcall>-->
+        <exec command="palm-launch com.joshondesign.amino.${appname}" dir="build/webos/tests"/>
+    </target>
+    
+</project>

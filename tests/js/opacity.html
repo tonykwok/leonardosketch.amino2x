@@ -1,0 +1,22 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../dist/amino-0.01.js"></script>
+
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    
+    var g = new Group();
+    g.add(new Rect().setWidth(100).setHeight(50).setFill("green"));
+    g.add(new Group().setOpacity(0.5).add(new Rect().set(0,100,100,50).setFill("green")));
+    runner.setBackground("white");
+    runner.addAnim(new PropAnim(g,"opacity",1.0,0.0,4.0).setLoop(true).setAutoReverse(true));
+    runner.setRoot(g);
+    runner.start();
+</script>
+
+</body>
+</html>

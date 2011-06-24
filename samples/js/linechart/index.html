@@ -1,0 +1,33 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../../dist/amino.js"></script>
+    <script src="linechart.js"></script>
+<body>
+<p>A line chart which shows axis, labels, legend, and multiple data sets in
+different colors. It rescales the axis as needed to fit the datapoints.
+</p>
+<canvas id="can" width="800" height="600"></canvas>
+
+<script language="JavaScript">
+
+    //set up the scene
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("can")).setBackground("white").setFPS(30);
+    
+    var chart = new LineChart();
+    chart.setVLabel("Revenue");
+    chart.setHLabel("Week");
+    chart.setWidth(600);
+    chart.setHeight(500);
+    chart.addDataSet("Stan", [5,20,5,8,5,6]);
+    chart.addDataSet("Kyle", [30, 5,8,5,20,28]);
+    chart.addDataSet("Eric", [26,41,6,16,24,3]);
+    chart.addDataSet("Kenny", [20,19,15,12,5,0]);
+    runner.setRoot(chart);
+    
+    runner.setFPS(1);
+    runner.start();
+</script>
+
+</body>
+</html>
