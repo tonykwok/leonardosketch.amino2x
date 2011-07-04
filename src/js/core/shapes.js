@@ -75,6 +75,114 @@ function Text() {
 };
 Text.extend(Shape);
 
+// @class Ellipse  A ellipse shape.
+// @category shape
+//
+function Ellipse() {
+    Shape.call(this);
+
+    //@property x  The X coordinate of the *center* of the ellipse (not it's left edge)
+    this.x = 0.0;
+    this.getX = function() { return this.x; };
+    this.setX = function(x) { this.x = x; this.setDirty(); return this; };
+
+    //@property y  The Y coordinate of the *center* of the ellipse (not it's top edge)
+    this.y = 0.0;
+    this.getY = function() { return this.y; };
+    this.setY = function(y) { this.y = y; this.setDirty(); return this; };
+
+    this.width = 20;
+    this.getWidth = function() { return this.width; };
+    this.setWidth = function(width) { this.width = width; this.setDirty(); return this; };
+
+    this.height = 10;
+    this.getHeight = function() { return this.height; };
+    this.setHeight = function(height) { this.height = height; this.setDirty(); return this; };
+
+    // @property scaleWidth The width ratio of the ellipse
+    this.scaleWidth = 1.0;
+
+    // @property scaleHeight The height ratio of the ellipse
+    this.scaleHeight = 1.0;
+
+    // @property radius The radius of the ellipse
+    this.radius = (this.width <= this.height) ? this.height : this.width;
+
+    var self = this;
+
+    // @method normalize Computes ratio among width and height and passes the result to ctx.scale(double, double)
+    function normalize(width, height) {
+      if(width <= height) {
+        self.radius = width / 2;
+	self.scaleWidth = 1.0;
+	self.scaleHeight = height / width;
+	self.y /= self.scaleHeight;
+      } 
+      if(height <= width) {
+        self.radius = height / 2;
+	self.scaleHeight = 1.0;
+        self.scaleWidth = width / height;
+	self.x /= self.scaleWidth;
+      }
+    }
+
+    // @method set Sets the x, y, width and height of the ellipse all in one step
+    this.set = function(x, y, width, height) {
+        self.x = x;
+        self.y = y;
+	self.width = width;
+	self.height = height;
+	self.radius = (self.width <= self.height) ? self.height : self.width;
+        self.setDirty();
+        return self;
+    };
+
+    // Property fill and method setFill are inherited from Node, therefore we need them onlyu for debug.
+    //this.fill = "black";
+    
+    //this.setFill = function(fill) {
+        //self.fill = fill;
+        //self.setDirty();
+        //return self;
+    //}
+
+  this.draw = function(ctx) {
+        if(!this.isVisible()) return;
+        ctx.fillStyle = self.fill;
+	normalize(self.width, self.height);
+	ctx.scale(self.scaleWidth, self.scaleHeight);
+        ctx.beginPath();
+        ctx.arc(self.x, self.y, self.radius, 0, Math.PI * 2, false);
+        ctx.closePath();
+        ctx.fill();
+        if(self.getStrokeWidth() > 0) {
+            ctx.strokeStyle = self.getStroke();
+            ctx.lineWidth = self.getStrokeWidth();
+            ctx.stroke();
+        }
+        this.clearDirty();
+    };
+
+    this.contains = function(x,y) {
+        if(x >= this.x - this.radius && x <= this.x + this.radius) {
+            if(y >= this.y - this.radius && y<= this.y + this.radius) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    this.getVisualBounds = function() {
+        return new Bounds(this.x - this.width / 2
+            ,this.y - this.height / 2
+            ,this.width
+            ,this.height);
+    };
+    return true;
+};
+Ellipse.extend(Shape);
+
+
 
 
 
