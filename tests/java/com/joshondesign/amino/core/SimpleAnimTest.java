@@ -24,7 +24,7 @@ public class SimpleAnimTest {
         r.setFill(Color.WHITE);
         Transform t = new Transform(r).setTranslateX(100).setTranslateY(100);
         g.add(t);
-        runner.addAnim(new PropAnim(t,"rotation",0,90,1).setLoop(true).setAutoReverse(false));
+        runner.addAnim(new PropAnim(t,"rotate",0,90,1).setLoop(true).setAutoReverse(false));
         runner.addAnim(new PropAnim(t,"translateX",100,500,4).setLoop(true).setAutoReverse(true));
         runner.addAnim(new PropAnim(t,"translateY",100,150,0.5).setLoop(true).setAutoReverse(true));
 
