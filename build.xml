@@ -3,10 +3,10 @@
 
     <target name="init">
         <property name="tests.dir" value="samples/js"/>
-        <property name="amino.path" value="dist/amino-1.0b1.js"/>
+        <property name="version" value="unknown"/>
+        <property name="amino.path" value="dist/amino-${version}.js"/>
         <mkdir dir="build/webos/tests"/>
         
-        <property name="version" value="1.0b1"/>
         
         <echo message="basedir = ${basedir}"/>
         <buildnumber/>
