@@ -124,6 +124,17 @@ function Node() {
         return this.visible;
     };
     
+    //@property cached Indicates if the node should be automatically cached an a buffer. false by default
+    this.cached = false;
+    this.setCached = function(cached) {
+        self.cached = cached;
+        self.setDirty();
+        return self;
+    };
+    this.isCached = function() {
+        return self.cached;
+    };
+    
     
     // @property blocksMouse Indicates if this node will block mouse events from hitting nodes beneath it.
     this.blocksMouse = false;
