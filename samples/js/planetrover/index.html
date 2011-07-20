@@ -188,14 +188,17 @@ function setupGrassLevel() {
     background0.add(new Circle().set(300,300,100).setFill("#FCD116"));
     
     //parallax hills
+    
     background1.add(new Transform(hill).setTranslateX(-100).setTranslateY(200));
     background1.add(new Transform(hill).setTranslateX(280).setTranslateY(100));
     background1.add(new Transform(hill).setTranslateX(200).setTranslateY(200));
+    
     ground.add(cg(-300,500,3400,600));
     ground.add(cg(300,400,1000,100));
     ground.add(cg(500,300,400,100));
     
     ground.add(cg(1800,400,400,100));
+    
     background1.add(new Transform(hill).setTranslateX(1100).setTranslateY(150));
     background1.add(new Transform(hill).setTranslateX(1180).setTranslateY(100));
     background1.add(new Transform(hill).setTranslateX(1250).setTranslateY(120));
@@ -361,25 +364,46 @@ overlay.setVisible(false);
 var buttons = new Group();
 var leftButton = new Rect().set(0,0,100,50).setFill("rgba(255,0,0,0.1)");
 leftButton.setCorner(15);
-runner.listen("MOUSE_PRESS",leftButton,function() {   left = true; right=false; });
-runner.listen("MOUSE_RELEASE",leftButton,function() { left = false; });
 var rightButton = new Rect().set(110,0,100,50).setFill("rgba(255,0,0,0.1)");
 rightButton.setCorner(15);
-runner.listen("MOUSE_PRESS",rightButton,function() {   right = true; left=false; });
-runner.listen("MOUSE_RELEASE",rightButton,function() { right = false; });
 buttons.add(leftButton);
 buttons.add(rightButton);
 var jumpButton = new Rect().set(850,0,100,50).setFill("rgba(255,0,0,0.1)");
 jumpButton.setCorner(15);
-runner.listen("MOUSE_PRESS",jumpButton,function() {   up = true; });
-runner.listen("MOUSE_RELEASE",jumpButton,function() { up = false; });
 buttons.add(jumpButton);
 buttons.setX(20).setY(580);
 
 /*
+runner.listen("MOUSE_PRESS",leftButton,function() {   left = true; right=false; });
+runner.listen("MOUSE_RELEASE",leftButton,function() { left = false; });
+runner.listen("MOUSE_PRESS",rightButton,function() {   right = true; left=false; });
+runner.listen("MOUSE_RELEASE",rightButton,function() { right = false; });
+runner.listen("MOUSE_PRESS",jumpButton,function() {   up = true; });
+runner.listen("MOUSE_RELEASE",jumpButton,function() { up = false; });
+*/
+
 var canvas = document.getElementById("canvas");
+var navid = -1;
 canvas.ontouchstart = function(e) {
-    console.log("start : " + e.changedTouches.length);
+    for(var i=0; i<e.changedTouches.length; i++) {
+        var touch = e.changedTouches[i];
+        if(leftButton.contains(touch.clientX-20,touch.clientY-580)) {
+            left = true;
+            right = false;
+            navid = touch.identifier;
+        }
+        if(rightButton.contains(touch.clientX-20,touch.clientY-580)) {
+            left = false;
+            right = true;
+            navid = touch.identifier;
+        }
+        if(jumpButton.contains(touch.clientX-20,touch.clientY-580)) {
+            up = true;
+        }
+    }
+}
+
+canvas.ontouchmove = function(e) {
     for(var i=0; i<e.changedTouches.length; i++) {
         var touch = e.changedTouches[i];
         if(leftButton.contains(touch.clientX-20,touch.clientY-580)) {
@@ -390,23 +414,13 @@ canvas.ontouchstart = function(e) {
             left = false;
             right = true;
         }
-        if(jumpButton.contains(touch.clientX-20,touch.clientY-580)) {
-            up = true;
-        }
     }
 }
-canvas.ontouchmove = function(e) {
-    console.log("move : " + e.changedTouches.length);
-}
 canvas.ontouchend = function(e) {
-    console.log("end : " + e.changedTouches.length);
     for(var i=0; i<e.changedTouches.length; i++) {
         var touch = e.changedTouches[i];
-        if(leftButton.contains(touch.clientX-20,touch.clientY-580)) {
-            left = false;
-            right = false;
-        }
-        if(rightButton.contains(touch.clientX-20,touch.clientY-580)) {
+        if(touch.identifier == navid) {
+            navid = -1;
             left = false;
             right = false;
         }
@@ -415,7 +429,7 @@ canvas.ontouchend = function(e) {
         }
     }
 }
-*/
+
 
 runner.setRoot(new Group()
     .add(background0)
@@ -434,11 +448,13 @@ var VK_UP = 38;
 var VK_LEFT = 37;
 var VK_RIGHT = 39;
 runner.listen("KEY_PRESSED",null, function(e) {
+    console.log('key pressed');
     if(e.key == VK_UP) up = true;
     if(e.key == VK_LEFT) left = true;
     if(e.key == VK_RIGHT) right = true;
 });
 runner.listen("KEY_RELEASED",null, function(e) {
+    console.log('key released');
     if(e.key == VK_UP) up = false;
     if(e.key == VK_LEFT) left = false;
     if(e.key == VK_RIGHT) right = false;

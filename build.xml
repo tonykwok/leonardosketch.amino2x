@@ -150,8 +150,7 @@
         <exec command="palm-install com.joshondesign.amino.${appname}_0.0.1_all.ipk" dir="build/webos/samples"/>
     </target>
 
-    <target name="run-touchpad-app" depends="init">
-        <antcall target="build-app"/>
+    <target name="run-touchpad-app" depends="init, build-touchpad-app">
         <!--<param name="appname" value="visualizer"/></antcall>-->
         <exec command="palm-launch com.joshondesign.amino.${appname}" dir="build/webos/tests"/>
     </target>
