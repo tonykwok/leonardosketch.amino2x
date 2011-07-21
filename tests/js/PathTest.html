@@ -1,6 +1,6 @@
 <html>
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
-    <script src="../../src/js/core/amino.js"></script>
+    <script src="../../dist/amino.js"></script>
 <script language="JavaScript">
 </script>
 
@@ -30,7 +30,7 @@
     
     
     var c2 = new Circle().set(300,100,10).setFill("red");
-    runner.addAnim(new Anim(c2,"x",300,400,1).setLoop(true).setAutoReverse(true));
+    runner.addAnim(new PropAnim(c2,"x",300,400,1).setLoop(true).setAutoReverse(true));
     g.add(c2);
     
     

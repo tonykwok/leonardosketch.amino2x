@@ -448,13 +448,11 @@ var VK_UP = 38;
 var VK_LEFT = 37;
 var VK_RIGHT = 39;
 runner.listen("KEY_PRESSED",null, function(e) {
-    console.log('key pressed');
     if(e.key == VK_UP) up = true;
     if(e.key == VK_LEFT) left = true;
     if(e.key == VK_RIGHT) right = true;
 });
 runner.listen("KEY_RELEASED",null, function(e) {
-    console.log('key released');
     if(e.key == VK_UP) up = false;
     if(e.key == VK_LEFT) left = false;
     if(e.key == VK_RIGHT) right = false;
