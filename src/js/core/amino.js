@@ -276,7 +276,7 @@ function BufferNode(n) {
 	Node.call(this);
 	this.node = n;
     this.node.setParent(this);
-    this.buf = null;//= new Buffer(200,200);
+    this.buf = null;
     var self = this;
     this.draw = function(ctx) {
         var bounds = this.node.getVisualBounds();
@@ -585,6 +585,83 @@ function ImageView(url) {
 ImageView.extend(Node);
 
 
+/*
+basic painting routine. just recursively draw
+*/
+function SimplePaintStrategy() {
+    this.paintScene = function(ctx,root) {
+        if(root == null) return;
+        root.draw(ctx);
+    };
+}
+
+
+/*
+advanced painting routine which handles recursion itself and caches nodes into canvas buffers.
+*/
+function CachingPaintStrategy() {
+    var self = this;
+    self.drawCount = 0;
+    
+    this.paintScene = function(ctx,root) {
+        if(root == null) return;
+        self.drawCount = 0;
+        if(root instanceof Group) {
+            self.drawGroup(ctx,root);
+        } else {
+            self.drawShape(ctx,root);
+        }
+        //console.log("caching paint node count = " + self.drawCount);
+    };
+    
+    this.drawShape = function(ctx,node) {
+        if(!node || !node.isVisible()) return;
+        
+        if(node.isCached()) {
+            //draw using a buffer cache
+            var bounds = node.getVisualBounds();
+            var bufdirty = !node._amino_buf;
+            if(bufdirty) {
+                node._amino_buf = new Buffer(bounds.getWidth(),bounds.getHeight());
+            }
+            //redraw the child only if it's dirty
+            if(node.isDirty() || bufdirty) {
+                var ctx2 = node._amino_buf.getContext();
+                ctx2.save();
+                ctx2.translate(-bounds.getX(),-bounds.getY());
+                self.drawCount++;
+                node.draw(ctx2);
+                ctx2.restore();
+            }
+            ctx.save();
+            ctx.translate(bounds.getX(),bounds.getY());
+            ctx.drawImage(node._amino_buf.buffer,0,0);
+            ctx.restore();
+            node.clearDirty();
+        } else {
+            //regular draw
+            self.drawCount++;
+            node.draw(ctx);
+        }
+    };
+    
+    this.drawGroup = function(ctx,group) {
+        if(!group || !group.isVisible()) return;
+        
+        indent();
+        ctx.save();
+        var ga = ctx.globalAlpha;
+        ctx.globalAlpha = group.opacity;
+        ctx.translate(group.x,group.y);
+        for(var i=0; i<group.children.length;i++) {
+            self.drawShape(ctx,group.children[i]);
+        }
+        ctx.restore();
+        outdent();
+        group.clearDirty();
+    };
+}
+
 
 
 /* 
@@ -842,6 +919,9 @@ function Runner() {
     this.clearBackground = true;
     this.DEBUG = true;
     
+    //this.paintStrategy = new SimplePaintStrategy();
+    this.paintStrategy = new CachingPaintStrategy();
+    
     var self = this;
 
     //@property root  The root node of the scene.
@@ -1053,7 +1133,7 @@ function Runner() {
         
         //draw the scene
         if(self.root) {
-            self.root.draw(ctx);
+            self.paintStrategy.paintScene(ctx,self.root);
         }
     }        
     
