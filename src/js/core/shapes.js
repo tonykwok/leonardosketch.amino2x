@@ -13,9 +13,7 @@ function Shape() {
         this.setDirty();
         return this;
     };
-    this.getFill = function() {
-        return this.fill;
-    };
+    this.getFill = function() { return this.fill; };
     
     //@property strokeWidth The width of the shape's outline stroke. Set it to 0 to not draw a stroke.
     this.strokeWidth = 0;
@@ -27,6 +25,10 @@ function Shape() {
     this.setStroke = function(stroke) { this.stroke = stroke; return this; }
     this.getStroke = function() { return this.stroke; }
     
+    //@property opacity the opacity of the entire node. default is 1.0
+    this.opacity = 1.0;
+    this.setOpacity = function(opacity) { this.opacity = opacity; return this; }
+    this.getOpacity = function() { return this.opacity; }
     return true;
 }
 Shape.extend(Node);
@@ -334,7 +336,11 @@ function Rect() {
         return false;
     };
     this.draw = function(ctx) {
-        ctx.fillStyle = this.fill;
+        if(this.fill instanceof LinearGradientFill) {
+            ctx.fillStyle = this.fill.generate(ctx);
+        } else {
+            ctx.fillStyle = this.fill;
+        }
         if(this.corner > 0) {
             var x = this.x;
             var y = this.y;

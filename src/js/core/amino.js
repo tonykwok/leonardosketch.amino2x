@@ -585,6 +585,30 @@ function ImageView(url) {
 ImageView.extend(Node);
 
 
+
+function LinearGradientFill(x,y,width,height) {
+    var self = this;
+    self.x = x;
+    self.y = y;
+    self.width = width;
+    self.height = height;
+    self.offsets = [];
+    self.colors = [];
+    self.addStop = function(offset, color) {
+        self.offsets.push(offset);
+        self.colors.push(color);
+        return self;
+    };
+    self.generate = function(ctx) {
+        var grad = ctx.createLinearGradient(self.x,self.y,self.width,self.height);
+        for(var i in self.offsets) {
+            grad.addColorStop(self.offsets[i],self.colors[i]);
+        }
+        return grad;
+    }
+};
+
+
 /*
 basic painting routine. just recursively draw
 */
