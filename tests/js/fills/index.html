@@ -1,7 +1,7 @@
 <html>
     <title>Fill Tests</title>
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
-    <script src="../../../src/js/core/amino.js"></script>
+    <script src="../../../dist/amino.js"></script>
     <style>
     canvas { border: 0px solid black; margin: 0px;  padding:0px; }
     </style>
@@ -28,14 +28,18 @@ grad1.addColorStop(0.5, "black");
 grad1.addColorStop(1, "white");
 
 //texture fill
-var textRect = new Rect().set(0,0,100,40).setFill("yellow");
-var img = new Image();
+var pat = new PatternFill('checkerboard.png', 'repeat');
+var textRect = new Rect()
+    .set(0,0,100,40)
+    .setFill("yellow")
+    .setFill(pat);
+//var img = new Image();
 //we have to do this in a callback because the image might not be ready yet
-img.onload = function() {
-    var tex0 = r.getContext().createPattern(img,'repeat');
-    textRect.setFill(tex0);
-};
-img.src = 'checkerboard.png';
+//img.onload = function() {
+//    var tex0 = r.getContext().createPattern(img,'repeat');
+//    textRect.setFill(tex0);
+//};
+//img.src = 'checkerboard.png';
 
 r.setRoot(new Group()
     //radial gradient

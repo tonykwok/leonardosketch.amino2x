@@ -608,6 +608,27 @@ function LinearGradientFill(x,y,width,height) {
     }
 };
 
+function PatternFill(url, repeat) {
+    var self = this;
+    
+    self.src = url;
+    self.img = new Image();
+    self.loaded = false;
+    self.repeat = repeat;
+    self.img.onload = function() {
+        console.log("pattern loaded");
+        self.loaded = true;
+    };
+    self.img.src = self.src;
+    self.generate = function(ctx) {
+        if(!self.loaded) {
+            return "red";
+        }
+        return ctx.createPattern(self.img, self.repeat);
+    };
+    return true;
+}
+
 
 /*
 basic painting routine. just recursively draw
