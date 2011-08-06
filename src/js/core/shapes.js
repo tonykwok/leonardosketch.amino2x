@@ -93,68 +93,44 @@ function Ellipse() {
     this.getY = function() { return this.y; };
     this.setY = function(y) { this.y = y; this.setDirty(); return this; };
 
+    //@property width The width of the ellipse.
     this.width = 20;
     this.getWidth = function() { return this.width; };
     this.setWidth = function(width) { this.width = width; this.setDirty(); return this; };
 
+    //@property height The height of the ellipse.
     this.height = 10;
     this.getHeight = function() { return this.height; };
     this.setHeight = function(height) { this.height = height; this.setDirty(); return this; };
 
-    // @property scaleWidth The width ratio of the ellipse
-    this.scaleWidth = 1.0;
-
-    // @property scaleHeight The height ratio of the ellipse
-    this.scaleHeight = 1.0;
-
-    // @property radius The radius of the ellipse
-    this.radius = (this.width <= this.height) ? this.height : this.width;
-
     var self = this;
 
-    // @method normalize Computes ratio among width and height and passes the result to ctx.scale(double, double)
-    function normalize(width, height) {
-      if(width <= height) {
-        self.radius = width / 2;
-	self.scaleWidth = 1.0;
-	self.scaleHeight = height / width;
-	self.y /= self.scaleHeight;
-      } 
-      if(height <= width) {
-        self.radius = height / 2;
-	self.scaleHeight = 1.0;
-        self.scaleWidth = width / height;
-	self.x /= self.scaleWidth;
-      }
-    }
-
-    // @method set Sets the x, y, width and height of the ellipse all in one step
-    this.set = function(x, y, width, height) {
-        self.x = x;
-        self.y = y;
-	self.width = width;
-	self.height = height;
-	self.radius = (self.width <= self.height) ? self.height : self.width;
-        self.setDirty();
-        return self;
+    //@method Set the x, y, w, h at the same time.
+    this.set = function(x,y,w,h) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+        this.setDirty();
+        return this;
     };
-
-    // Property fill and method setFill are inherited from Node, therefore we need them onlyu for debug.
-    //this.fill = "black";
     
-    //this.setFill = function(fill) {
-        //self.fill = fill;
-        //self.setDirty();
-        //return self;
-    //}
-
-  this.draw = function(ctx) {
+    this.draw = function(ctx) { //, aX, aY, aWidth, aHeight)
         if(!this.isVisible()) return;
         ctx.fillStyle = self.fill;
-	normalize(self.width, self.height);
-	ctx.scale(self.scaleWidth, self.scaleHeight);
-        ctx.beginPath();
-        ctx.arc(self.x, self.y, self.radius, 0, Math.PI * 2, false);
+        var hB = (self.width / 2) * .5522848
+        var vB = (self.height / 2) * .5522848
+        var aX = self.x;
+        var aY = self.y;
+        var eX = self.x + self.width;
+        var eY = self.y + self.height;
+        var mX = self.x + self.width / 2;
+        var mY = self.y + self.height / 2;
+        ctx.moveTo(aX, mY);
+        ctx.bezierCurveTo(aX, mY - vB, mX - hB, aY, mX, aY);
+        ctx.bezierCurveTo(mX + hB, aY, eX, mY - vB, eX, mY);
+        ctx.bezierCurveTo(eX, mY + vB, mX + hB, eY, mX, eY);
+        ctx.bezierCurveTo(mX - hB, eY, aX, mY + vB, aX, mY);
         ctx.closePath();
         ctx.fill();
         if(self.getStrokeWidth() > 0) {
@@ -163,11 +139,12 @@ function Ellipse() {
             ctx.stroke();
         }
         this.clearDirty();
-    };
+    }
 
     this.contains = function(x,y) {
-        if(x >= this.x - this.radius && x <= this.x + this.radius) {
-            if(y >= this.y - this.radius && y<= this.y + this.radius) {
+        //console.log("comparing: " + this.x + " " + this.y + " " + this.width + " " + this.height + " --- " + x + " " + y);
+        if(x >= this.x && x <= this.x + this.width) {
+            if(y >= this.y && y<=this.y + this.height) {
                 return true;
             }
         }
@@ -175,10 +152,12 @@ function Ellipse() {
     };
 
     this.getVisualBounds = function() {
-        return new Bounds(this.x - this.width / 2
-            ,this.y - this.height / 2
+        return new Bounds(
+             this.x
+            ,this.y
             ,this.width
-            ,this.height);
+            ,this.height
+            );
     };
     return true;
 };
