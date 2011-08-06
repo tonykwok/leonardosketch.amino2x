@@ -336,6 +336,7 @@ function Rect() {
         return false;
     };
     this.draw = function(ctx) {
+
         if(this.fill instanceof LinearGradientFill) {
             ctx.fillStyle = this.fill.generate(ctx);
         } else {
@@ -358,14 +359,24 @@ function Rect() {
             ctx.lineTo(x,y+r);
             ctx.bezierCurveTo(x,y+r/2,     x+r/2,y,     x+r,y);
             ctx.closePath();
+            ctx.save();
+            if(this.getOpacity() != 1) {
+                ctx.globalAlpha = this.getOpacity();
+            }
             ctx.fill();
+            ctx.restore();
             if(this.strokeWidth > 0) {
                 ctx.strokeStyle = this.getStroke();
                 ctx.lineWidth = this.strokeWidth;
                 ctx.stroke();
             }
         } else {
+            ctx.save();
+            if(this.getOpacity() != 1) {
+                ctx.globalAlpha = this.getOpacity();
+            }
             ctx.fillRect(this.x,this.y,this.width,this.height);
+            ctx.restore();
             if(this.strokeWidth > 0) {
                 ctx.strokeStyle = this.getStroke();
                 ctx.lineWidth = this.strokeWidth;
