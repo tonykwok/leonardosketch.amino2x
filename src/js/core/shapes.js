@@ -82,7 +82,8 @@ Text.extend(Shape);
 //
 function Ellipse() {
     Shape.call(this);
-
+    var self = this;
+    
     //@property x  The X coordinate of the *center* of the ellipse (not it's left edge)
     this.x = 0.0;
     this.getX = function() { return this.x; };
@@ -103,7 +104,6 @@ function Ellipse() {
     this.getHeight = function() { return this.height; };
     this.setHeight = function(height) { this.height = height; this.setDirty(); return this; };
 
-    var self = this;
 
     //@method Set the x, y, w, h at the same time.
     this.set = function(x,y,w,h) {
@@ -115,9 +115,14 @@ function Ellipse() {
         return this;
     };
     
-    this.draw = function(ctx) { //, aX, aY, aWidth, aHeight)
+    this.draw = function(ctx) { 
         if(!this.isVisible()) return;
-        ctx.fillStyle = self.fill;
+        
+        if(this.fill instanceof LinearGradientFill) {
+            ctx.fillStyle = this.fill.generate(ctx);
+        } else {
+            ctx.fillStyle = self.fill;
+        }
         var hB = (self.width / 2) * .5522848
         var vB = (self.height / 2) * .5522848
         var aX = self.x;
@@ -126,20 +131,26 @@ function Ellipse() {
         var eY = self.y + self.height;
         var mX = self.x + self.width / 2;
         var mY = self.y + self.height / 2;
+        ctx.beginPath();
         ctx.moveTo(aX, mY);
         ctx.bezierCurveTo(aX, mY - vB, mX - hB, aY, mX, aY);
         ctx.bezierCurveTo(mX + hB, aY, eX, mY - vB, eX, mY);
         ctx.bezierCurveTo(eX, mY + vB, mX + hB, eY, mX, eY);
         ctx.bezierCurveTo(mX - hB, eY, aX, mY + vB, aX, mY);
         ctx.closePath();
+        ctx.save();
+        if(this.getOpacity() != 1) {
+            ctx.globalAlpha = this.getOpacity();
+        }
         ctx.fill();
+        ctx.restore();
         if(self.getStrokeWidth() > 0) {
             ctx.strokeStyle = self.getStroke();
             ctx.lineWidth = self.getStrokeWidth();
             ctx.stroke();
         }
         this.clearDirty();
-    }
+    };
 
     this.contains = function(x,y) {
         //console.log("comparing: " + this.x + " " + this.y + " " + this.width + " " + this.height + " --- " + x + " " + y);
@@ -152,12 +163,7 @@ function Ellipse() {
     };
 
     this.getVisualBounds = function() {
-        return new Bounds(
-             this.x
-            ,this.y
-            ,this.width
-            ,this.height
-            );
+        return new Bounds(self.x,self.y,self.width,self.height);
     };
     return true;
 };
@@ -250,6 +256,7 @@ Circle.extend(Shape);
 function Rect() {
     Shape.call(this);
     
+    var self = this;
     //@method Set the x, y, w, h at the same time.
     this.set = function(x,y,w,h) {
         this.x = x;
@@ -315,7 +322,7 @@ function Rect() {
         return false;
     };
     this.draw = function(ctx) {
-
+        
         if(this.fill instanceof LinearGradientFill) {
             ctx.fillStyle = this.fill.generate(ctx);
         } else {
