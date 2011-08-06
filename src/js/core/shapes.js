@@ -323,7 +323,7 @@ function Rect() {
     };
     this.draw = function(ctx) {
         
-        if(this.fill instanceof LinearGradientFill) {
+        if(this.fill.generate) {
             ctx.fillStyle = this.fill.generate(ctx);
         } else {
             ctx.fillStyle = this.fill;
