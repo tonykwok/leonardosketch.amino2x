@@ -62,7 +62,12 @@ function Text() {
         if(!this.isVisible()) return;
         var f = ctx.font;
         ctx.font = this.font;
-        ctx.fillStyle = this.fill;
+        if(this.fill.generate) {
+            ctx.fillStyle = this.fill.generate(ctx);
+        } else {
+            ctx.fillStyle = this.fill;
+        }
+        
         ctx.fillText(this.text,this.x,this.y);
         ctx.font = f;
         this.clearDirty();
@@ -118,10 +123,10 @@ function Ellipse() {
     this.draw = function(ctx) { 
         if(!this.isVisible()) return;
         
-        if(this.fill instanceof LinearGradientFill) {
+        if(this.fill.generate) {
             ctx.fillStyle = this.fill.generate(ctx);
         } else {
-            ctx.fillStyle = self.fill;
+            ctx.fillStyle = this.fill;
         }
         var hB = (self.width / 2) * .5522848
         var vB = (self.height / 2) * .5522848
@@ -207,17 +212,13 @@ function Circle() {
         return self;
     };
     
-    //this.fill = "black";
-    /*
-    this.setFill = function(fill) {
-        self.fill = fill;
-        self.setDirty();
-        return self;
-    };*/
-    
     this.draw = function(ctx) {
         if(!this.isVisible()) return;
-        ctx.fillStyle = self.fill;
+        if(this.fill.generate) {
+            ctx.fillStyle = this.fill.generate(ctx);
+        } else {
+            ctx.fillStyle = this.fill;
+        }
         ctx.beginPath();
         ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, true); 
         ctx.closePath();
@@ -500,7 +501,11 @@ function PathNode() {
     
     this.draw = function(ctx) {
         if(!this.isVisible()) return;
-        ctx.fillStyle = this.fill;
+        if(this.fill.generate) {
+            ctx.fillStyle = this.fill.generate(ctx);
+        } else {
+            ctx.fillStyle = this.fill;
+        }
         ctx.beginPath();
         for(var i=0; i<this.path.segments.length; i++) {
             var s = this.path.segments[i];
