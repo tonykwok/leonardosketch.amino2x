@@ -608,6 +608,29 @@ function LinearGradientFill(x,y,width,height) {
     }
 };
 
+
+
+function RadialGradientFill(x,y,radius) {
+    var self = this;
+    self.x = x;
+    self.y = y;
+    self.radius = radius;
+    self.offsets = [];
+    self.colors = [];
+    self.addStop = function(offset, color) {
+        self.offsets.push(offset);
+        self.colors.push(color);
+        return self;
+    };
+    self.generate = function(ctx) {
+        var grad = ctx.createRadialGradient(self.x,self.y, 0, self.x, self.y, self.radius);
+        for(var i in self.offsets) {
+            grad.addColorStop(self.offsets[i],self.colors[i]);
+        }
+        return grad;
+    }
+};
+
 function PatternFill(url, repeat) {
     var self = this;
     
