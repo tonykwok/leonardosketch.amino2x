@@ -57,6 +57,21 @@ function Text() {
     this.text = "-no text-";
     this.setText = function(text) { this.text = text;  this.setDirty();  return this;  };
     
+    //@property autoSize  should the bounds of the text be calculated from the text, or explicit
+    this.autoSize = true;
+    this.setAutoSize = function(autoSize) { this.autoSize = autoSize; this.setDirty(); return this; };
+    
+    //@property width width of text box
+    this.width = 100;
+    this.setWidth = function(width) { this.width = width; this.setDirty(); return this; };
+    
+    //@property height height of text box
+    this.height = 100;
+    this.setHeight = function(height) { this.height = height; this.setDirty(); return this; };
+
+    //@property halign
+    this.halign = 'left';
+    this.setHAlign = function(halign) { this.halign = halign; this.setDirty(); return this; };    
     
     this.draw = function(ctx) {
         if(!this.isVisible()) return;
@@ -71,11 +86,39 @@ function Text() {
         var strs = this.text.split('\n');
         var h = ctx.measureText('m').width;
         var y = this.y;
-        for(var i=0; i<strs.length; i++) {
-            ctx.fillText(strs[i], this.x, y);
-            y+= h;
+        if(this.autoSize) {
+            for(var i=0; i<strs.length; i++) {
+                ctx.fillText(strs[i], this.x, y);
+                y+= h;
+            }
+        } else {
+            var align = ctx.textAlign;
+            if(this.halign == 'left') {
+                ctx.textAlign = 'left';
+                for(var i=0; i<strs.length; i++) {
+                    ctx.fillText(strs[i], this.x, y);
+                    y+= h;
+                }
+            }
+            if(this.halign == 'right') {
+                ctx.textAlign = 'right';
+                for(var i=0; i<strs.length; i++) {
+                    ctx.fillText(strs[i], this.x + this.width, y);
+                    y+= h;
+                }
+            }
+            if(this.halign == 'center') {
+                ctx.textAlign = 'center';
+                for(var i=0; i<strs.length; i++) {
+                    ctx.fillText(strs[i], this.x + this.width/2, y);
+                    y+= h;
+                }
+            }
+            ctx.textAlign = align;
         }
         ctx.font = f;
+        
+        ctx.strokeRect(this.x, this.y, this.width, this.height);
         this.clearDirty();
     };
     
