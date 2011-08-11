@@ -68,7 +68,13 @@ function Text() {
             ctx.fillStyle = this.fill;
         }
         
-        ctx.fillText(this.text,this.x,this.y);
+        var strs = this.text.split('\n');
+        var h = ctx.measureText('m').width;
+        var y = this.y;
+        for(var i=0; i<strs.length; i++) {
+            ctx.fillText(strs[i], this.x, y);
+            y+= h;
+        }
         ctx.font = f;
         this.clearDirty();
     };
