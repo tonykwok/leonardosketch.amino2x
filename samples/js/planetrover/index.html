@@ -49,6 +49,10 @@ function Planet() {
         self.gravityRadius = grad;
         return self;
     };
+    this.getVisualBounds = function() {
+        var r = self.gravityRadius;
+        return new Bounds(self.x-r,self.y-r,r*2,r*2);
+    };
 }
 Planet.extend(Node);
 
@@ -137,6 +141,10 @@ function Player() {
         this.clearDirty();
         
 
+    };
+    this.getVisualBounds = function() {
+        var r = self.radius;
+        return new Bounds(self.x-r,self.y-r,r*2,r*2);
     };
 }
 
@@ -262,7 +270,6 @@ function setupSpaceLevel() {
     
     //player and initial platforms.
     player.setX(-100).setY(200);
-        
     ground.add(cg2(-300,500,400,600));
     ground.add(cg2(0,400,400,600));
     ground.add(cg2(450,300,100,600));
