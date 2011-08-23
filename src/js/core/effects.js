@@ -235,14 +235,24 @@ function BackgroundSaturationNode(n) {
             var start = new Date().getTime();
             while(new Date().getTime()-start < 1000/40) {
                 var workSize = 32;
-                var tile = new WorkTile(this.workX,this.workY,workSize,workSize, this.buf1, this.buf2);
+                
+                var workW = workSize;
+                if(this.workX+workW > this.buf1.getWidth()) {
+                    workW = this.buf1.getWidth()-this.workX;
+                }
+                var workH = workSize;
+                if(this.workY+workH > this.buf1.getHeight()) {
+                    workH = this.buf1.getHeight()-this.workY;
+                }
+                var tile = new WorkTile(this.workX,this.workY,workW,workH, this.buf1, this.buf2);
                 this.applyEffect(tile);
-                this.workX+=workSize;
                 if(this.workX+workSize > this.buf1.getWidth()) {
                     this.workX = 0;
                     this.workY+=workSize;
+                } else {
+                    this.workX+=workSize;
                 }
-                if(this.workY+workSize > this.buf1.getHeight()) {
+                if(this.workY > this.buf1.getHeight()) {
                     this.inProgress = false;
                     var endTime = new Date().getTime();
                     if(bounds.getWidth() > 100) {
