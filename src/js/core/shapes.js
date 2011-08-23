@@ -101,7 +101,7 @@ function Text() {
                 y+= h;
             }
         } else {
-            mw = width;
+            mw = this.width;
             var align = ctx.textAlign;
             if(this.halign == 'left') {
                 ctx.textAlign = 'left';
