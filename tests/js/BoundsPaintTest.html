@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <script src="../../dist/amino.js"></script>
+    </head>
+<body>
+<canvas id="canvas" width="600" height="400"></canvas>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    runner.setBackground("#eeeeee");
+    
+    var tests = [];
+    /*
+    tests.push(new Circle().set(-100,20,20).setFill("red"));
+    tests.push(new Circle().set(100,20,20).setFill("red"));
+    tests.push(new Circle().set(500,20,20).setFill("red"));
+    tests.push(new Circle().set(800,20,20).setFill("red"));
+    tests.push(new Circle().set(100,-200,20).setFill("red"));
+    tests.push(new Circle().set(100,800,20).setFill("red"));
+    
+    */
+    var c = new Circle().set(50,50,50).setFill("red");
+    tests.push(c);
+    runner.addAnim(new PropAnim(c,"x",-400,800,2).setLoop(true));
+    
+    var g1 = new Group();
+    g1.add(new Circle().set(50,50,20).setFill("red"));
+    g1.add(new Circle().set(150,50,20).setFill("red"));
+    tests.push(g1);
+    
+    var g2 = new Group();
+    g2.add(new Circle().set(50,50,20).setFill("yellow"));
+    g2.add(new Circle().set(150,50,20).setFill("yellow"));
+    g2.setX(-100);
+    tests.push(g2);
+    
+    var g3 = new Group();
+    g3.add(new Circle().set(50,50,20).setFill("green"));
+    g3.add(new Circle().set(150,50,20).setFill("green"));
+    g3.setX(-500);
+    tests.push(g3);
+    
+    var g4 = new Group();
+    g4.add(new Circle().set(50,50,20).setFill("green"));
+    g4.add(new Circle().set(150,50,20).setFill("green"));
+    g4.setX(-500);
+    runner.addAnim(new PropAnim(g4,"x",-400,800,4).setLoop(true));
+    tests.push(g4);
+    
+    var current = 0;
+    runner.setRoot(tests[current]);
+        
+    runner.listen("MOUSE_PRESS", null,function() {
+        current = (current+1) % tests.length;
+        runner.setRoot(tests[current]);
+    });
+    
+    runner.start();
+</script>
+
+</body>
+</html>
