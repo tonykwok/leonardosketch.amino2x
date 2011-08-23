@@ -597,8 +597,8 @@ function Group() {
                 if(!child.getVisualBounds) {
                     if(child instanceof Group) {
                     } else {
-                        console.log("warning. no visual bounds: ");
-                        console.log(self.children[i]);
+                        //console.log("warning. no visual bounds: ");
+                        //console.log(self.children[i]);
                     }
                     continue;
                 }
@@ -606,8 +606,8 @@ function Group() {
                 if(b == null) {
                     if(child instanceof Group) {
                     } else {
-                        console.log("warning, vis bounds is null");
-                        console.log(self.children[i]);
+                        //console.log("warning, vis bounds is null");
+                        //console.log(self.children[i]);
                     }
                     continue;
                 }
