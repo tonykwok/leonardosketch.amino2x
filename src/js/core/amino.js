@@ -178,6 +178,7 @@ function Bounds(x,y,w,h) {
     this.y = y;
     this.w = w;
     this.h = h;
+    var self = this;
     
     
     //@property x Return the x coordinate of the bounds.
@@ -188,6 +189,63 @@ function Bounds(x,y,w,h) {
     this.getWidth = function() { return this.w; }
     //@property height Return the height of the bounds.
     this.getHeight = function() { return this.h; }
+    
+    this.intersects = function(b) {
+        
+        var left = self.x;
+        var top = self.y;
+        var right = self.x + self.w;
+        var bottom = self.y + self.h;
+        
+        var bleft = b.x;
+        var btop = b.y;
+        var bright = b.x + b.w;
+        var bbottom = b.y + b.h;
+        
+        if(bleft < left && bright > right) return true;
+        
+        //too far left
+        if(bright < left) return false;
+        
+        //too far right
+        if(bleft > right) return false;
+        
+        //too high
+        if(bbottom < top) return false;
+        
+        //too low
+        if(btop > bottom) return false;
+        
+        
+        
+        return true;
+    }
+    
+    this.union = function(b) {
+        var al = self.x;
+        var ar = self.x+self.w;
+        var at = self.y;
+        var ab = self.y+self.h;
+        var bl = b.x;
+        var br = b.x+b.w;
+        var bt = b.y;
+        var bb = b.y+b.h;
+        
+        var l = Math.min(al,bl);
+        var r = Math.max(ar,br);
+        var t = Math.min(at,bt);
+        var b = Math.max(ab,bb);
+        return new Bounds(l,t,r-l,b-t);
+    }
+     
+    
+    this.translate = function(x,y) {
+        return new Bounds(self.x+x,self.y+y,self.w,self.h);
+    }
+    
+    this.toString = function() {
+        return "Bounds: " + x + ","+y+" "+w+"x"+h;
+    }
     
     return true;
 };
@@ -409,6 +467,14 @@ function Transform(n) {
         ctx.restore();
         this.clearDirty();
     };
+    
+    this.getVisualBounds = function() {
+        if(!this.node.getVisualBounds) return null;
+        var b = this.node.getVisualBounds();
+        if(b == null) return null;
+        return this.node.getVisualBounds().translate(this.getTranslateX(),this.getTranslateY());
+    }
+    
     return true;
 }
 Transform.extend(Node);
@@ -432,6 +498,7 @@ function Group() {
     this.x = 0;
     this.setX = function(x) {
         self.x = x;
+        self.setDirty();
         return self;
     };
     this.getX = function() {
@@ -442,6 +509,7 @@ function Group() {
     this.y = 0;
     this.setY = function(y) {
         self.y = y;
+        self.setDirty();
         return self;
     };
     this.getY = function() {
@@ -472,6 +540,7 @@ function Group() {
             n.setParent(null);
         }
         self.setDirty();
+        self._bounds = null;
         return self;
     };
     
@@ -514,6 +583,53 @@ function Group() {
     //@method Returns the child node at index `n`.
     this.getChild = function(n) {
         return self.children[n];
+    };
+    
+    this._bounds = null;
+    this.getVisualBounds = function() {
+        if(self.children.length <= 0) {
+            return null;
+        }
+        
+        if(self._bounds == null) {
+            for(var i=0; i<self.children.length; i++) {
+                var child = self.children[i];
+                if(!child.getVisualBounds) {
+                    if(child instanceof Group) {
+                    } else {
+                        console.log("warning. no visual bounds: ");
+                        console.log(self.children[i]);
+                    }
+                    continue;
+                }
+                var b = child.getVisualBounds();
+                if(b == null) {
+                    if(child instanceof Group) {
+                    } else {
+                        console.log("warning, vis bounds is null");
+                        console.log(self.children[i]);
+                    }
+                    continue;
+                }
+                if(self._bounds == null) {
+                    self._bounds = b;
+                } else {
+                    self._bounds = self._bounds.union(b);
+                }
+            }
+            if(self._bounds != null) {
+                self._bounds = self._bounds.translate(self.x,self.y);
+            }
+        }
+        return self._bounds;
+    };
+    
+    this.setDirty = function() {
+        self.dirty = true;
+        self._bounds = null;
+        if(self.getParent()) {
+            self.getParent().setDirty();
+        }
     };
     return true;
 };
@@ -654,18 +770,78 @@ function PatternFill(url, repeat) {
 
 
 /*
-basic painting routine. just recursively draw
+ basic painting routine. just recursively draw
 */
 function SimplePaintStrategy() {
-    this.paintScene = function(ctx,root) {
+    this.paintScene = function(ctx,runner) {
+        var root = runner.root;
         if(root == null) return;
         root.draw(ctx);
     };
 }
 
+/*
+ bounds painting routine. doesn't draw shapes which are outside the bounds of the viewport
+*/
+function BoundsPaintStrategy() {
+    var self = this;
+    var drawCount = 0;
+    this.paintScene = function(ctx, runner) {
+        self.drawCount = 0;
+        var root = runner.root;
+        var viewport = new Bounds(0,0,runner.canvas.width,runner.canvas.height);
+        self.drawNode(ctx, runner, viewport, root);
+        ADB.debugLine("draw count = " + self.drawCount);
+        //console.log("---");
+    };
+    
+    this.drawNode = function(ctx, runner, viewport, node) {
+        //fast fails
+        if(node == null) return;
+        if(!node.isVisible()) return;
+        //if no bounds then just draw it
+        if(!node.getVisualBounds) {
+            node.draw(ctx);
+            node.clearDirty();
+            self.drawCount++;
+            return;
+        }
+        
+        var bounds = node.getVisualBounds();
+        if(bounds == null) return;
+        if(false) {
+            ctx.strokeStyle = "red";
+            ctx.fillStyle = "red";
+            ctx.strokeRect(bounds.x,bounds.y,bounds.w,bounds.h);
+            ctx.fillText(""+bounds.toString() + "    " + viewport.toString(),bounds.x+500,bounds.y);
+            p("bounds = " + bounds.toString() + " " + viewport.toString() + " " + viewport.intersects(bounds));
+        }
+        //if intersect then draw
+        if(viewport.intersects(bounds)) {
+            if(node instanceof Group) {
+                ctx.save();
+                ctx.translate(node.x,node.y);
+                var v2 = viewport.translate(-node.x,-node.y);
+                indent();
+                for(var i=0; i<node.children.length;i++) {
+                    self.drawNode(ctx,runner,v2,node.children[i]);
+                }
+                outdent();
+                ctx.restore();
+                node.clearDirty();
+                self.drawCount++;
+            } else {
+                node.draw(ctx);
+                self.drawCount++;
+            }
+        }
+        //make the node clean
+        node.clearDirty();
+    }
+}
 
 /*
-advanced painting routine which handles recursion itself and caches nodes into canvas buffers.
+ advanced painting routine which handles recursion itself and caches nodes into canvas buffers.
 */
 function CachingPaintStrategy() {
     var self = this;
@@ -939,7 +1115,7 @@ function PathAnim(n,path,duration) {
         //value = (self.endValue-self.startValue)*tvalue + self.startValue;
         var pt = self.path.pointAtT(tvalue);
         if(self.node.setX){
-            console.log("setting x");
+            //console.log("setting x");
             self.node.setX(pt[0]);
             self.node.setY(pt[1]);
         }
@@ -988,13 +1164,17 @@ function Runner() {
     this.DEBUG = true;
     
     //this.paintStrategy = new SimplePaintStrategy();
-    this.paintStrategy = new CachingPaintStrategy();
+    //this.paintStrategy = new CachingPaintStrategy();
+    this.paintStrategy = new BoundsPaintStrategy();
     
     var self = this;
 
     //@property root  The root node of the scene.
     this.setRoot = function(r) {
         self.root = r;
+        if(self.root) {
+            self.root.setDirty();
+        }
         return self;
     };
     //@property background The background color of the scene.  May be set to null or "" to not draw a background.
@@ -1201,7 +1381,7 @@ function Runner() {
         
         //draw the scene
         if(self.root) {
-            self.paintStrategy.paintScene(ctx,self.root);
+            self.paintStrategy.paintScene(ctx,self);
         }
     }        
     

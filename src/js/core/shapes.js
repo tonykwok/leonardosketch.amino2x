@@ -73,6 +73,13 @@ function Text() {
     this.halign = 'left';
     this.setHAlign = function(halign) { this.halign = halign; this.setDirty(); return this; };    
     
+    this._bounds = new Bounds(0,0,50,20);
+    
+    var self = this;
+    this.getVisualBounds = function() {
+        return self._bounds;
+    };
+    
     this.draw = function(ctx) {
         if(!this.isVisible()) return;
         var f = ctx.font;
@@ -85,13 +92,16 @@ function Text() {
         
         var strs = this.text.split('\n');
         var h = ctx.measureText('m').width;
+        var mw = 0;
         var y = this.y;
         if(this.autoSize) {
             for(var i=0; i<strs.length; i++) {
                 ctx.fillText(strs[i], this.x, y);
+                mw = Math.max(mw,ctx.measureText(strs[i]));
                 y+= h;
             }
         } else {
+            mw = width;
             var align = ctx.textAlign;
             if(this.halign == 'left') {
                 ctx.textAlign = 'left';
@@ -118,6 +128,7 @@ function Text() {
         }
         ctx.font = f;
         
+        this._bounds = new Bounds(this.x,this.y,mw,y);
         //ctx.strokeRect(this.x, this.y, this.width, this.height);
         this.clearDirty();
     };
@@ -539,14 +550,50 @@ function PathNode() {
     Shape.call(this);
     //@property path  the Path to draw
     this.path = null;
+    this._bounds = null;
+    
     this.setPath = function(path) {
         this.path = path;
+        this._bounds = null;
         this.setDirty();
         return this;
     };
     this.getPath = function() {
         return this.path;
     };
+    this.getVisualBounds = function() {
+        if(this._bounds == null) {
+            var l = 10000;
+            var r = -10000;
+            var t = 10000;
+            var b = -10000;
+            for(var i=0; i<this.path.segments.length; i++) {
+                var s = this.path.segments[i];
+                if(s.kind == SEGMENT_MOVETO) {
+                    l = Math.min(l,s.x);
+                    t = Math.min(t,s.y);
+                    r = Math.max(r,s.x);
+                    b = Math.max(b,s.y);
+                }
+                    
+                //ctx.moveTo(s.x,s.y);
+                if(s.kind == SEGMENT_LINETO) {
+                    //ctx.lineTo(s.x,s.y);
+                    l = Math.min(l,s.x);
+                    t = Math.min(t,s.y);
+                    r = Math.max(r,s.x);
+                    b = Math.max(b,s.y);                    
+                }
+                //                if(s.kind == SEGMENT_CURVETO)
+                //                    ctx.bezierCurveTo(s.cx1,s.cy1,s.cx2,s.cy2,s.x,s.y);
+                //                if(s.kind == SEGMENT_CLOSETO)
+                //                    ctx.closePath();
+            }
+            this._bounds = new Bounds(l,t,r-l,b-t);
+            //console.log("calced path bounds = " + this._bounds);
+        }
+        return this._bounds;
+    }
     
     this.draw = function(ctx) {
         if(!this.isVisible()) return;
