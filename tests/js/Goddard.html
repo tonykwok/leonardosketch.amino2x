@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>Amino tutorial 07</title>
+        <script src="../../dist/amino.js"></script>
+</head>
+<body>
+<canvas width="400" height="200" id="blender">
+<script>
+ var main = new Runner();
+ main.setCanvas(document.getElementById("blender"));
+ main.setBackground("yellow");
+
+ var scene = new Group();
+ main.setRoot(scene);
+
+ var w = 100;
+ var black = new Rect();
+ black.set(0, 0, w,w);
+ black.setFill("black");
+ //scene.add(black);
+
+ var red = new Rect();
+ red.set(0, 0, w,w);
+ red.setFill("red");
+ scene.add(red);
+
+ var saturate = new BackgroundSaturationNode(black);
+ scene.add(saturate);
+
+ main.DEBUG = false;
+ main.start();
+</script>
+</canvas>
+</body>
+</html>
+
