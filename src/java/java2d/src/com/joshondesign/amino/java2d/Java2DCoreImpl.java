@@ -80,4 +80,9 @@ public class Java2DCoreImpl extends CoreImpl {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public AminoImage loadImage(File file) throws IOException {
+        return new Java2DImage(file);
+    }
+
 }

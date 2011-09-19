@@ -7,5 +7,8 @@ package com.joshondesign.amino.core;
  * Time: 2:04 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AminoImage {
+public abstract class AminoImage {
+    public abstract int getWidth();
+
+    public abstract int getHeight();
 }

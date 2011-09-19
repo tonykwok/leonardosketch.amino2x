@@ -21,4 +21,5 @@ public abstract class CoreImpl {
     public abstract AminoFont loadFont(File resource) throws IOException, FontFormatException;
 
     public abstract AminoImage loadImage(URL resource);
+    public abstract AminoImage loadImage(File file) throws IOException;
 }

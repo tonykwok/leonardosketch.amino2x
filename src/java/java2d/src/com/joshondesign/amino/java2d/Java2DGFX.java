@@ -49,17 +49,65 @@ public class Java2DGFX extends GFX {
 
     @Override
     public void drawImage(AminoImage image, int x, int y) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        g.drawImage(((Java2DImage)image)._image,x,y,null);
     }
 
     @Override
     public void drawImage(AminoImage image, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        g.drawImage(((Java2DImage)image)._image,
+                dx,dy,dx+dw,dy+dh, //note that src & dest are swapped from the amino form
+                sx,sy,sx+sw,sy+sh,
+                null);
     }
 
     @Override
     public void drawImage9Slice(AminoImage image, int left, int right, int top, int bottom, int x, int y, int w, int h) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //upper left
+        drawImage(image,
+                0,0,left,top,
+                x,y,left,top);
+        //upper center
+        drawImage(image,
+                left,0,image.getWidth()-left-right,top,
+                x+left,y,w-left-right,top
+                );
+        //upper right
+        drawImage(image,
+                image.getWidth()-right,0,left,top,
+                x+w-right,y,right,top
+                );
+
+
+        //center left
+        drawImage(image,
+                0,top,left,image.getHeight()-top-bottom,
+                x,y+top,left,h-top-bottom);
+        //upper center
+        drawImage(image,
+                left,top,image.getWidth()-left-right,image.getHeight()-top-bottom,
+                x+left,y+top,w-left-right,h-top-bottom
+                );
+        //upper right
+        drawImage(image,
+                image.getWidth()-right,top,left,image.getHeight()-top-bottom,
+                x+w-right,y+top,right,h-top-bottom
+                );
+
+        //bottom left
+        drawImage(image,
+                0,image.getHeight()-bottom,left,bottom,
+                x,y+h-bottom,left,bottom
+                );
+        //bottom center
+        drawImage(image,
+                left,image.getHeight()-bottom,image.getWidth()-left-right,bottom,
+                x+left,y+h-bottom,w-left-right,bottom
+                );
+        //bottom right
+        drawImage(image,
+                left,image.getHeight()-bottom,image.getWidth()-left-right,bottom,
+                x+w-right,y+h-bottom,right,bottom
+                );
     }
 
     @Override

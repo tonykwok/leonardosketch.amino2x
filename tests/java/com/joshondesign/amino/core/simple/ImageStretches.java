@@ -18,15 +18,14 @@ public class ImageStretches implements Core.InitCallback {
         Core.init(new ImageStretches());
     }
 
-    public void call(Core core) throws AminoException {
+    public void call(Core core) throws Exception {
         Window window = core.createResizableWindow(800, 600);
-        window.setBackgroundFill(Color.BLACK);
-        final AminoImage image = core.loadImage(TextSamples.class.getResource("/resources/andromeda.jpg"));
+        window.setBackgroundFill(Color.WHITE);
+        final AminoImage image = core.loadImage(new File("tests/java/com/joshondesign/amino/core/resources/andromeda.jpg"));
 
         window.setRoot(new Node() {
             @Override
             public void draw(Graphics2D gfx) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             @Override
@@ -36,12 +35,14 @@ public class ImageStretches implements Core.InitCallback {
                 //draw image translated
                 gfx.drawImage(image,500,10);
                 //draw internal slice of image
-                gfx.drawImage(image, 100,100,50,50,  0,400,200,200);
+                gfx.drawImage(image,
+                        100,100,50,100,
+                        50,300,200,200);
 
                 //draw image as 9slice
                 gfx.drawImage9Slice(image,
                         20, 20, 20, 20,
-                        0, 0, 700, 500);
+                        300, 300, 400, 150);
 
 
 
