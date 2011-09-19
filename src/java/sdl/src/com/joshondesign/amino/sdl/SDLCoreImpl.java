@@ -4,6 +4,8 @@ import com.joshondesign.amino.core.*;
 import com.joshondesign.amino.sdl.gfx.Util;
 import com.joshondesign.sdljava.*;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class SDLCoreImpl extends CoreImpl {
                 try {
                     Util.standard_init();
                     initCallback.call(core);
+                    core.start();
                 } catch (Throwable thr) {
                     thr.printStackTrace();
                 }
@@ -93,6 +96,20 @@ public class SDLCoreImpl extends CoreImpl {
         }
         SDL.SDL_Quit();
         System.exit(0);
+    }
+
+    @Override
+    public AminoFont loadFont(URL resource) {
+        return new SDLFont(resource);
+    }
+
+    public AminoFont loadFont(File file) {
+        return new SDLFont(file);
+    }
+
+    @Override
+    public AminoImage loadImage(URL resource) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private void draw(Core core) {

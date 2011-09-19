@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -271,6 +274,18 @@ public class Core {
         return _impl.createResizableWindow(_core, width,height);
     }
 
+    public AminoFont loadFont(URL resource) throws Exception {
+        return _impl.loadFont(resource);
+    }
+
+    public AminoFont loadFont(File resource) throws Exception {
+        return _impl.loadFont(resource);
+    }
+
+    public AminoImage loadImage(URL resource) {
+        return _impl.loadImage(resource);
+    }
+
     private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;
@@ -426,6 +441,6 @@ public class Core {
     }
 
     public interface InitCallback {
-        public void call(Core core) throws AminoException;
+        public void call(Core core) throws Exception;
     }
 }
