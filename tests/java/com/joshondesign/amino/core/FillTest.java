@@ -1,8 +1,11 @@
 package com.joshondesign.amino.core;
 
+import com.joshondesign.amino.sdl.SDLCore;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,8 +14,13 @@ import java.awt.image.BufferedImage;
  * Time: 3:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class FillTest {
+public class FillTest implements Core.InitCallback {
     public static void main(String ... args) throws Exception {
+        Core.setImpl(SDLCore.getImpl());
+        Core.init(new FillTest());
+    }
+
+    public void call(Core core) throws AminoException {
         final Core r = new Core();
         r.setSize(600,400);
         r.setBackground(Color.WHITE);
@@ -36,7 +44,12 @@ public class FillTest {
         //texture fill
         Shape textRect = new Rect().set(0, 0, 100, 40).setFill(Color.YELLOW);
 
-        BufferedImage img = ImageIO.read(FillTest.class.getResource("checkerboard.png"));
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(FillTest.class.getResource("checkerboard.png"));
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         textRect.setFill(new TexturePaint(img,new Rectangle(0,0,img.getWidth(),img.getHeight())));
 
         r.setRoot(new Group()

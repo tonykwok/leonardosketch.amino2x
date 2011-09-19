@@ -31,6 +31,12 @@ public class Core {
     private long[] tickList = new long[tickSamples];
     private List<Anim> anims = new ArrayList<Anim>();
     private boolean smoothStrokes = false;
+    private static CoreImpl _impl;
+    private static Core _core;
+
+    public static void setImpl(CoreImpl impl) {
+        _impl = impl;
+    }
 
     //@method Set the size of the window. This will be replaced once we have a proper *Frame* class.
     public void setSize(int width, int height) {
@@ -46,11 +52,13 @@ public class Core {
 
     //@method Start the rendering. If this isn't called then you won't see anything on the screen.
     public void start() {
+        _impl.startTimerLoop(this);
+        /*
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 realStart();
             }
-        });
+        });*/
     }
 
     private void realStart() {
@@ -214,6 +222,55 @@ public class Core {
         return this;
     }
 
+    public static void init(InitCallback initCallback) {
+        _core = new Core();
+        try {
+            if(_impl == null) {
+                autodetectImpl();
+            }
+
+            _impl.init(_core,initCallback);
+        } catch (AminoException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InstantiationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    private static void autodetectImpl() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+
+        if("sdl".equals(System.getProperty("com.joshondesign.amino.impl"))) {
+            u.p("need to do SDL");
+            Class clazz = Class.forName("com.joshondesign.amino.sdl.SDLCore");
+            CoreImplProvider provider = (CoreImplProvider) clazz.newInstance();
+            setImpl(provider.createImpl());
+            return;
+        }
+
+        if("java2d".equals(System.getProperty("com.joshondesign.amino.impl"))) {
+            u.p("need to do java2d");
+            Class clazz = Class.forName("com.joshondesign.amino.java2d.Java2DCore");
+            CoreImplProvider provider = (CoreImplProvider) clazz.newInstance();
+            setImpl(provider.createImpl());
+            return;
+        }
+
+        u.p("no Core impl specified. Will try falling back to Java2D");
+        Class clazz = Class.forName("com.joshondesign.amino.java2d.Java2DCore");
+        CoreImplProvider provider = (CoreImplProvider) clazz.newInstance();
+        setImpl(provider.createImpl());
+
+
+    }
+
+    public Window createResizableWindow(int width, int height) throws AminoException {
+        return _impl.createResizableWindow(_core, width,height);
+    }
+
     private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;
@@ -366,5 +423,9 @@ public class Core {
             evt.key = keyEvent.getKeyCode();
             fireEvent("KEY_RELEASED", null, evt);
         }
+    }
+
+    public interface InitCallback {
+        public void call(Core core) throws AminoException;
     }
 }
