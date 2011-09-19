@@ -286,6 +286,10 @@ public class Core {
         return _impl.loadImage(resource);
     }
 
+    public AminoImage loadImage(File file) throws IOException {
+        return _impl.loadImage(file);
+    }
+
     private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;

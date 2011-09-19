@@ -5,6 +5,7 @@ import com.joshondesign.amino.sdl.gfx.Util;
 import com.joshondesign.sdljava.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +111,11 @@ public class SDLCoreImpl extends CoreImpl {
     @Override
     public AminoImage loadImage(URL resource) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public AminoImage loadImage(File file) throws IOException {
+        return new SDLImage(file);
     }
 
     private void draw(Core core) {

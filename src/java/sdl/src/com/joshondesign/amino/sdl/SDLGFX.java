@@ -64,19 +64,97 @@ public class SDLGFX extends GFX {
         }
     }
 
+    private void drawImage(SDL_Surface image, int x, int y) {
+        imgsrc_rect.setX((short) 0);
+        imgsrc_rect.setY((short) 0);
+        imgsrc_rect.setW(image.getW());
+        imgsrc_rect.setH(image.getH());
+        imgdst_rect.setX((short) (x+this.translateX));
+        imgdst_rect.setY((short) (y+this.translateY));
+        imgdst_rect.setW(0);
+        imgdst_rect.setH(0);
+        SDL.SDL_UpperBlit(image,imgsrc_rect,surface,imgdst_rect);
+    }
+
     @Override
     public void drawImage(AminoImage image, int x, int y) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        drawImage(((SDLImage)image)._image,x,y);
     }
 
     @Override
     public void drawImage(AminoImage image, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh) {
+        imgsrc_rect.setX((short) sx);
+        imgsrc_rect.setY((short) sy);
+        imgsrc_rect.setW(sw);
+        imgsrc_rect.setH(sh);
+        imgdst_rect.setX((short) (dx+this.translateX));
+        imgdst_rect.setY((short) (dy+this.translateY));
+        imgdst_rect.setW(dw);
+        imgdst_rect.setH(dh);
+
+        SDL.SDL_UpperBlit(((SDLImage)image)._image, imgsrc_rect, surface, imgdst_rect);
     }
 
+
     @Override
-    public void drawImage9Slice(AminoImage image, int left, int right, int top, int bottom, int x, int y, int w, int h) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void drawImage9Slice(AminoImage image
+            , int left, int right
+            , int top, int bottom
+            , int destX, int destY
+            , int destW, int destH) {
+
+
+        //draw parts of image
+        int yh = image.getHeight()-top-bottom;
+
+        drawRow(image, destX, destY, destW,
+                left, right, 0, top, 0);
+
+        //middle
+        //Util.p("top = " + top + " desth = " + destH + " bottom = " + bottom + " yh = " + yh);
+        for (int j = top; j <= destH-bottom-yh; j += yh) {
+            //Util.p("drawing once");
+            drawRow(image, destX, destY, destW,
+                left, right, top, yh, j);
+        }
+
+        //center end
+        int ygap = (destH-top-bottom) % yh;
+        drawRow(image, destX, destY, destW,
+                left, right, top, ygap, destH-bottom-ygap
+                );
+
+        drawRow(image, destX, destY, destW,
+                left, right, image.getHeight()-bottom, bottom, destH-bottom
+        );
     }
+
+    private void drawRow(AminoImage image, int destX, int destY, int destW,
+                         int left, int right, int sy, int sh, int dy) {
+        int xw = image.getWidth()-left-right;
+        // left
+        drawImage(image,
+                0, sy, left, sh,
+                destX+0, destY+dy, left, sh);
+        // center
+
+        for (int i = left; i < destW-right-xw; i += xw) {
+            drawImage(image,
+                    left, sy, image.getWidth()-right-left, sh,
+                    destX+i, destY+dy, xw, sh);
+        }
+        //center end
+        int xgap = (destW-left-right) % xw;
+        drawImage(image,
+                left, sy, xgap, sh,
+                destX+destW-right-xgap, destY+dy, xgap, sh
+            );
+        // right
+        drawImage(image,
+                image.getWidth()-right, sy, right, sh,
+                destX+destW-right, destY+dy, right, sh);
+    }
+
 
     @Override
     public void fillText(AminoFont aminoFont, String s, int dx, int dy) {
