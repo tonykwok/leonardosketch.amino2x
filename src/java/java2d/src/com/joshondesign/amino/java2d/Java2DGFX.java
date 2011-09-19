@@ -1,6 +1,9 @@
 package com.joshondesign.amino.java2d;
 
+import com.joshondesign.amino.core.AminoFont;
+import com.joshondesign.amino.core.AminoImage;
 import com.joshondesign.amino.core.GFX;
+import com.joshondesign.amino.core.u;
 
 import java.awt.*;
 
@@ -42,6 +45,27 @@ public class Java2DGFX extends GFX {
     @Override
     public void drawRect(int x, int y, int w, int h) {
         g.drawRect(x,y,w,h);
+    }
+
+    @Override
+    public void drawImage(AminoImage image, int x, int y) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void drawImage(AminoImage image, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void drawImage9Slice(AminoImage image, int left, int right, int top, int bottom, int x, int y, int w, int h) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void fillText(AminoFont font, String s, int x, int y) {
+        g.setFont(((Java2DFont)font)._font);
+        g.drawString(s,x,y);
     }
 
     @Override

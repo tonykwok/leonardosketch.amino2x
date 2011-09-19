@@ -78,5 +78,6 @@ public class FilledShapes implements Core.InitCallback {
         //gfx.fillRoundRect(  0,  200,    200,    40,     10);
         //gfx.drawEllipse(    0,  250,    200,    40);
         //gfx.fillEllipse(    0,  300,    200,    40);
+        //gfx.fillText("Some FILLED text!",0,400);
     }
 }

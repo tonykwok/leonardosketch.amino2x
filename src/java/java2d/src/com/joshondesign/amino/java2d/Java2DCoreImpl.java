@@ -5,8 +5,12 @@ import com.joshondesign.amino.core.Window;
 import com.joshondesign.amino.java2d.Java2DWindow;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +30,8 @@ public class Java2DCoreImpl extends CoreImpl {
             public void run() {
                 try {
                     initCallback.call(core);
-                } catch (AminoException e) {
+                    core.start();
+                } catch (Exception e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
@@ -58,6 +63,21 @@ public class Java2DCoreImpl extends CoreImpl {
         }).start();
 
 
+    }
+
+    @Override
+    public AminoFont loadFont(URL url) throws IOException, FontFormatException {
+        return new Java2DFont(url);
+    }
+
+    @Override
+    public AminoFont loadFont(File file) throws IOException, FontFormatException {
+        return new Java2DFont(file);
+    }
+
+    @Override
+    public AminoImage loadImage(URL resource) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 }

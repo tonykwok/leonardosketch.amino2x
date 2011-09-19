@@ -1,11 +1,10 @@
 package com.joshondesign.amino.sdl;
 
+import com.joshondesign.amino.core.AminoFont;
+import com.joshondesign.amino.core.AminoImage;
 import com.joshondesign.amino.core.Bounds;
 import com.joshondesign.amino.core.GFX;
-import com.joshondesign.sdljava.SDL;
-import com.joshondesign.sdljava.SDL_PixelFormat;
-import com.joshondesign.sdljava.SDL_Rect;
-import com.joshondesign.sdljava.SDL_Surface;
+import com.joshondesign.sdljava.*;
 
 import java.awt.*;
 
@@ -62,6 +61,67 @@ public class SDLGFX extends GFX {
         for (int j=0; j<h;j++) {
             setPixel(x,y+j);
             setPixel(x+w,y+j);
+        }
+    }
+
+    @Override
+    public void drawImage(AminoImage image, int x, int y) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void drawImage(AminoImage image, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh) {
+    }
+
+    @Override
+    public void drawImage9Slice(AminoImage image, int left, int right, int top, int bottom, int x, int y, int w, int h) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void fillText(AminoFont aminoFont, String s, int dx, int dy) {
+        SDLFont font = (SDLFont) aminoFont;
+        SDL_Color fg = new SDL_Color();
+        fg.setR((short) currentPaint.getRed());
+        fg.setG((short) currentPaint.getGreen());
+        fg.setB((short) currentPaint.getBlue());
+        fg.setUnused((short) 0);
+
+        SDL_Color bg = new SDL_Color();
+        bg.setR((short) 0xFF);
+        bg.setG((short) 0xFF);
+        bg.setB((short) 0xFF);
+        bg.setUnused((short) 0xFF);
+
+        //SDL.TTF_SetFontHinting(font._sdlfont, SDL.TTF_HINTING_NORMAL);
+
+        int x = 0;
+        int[] minx = {0};
+        int[] maxx = {0};
+        int[] miny = {0};
+        int[] maxy = {0};
+        int[] advance = {0};
+        for (int i = 0; i < s.length(); i++) {
+            //SDL_Surface glyph_surface = SDL.TTF_RenderGlyph_Shaded(font._sdlfont, s.charAt(i), fg, bg);
+            SDL_Surface glyph_surface = SDL.TTF_RenderGlyph_Blended(font._font, s.charAt(i), fg);
+            int ret = SDL.TTF_GlyphMetrics(font._font, s.charAt(i)
+                    , minx
+                    , maxx
+                    , miny
+                    , maxy
+                    , advance
+            );
+            fontsrc_rect.setX((short) 0);
+            fontsrc_rect.setY((short) 0);
+            fontsrc_rect.setW(glyph_surface.getW());
+            fontsrc_rect.setH(glyph_surface.getH());
+
+            fontdst_rect.setX((short) (dx + x + translateX));
+            fontdst_rect.setY((short) (dy - maxy[0] + translateY));
+            fontdst_rect.setW(0);
+            fontdst_rect.setH(0);
+            SDL.SDL_UpperBlit(glyph_surface, fontsrc_rect, surface, fontdst_rect);
+            x += advance[0];
         }
     }
 
