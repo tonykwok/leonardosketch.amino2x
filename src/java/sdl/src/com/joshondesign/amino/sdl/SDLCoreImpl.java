@@ -22,9 +22,12 @@ public class SDLCoreImpl extends CoreImpl {
     private boolean shouldStop;
     private int targetFPS = 60;
     private List<SDLWindow> windows = new ArrayList<SDLWindow>();
+    private boolean mouseDown;
+    private Core core;
 
     @Override
     public void init(final Core core, final Core.InitCallback initCallback) {
+        this.core = core;
         System.out.println("doing init");
         SDLUtil.init(new SDLUtil.InitCallback() {
             public void callback() throws Exception {
@@ -60,7 +63,6 @@ public class SDLCoreImpl extends CoreImpl {
                 int ret = SDL.SDL_PollEvent(event);
                 if(ret == 1) {
                     processEvents(event);
-                    //Util.dump(event);
                     if(event.getType() == SDL_EventType.SDL_ACTIVEEVENT) {
 
                     }
@@ -168,7 +170,123 @@ public class SDLCoreImpl extends CoreImpl {
     }
 
     private void processEvents(SDL_Event event) {
-        //To change body of created methods use File | Settings | File Templates.
+        //Util.dump(event);
+        if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONDOWN) {
+            mouseDown = true;
+            MEvent e = new MEvent();
+            e.node = null;
+            e.x = event.getButton().getX();
+            e.y = event.getButton().getY();
+            core.fireEvent(Core.Events.MOUSE_PRESS.toString(), null, e);
+        }
+        if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONUP) {
+            mouseDown = false;
+            MEvent e = new MEvent();
+            e.node = null;
+            e.x = event.getButton().getX();
+            e.y = event.getButton().getY();
+            core.fireEvent(Core.Events.MOUSE_RELEASE.toString(), null, e);
+        }
+        if(event.getType() == SDL_EventType.SDL_MOUSEMOTION && mouseDown) {
+            MEvent e = new MEvent();
+            e.node = null;
+            e.x = event.getMotion().getX();
+            e.y = event.getMotion().getY();
+            core.fireEvent(Core.Events.MOUSE_DRAG.toString(), null, e);
+        }
+        /*
+        if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONDOWN) {
+            mouseDown = true;
+            for(Trigger.TriggerRule rule : triggers) {
+                if(rule.matches(event)) {
+                    rule.call(event);
+                }
+            }
+        }
+        if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONUP) {
+            mouseDown = false;
+            for(Trigger.TriggerRule rule : triggers) {
+                if(rule.matches(event)) {
+                    rule.call(event);
+                }
+            }
+        }
+        if(event.getType() == SDL_EventType.SDL_MOUSEMOTION && mouseDown) {
+            MouseEvent evt = new MouseEvent(event.getMotion().getX(),event.getMotion().getY());
+            for(Callback<MouseEvent> callback : mouseDragListeners) {
+                callback.call(evt);
+            }
+            for(Trigger.TriggerRule rule : triggers) {
+                if(rule.matches(event)) {
+                    rule.call(event);
+                }
+            }
+        }
+        if(event.getType() == SDL_EventType.SDL_KEYDOWN && !keydown) {
+            keydown = true;
+            for(Trigger.TriggerRule rule : triggers) {
+                if(rule.matches(event)) {
+                    rule.call(event);
+                }
+            }
+        }
+        if(event.getType() == SDL_EventType.SDL_KEYUP) {
+            keydown = false;
+        }
+
+        //gesture stuff
+
+        if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONDOWN) {
+            RawEvents.RawMouseEvent e = new RawEvents.RawMouseEvent();
+            e.x = event.getButton().getX();
+            e.y = event.getButton().getY();
+            e.pressed = true;
+            Gestures.publish(e);
+        }
+
+        if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONUP) {
+            RawEvents.RawMouseEvent e = new RawEvents.RawMouseEvent();
+            e.x = event.getButton().getX();
+            e.y = event.getButton().getY();
+            e.released = true;
+            Gestures.publish(e);
+        }
+
+        if(event.getType() == SDL_EventType.SDL_KEYDOWN) {
+            RawEvents.RawKeyEvent e = new RawEvents.RawKeyEvent();
+            int sym = event.getKey().getKeysym().getSym();
+            int mod = event.getKey().getKeysym().getMod();
+            if(!keymap.containsKey(sym)) {
+                Util.warn("keymap doesn't contain the symbol: " + sym + " : " +
+                        SDL.SDL_GetKeyName(sym)
+                );
+                return;
+            }
+            e.keyCode = keymap.get(sym);
+            e.pressed = true;
+            if((mod & SDLMod.KMOD_LSHIFT) > 0) e.shiftPressed = true;
+            if((mod & SDLMod.KMOD_RSHIFT) > 0) e.shiftPressed = true;
+            if((mod & SDLMod.KMOD_LMETA)  > 0) e.commandPressed = true;
+            Gestures.publish(e);
+        }
+
+        if(event.getType() == SDL_EventType.SDL_KEYUP) {
+            RawEvents.RawKeyEvent e = new RawEvents.RawKeyEvent();
+            int sym = event.getKey().getKeysym().getSym();
+            int mod = event.getKey().getKeysym().getMod();
+            if(!keymap.containsKey(sym)) {
+                Util.warn("keymap doesn't contain the symbol: " + sym);
+                return;
+            }
+            e.keyCode = keymap.get(sym);
+            e.released = true;
+            if((mod & SDLMod.KMOD_LSHIFT) > 0) e.shiftPressed = true;
+            if((mod & SDLMod.KMOD_RSHIFT) > 0) e.shiftPressed = true;
+            if((mod & SDLMod.KMOD_LMETA)  > 0) e.commandPressed = true;
+            Gestures.publish(e);
+        }
+
+        */
     }
 
     private void p(String s) {
