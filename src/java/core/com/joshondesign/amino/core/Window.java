@@ -11,7 +11,7 @@ import java.awt.*;
  */
 public class Window {
     protected Node root;
-    protected AminoColor backgroundFill;
+    protected AminoColor backgroundFill = AminoColor.WHITE;
 
     public void setRoot(Node root) {
         this.root = root;

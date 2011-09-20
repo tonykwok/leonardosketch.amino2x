@@ -1,6 +1,9 @@
-package com.joshondesign.amino.core;
+package com.joshondesign.amino.core.input;
+
+import com.joshondesign.amino.core.*;
 
 import java.awt.*;
+import java.awt.Shape;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,16 +12,16 @@ import java.awt.*;
  * Time: 2:52 PM
  * To change this template use File | Settings | File Templates.
  */
-public class DragNodes {
+public class DragNodes implements Core.InitCallback {
     private static Dragger dragger;
 
     public static void main(String ... args) {
-        Core runner = new Core();
-        //runner.setSize(700,400);
-        //runner.setBackground(Color.WHITE);
+        Core.init(new DragNodes());
+    }
+    public void call(Core core) throws Exception {
+        com.joshondesign.amino.core.Window window = core.createResizableWindow(600,400);
 
         Group g = new Group();
-        runner.root = g;
 
         Rect r1 = new Rect().set(200, 10, 100, 100).setCorner(10);
         r1.setFill(AminoColor.fromRGB(0xccddff)).setStrokeWidth(4);
@@ -33,12 +36,10 @@ public class DragNodes {
         g.add(r1).add(r2).add(r3);
 
 
-        dragger = new Dragger(runner);
-
-
-        runner.start();
-
+        dragger = new Dragger(core);
+        window.setRoot(g);
     }
+
 }
 
 
@@ -78,7 +79,7 @@ class Dragger {
     }
 }
 
-class Connector extends Shape {
+class Connector extends Node {
     private Rect r1;
     private Rect r2;
 

@@ -40,7 +40,7 @@ public class Java2DCoreImpl extends CoreImpl {
 
     @Override
     public Window createResizableWindow(Core core, int width, int height) throws AminoException {
-        Java2DWindow w = new Java2DWindow(width, height);
+        Java2DWindow w = new Java2DWindow(core,width, height);
         this.windows.add(w);
         return w;
     }

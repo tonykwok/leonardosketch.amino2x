@@ -9,9 +9,9 @@ was clicked on.
 @category misc
  */
 public class MEvent {
-    double x;
-    double y;
-    Node node;
+    public double x;
+    public double y;
+    public Node node;
 
     //@property x the x coordinate of the mouse event
     public double getX() {
