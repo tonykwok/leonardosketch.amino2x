@@ -14,8 +14,8 @@ public class DragNodes {
 
     public static void main(String ... args) {
         Core runner = new Core();
-        runner.setSize(700,400);
-        runner.setBackground(Color.WHITE);
+        //runner.setSize(700,400);
+        //runner.setBackground(Color.WHITE);
 
         Group g = new Group();
         runner.root = g;

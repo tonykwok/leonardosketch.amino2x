@@ -12,8 +12,8 @@ import java.awt.*;
 public class SimpleAnimTest {
     public static void main(String ... args) throws Exception {
         final Core runner = new Core();
-        runner.setSize(600,400);
-        runner.setBackground(Color.BLACK);
+        //runner.setSize(600,400);
+        //runner.setBackground(Color.BLACK);
 
         Group g = new Group();
         g.add(new Rect().setWidth(100).setHeight(50).setFill(AminoColor.GREEN))

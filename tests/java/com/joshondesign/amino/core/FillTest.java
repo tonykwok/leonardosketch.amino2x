@@ -1,10 +1,6 @@
 package com.joshondesign.amino.core;
 
-import com.joshondesign.amino.sdl.SDLCore;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
@@ -16,14 +12,14 @@ import java.io.IOException;
  */
 public class FillTest implements Core.InitCallback {
     public static void main(String ... args) throws Exception {
-        Core.setImpl(SDLCore.getImpl());
+        //Core.setImpl(SDLCore.getImpl());
         Core.init(new FillTest());
     }
 
     public void call(Core core) throws AminoException, IOException {
-        final Core r = new Core();
-        r.setSize(600,400);
-        r.setBackground(Color.WHITE);
+        Window window = core.createResizableWindow(600, 400);
+        //r.setSize(600,400);
+        //r.setBackground(Color.WHITE);
 
 
         //fills are always in the coordinate system of the child node, excluding internal
@@ -43,9 +39,9 @@ public class FillTest implements Core.InitCallback {
         //texture fill
         Shape textRect = new Rect().set(0, 0, 100, 40).setFill(AminoColor.YELLOW);
 
-        textRect.setFill(r.loadPattern(FillTest.class.getResource("checkerboard.png")));
+        textRect.setFill(core.loadPattern(FillTest.class.getResource("checkerboard.png")));
 
-        r.setRoot(new Group()
+        window.setRoot(new Group()
             //radial gradient
             .add(new Rect().set(0, 0, 100, 40).setFill(grad1))
             .add(new Rect().set(0, 50, 100, 40).setFill(grad1))
@@ -56,7 +52,6 @@ public class FillTest implements Core.InitCallback {
 
             );
 
-        r.setBackground(Color.GREEN);
-        r.start();
+        window.setBackgroundFill(AminoColor.GREEN);
     }
 }
