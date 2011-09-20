@@ -14,26 +14,30 @@ import java.io.File;
  * To change this template use File | Settings | File Templates.
  */
 public class FilledShapes implements Core.InitCallback {
+    private AminoFont font;
+
     public static void main(String ... args) {
         Core.init(new FilledShapes());
     }
 
-    public void call(Core core) throws AminoException {
+    public void call(Core core) throws Exception {
         Window window = core.createResizableWindow(800, 600);
         window.setBackgroundFill(Color.BLACK);
 
-        /*
-        final LinearGradient gradient = new VerticalLinearGradient(0,50)
-                .addColor(0.0,SColor.BLUE)
-                .addColor(0.3,SColor.WHITE)
-                .addColor(0.7, SColor.RED)
-                .addColor(1.0, SColor.WHITE);
+        font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/Junction.ttf"));
 
-        final LinearGradient gradient2 = new HorizontalLinearGradient(0,50)
-                .addColor(0.0,SColor.BLUE)
-                .addColor(0.3,SColor.WHITE)
-                .addColor(0.7,SColor.RED)
-                .addColor(1.0,SColor.WHITE);
+        final LinearGradient gradient = core.createVerticalLinearGradient(0,50)
+                .addColor(0.0,Color.BLUE)
+                .addColor(0.3,Color.WHITE)
+                .addColor(0.7, Color.RED)
+                .addColor(1.0, Color.WHITE);
+
+        final LinearGradient gradient2 = core.createHorizontalLinearGradient(0,50)
+                .addColor(0.0,Color.BLUE)
+                .addColor(0.3,Color.WHITE)
+                .addColor(0.7,Color.RED)
+                .addColor(1.0,Color.WHITE);
+        /*
         final SPattern pattern = new SPattern(new File("src/resources/checkerboard.png"));
         */
         window.setRoot(new Node() {
@@ -48,21 +52,21 @@ public class FilledShapes implements Core.InitCallback {
                 gfx.setPaint(Color.RED);
                 doDrawing(gfx);
 
-                /*
                 gfx.translate(250,0);
                 gfx.setPaint(gradient);
                 doDrawing(gfx);
+
 
                 gfx.setPaint(gradient2);
                 gfx.translate(250, 0);
                 doDrawing(gfx);
 
+                /*
                 gfx.setPaint(pattern);
                 gfx.translate(250,0);
                 doDrawing(gfx);
-
-
                 */
+
                 gfx.translate(-250*0,0);
             }
         });
@@ -74,10 +78,10 @@ public class FilledShapes implements Core.InitCallback {
         gfx.drawLine(       0,  0,      200,    40);
         gfx.drawRect(       0,  50,     200,    40);
         gfx.fillRect(       0,  100,    200,    40);
-        //gfx.drawRoundRect(  0,  150,    200,    40,     10);
-        //gfx.fillRoundRect(  0,  200,    200,    40,     10);
-        //gfx.drawEllipse(    0,  250,    200,    40);
-        //gfx.fillEllipse(    0,  300,    200,    40);
-        //gfx.fillText("Some FILLED text!",0,400);
+        gfx.drawRoundRect(  0,  150,    200,    40,     10);
+        gfx.fillRoundRect(  0,  200,    200,    40,     10);
+        gfx.drawEllipse(    0,  250,    200,    40);
+        gfx.fillEllipse(    0,  300,    200,    40);
+        gfx.fillText(font,"Some FILLED text!",0,400);
     }
 }

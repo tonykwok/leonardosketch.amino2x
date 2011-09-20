@@ -22,4 +22,7 @@ public abstract class CoreImpl {
 
     public abstract AminoImage loadImage(URL resource);
     public abstract AminoImage loadImage(File file) throws IOException;
+
+    public abstract LinearGradient createVerticalLinearGradient(int start, int end);
+    public abstract LinearGradient createHorizontalLinearGradient(int start, int end);
 }
