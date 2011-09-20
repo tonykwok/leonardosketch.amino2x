@@ -96,8 +96,8 @@ public class Java2DCoreImpl extends CoreImpl {
     }
 
     @Override
-    public PatternPaint loadPattern(File file) {
-        return null;
+    public PatternPaint loadPattern(File file) throws IOException {
+        return new Java2DPatternPaint(file);
     }
 
 }

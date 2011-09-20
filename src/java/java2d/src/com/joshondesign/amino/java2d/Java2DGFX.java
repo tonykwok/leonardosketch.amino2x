@@ -34,6 +34,9 @@ public class Java2DGFX extends GFX {
     @Override
     public void setPaint(AminoPaint backgroundFill) {
         this.paint = backgroundFill;
+        if(backgroundFill instanceof Graphics2DPaint) {
+            g.setPaint(((Graphics2DPaint)backgroundFill).getGraphics2DPaint());
+        }
     }
 
     @Override
