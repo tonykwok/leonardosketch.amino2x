@@ -290,6 +290,14 @@ public class Core {
         return _impl.loadImage(file);
     }
 
+    public LinearGradient createVerticalLinearGradient(int start, int end) {
+        return _impl.createVerticalLinearGradient(start, end);
+    }
+
+    public LinearGradient createHorizontalLinearGradient(int start, int end) {
+        return _impl.createHorizontalLinearGradient(start,end);
+    }
+
     private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;

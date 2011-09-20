@@ -1,9 +1,6 @@
 package com.joshondesign.amino.sdl;
 
-import com.joshondesign.amino.core.AminoFont;
-import com.joshondesign.amino.core.AminoImage;
-import com.joshondesign.amino.core.Bounds;
-import com.joshondesign.amino.core.GFX;
+import com.joshondesign.amino.core.*;
 import com.joshondesign.sdljava.*;
 
 import java.awt.*;
@@ -28,6 +25,7 @@ public class SDLGFX extends GFX {
     protected double translateY;
     private Color currentPaint;
     private long current_sdlcolor;
+    private AminoPaint paint;
 
     public SDLGFX(SDL_Surface surface) {
         super();
@@ -42,13 +40,166 @@ public class SDLGFX extends GFX {
     }
 
     public void fillRect(int x, int y, int w, int h) {
-        fillRect_rect.setX((short) (x + this.translateX));
-        fillRect_rect.setY((short) (y + this.translateY));
-        fillRect_rect.setW(w);
-        fillRect_rect.setH(h);
 
-        //long c = SDL.SDL_MapRGB(format, (short) currentColor.r, (short) currentColor.g, (short) currentColor.b);
-        SDL.SDL_FillRect(surface, fillRect_rect, current_sdlcolor);
+        if(paint != null  && paint instanceof SDLSurfacePaint) {
+            SDLSurfacePaint pt = (SDLSurfacePaint) paint;
+            SDL_Surface image = pt.getImage(surface);
+            for (int i = x; i < x + w; i++) {
+                for (int j = y; j < y + h; j++) {
+                    //drawImage(image,i,y);
+                    setPixel(i, j);
+                }
+            }
+        } else {
+            fillRect_rect.setX((short) (x + this.translateX));
+            fillRect_rect.setY((short) (y + this.translateY));
+            fillRect_rect.setW(w);
+            fillRect_rect.setH(h);
+            SDL.SDL_FillRect(surface, fillRect_rect, current_sdlcolor);
+        }
+    }
+
+    @Override
+    public void drawRoundRect(int x1, int y1, int w, int h, int r) {
+        int width = w - r - r;
+        int height = h - r - r;
+        int xm = x1 + r;
+        int ym = y1 + r;
+        int x = -r, y = 0, err = 2 - 2 * r; /* II. Quadrant */
+        do {
+            setPixel(xm - x + width, ym + y + height); /*   I. Quadrant */
+            setPixel(xm - y, ym - x + height); /*  II. Quadrant */
+            setPixel(xm + x, ym - y); /* III. Quadrant */
+            setPixel(xm + y + width, ym + x); /*  IV. Quadrant */
+            r = err;
+            if (r > x) err += ++x * 2 + 1; /* e_xy+e_x > 0 */
+            if (r <= y) err += ++y * 2 + 1; /* e_xy+e_y < 0 */
+        } while (x < 0);
+        drawVLine(x1, y1 + r / 2 + 1, h - r);
+        drawVLine(x1 + w, y1 + r / 2, h - r);
+
+        drawHLine(x1 + r / 2, y1, w - r);
+        drawHLine(x1 + r / 2 + 1, y1 + h, w - r);
+    }
+
+    @Override
+    public void fillRoundRect(int x1, int y1, int w, int h, int r) {
+        int width = w - r - r;
+        int height = h - r - r;
+        int xm = x1 + r;
+        int ym = y1 + r;
+        int x = -r, y = 0, err = 2 - 2 * r; /* II. Quadrant */
+        do {
+            setPixel(xm - x + width, ym + y + height); /*   I. Quadrant */
+            setPixel(xm - y, ym - x + height); /*  II. Quadrant */
+            setPixel(xm + x, ym - y); /* III. Quadrant */
+            setPixel(xm + y + width, ym + x); /*  IV. Quadrant */
+            int x2 = xm-x+width;
+            int w2 = x2-(xm+x);
+            drawHLine(xm+x,ym-y,w2);
+            drawHLine(xm+x,ym+y+height,w2);
+            r = err;
+            if (r > x) err += ++x * 2 + 1; /* e_xy+e_x > 0 */
+            if (r <= y) err += ++y * 2 + 1; /* e_xy+e_y < 0 */
+        } while (x < 0);
+        drawVLine(x1, y1 + r / 2 + 1, h - r);
+        drawVLine(x1 + w, y1 + r / 2, h - r);
+
+        drawHLine(x1 + r / 2, y1, w - r);
+        drawHLine(x1 + r / 2 + 1, y1 + h, w - r);
+        for(int i=y1+r/2; i<y1+h-r/2; i++) {
+            drawHLine(x1,i,w);
+        }
+    }
+
+    @Override
+    public void drawEllipse(int x1, int y1, int w, int h) {
+        int x2 = x1 + w;
+        int y2 = y1 + h;
+        int a = abs(x1 - x2), b = abs(y1 - y2), b1 = b & 1; /* values of diameter */
+        long dx = 4 * (1 - a) * b * b, dy = 4 * (b1 + 1) * a * a; /* error increment */
+        long err = dx + dy + b1 * a * a, e2; /* error of 1.step */
+
+        if (x2 > x1) {
+            x2 = x1;
+            x1 += a;
+        } /* if called with swapped points */
+        if (y2 > y1) y2 = y1; /* .. exchange them */
+        y2 += (b + 1) / 2;
+        y1 = y2 - b1;   /* starting pixel */
+        a *= 8 * a;
+        b1 = 8 * b * b;
+
+        do {
+            setPixel(x1, y2); /*   I. Quadrant */
+            setPixel(x2, y2); /*  II. Quadrant */
+            setPixel(x2, y1); /* III. Quadrant */
+            setPixel(x1, y1); /*  IV. Quadrant */
+            e2 = 2 * err;
+            if (e2 >= dx) {
+                x2++;
+                x1--;
+                err += dx += b1;
+            } /* x step */
+            if (e2 <= dy) {
+                y2++;
+                y1--;
+                err += dy += a;
+            }  /* y step */
+        } while (x2 <= x1);
+
+        while (y2 - y1 < b) {  /* too early stop of flat ellipses a=1 */
+            setPixel(x2 - 1, y2); /* -> finish tip of ellipse */
+            setPixel(x1 + 1, y2++);
+            setPixel(x2 - 1, y1);
+            setPixel(x1 + 1, y1--);
+        }
+    }
+
+    @Override
+    public void fillEllipse(int x1, int y1, int w, int h) {
+        int x2 = x1 + w;
+        int y2 = y1 + h;
+        int a = abs(x1 - x2), b = abs(y1 - y2), b1 = b & 1; /* values of diameter */
+        long dx = 4 * (1 - a) * b * b, dy = 4 * (b1 + 1) * a * a; /* error increment */
+        long err = dx + dy + b1 * a * a, e2; /* error of 1.step */
+
+        if (x2 > x1) {
+            x2 = x1;
+            x1 += a;
+        } /* if called with swapped points */
+        if (y2 > y1) y2 = y1; /* .. exchange them */
+        y2 += (b + 1) / 2;
+        y1 = y2 - b1;   /* starting pixel */
+        a *= 8 * a;
+        b1 = 8 * b * b;
+
+        do {
+            setPixel(x1, y2); /*   I. Quadrant */
+            setPixel(x2, y2); /*  II. Quadrant */
+            setPixel(x2, y1); /* III. Quadrant */
+            setPixel(x1, y1); /*  IV. Quadrant */
+            drawHLine(x2, y1, x1 - x2);
+            drawHLine(x2,y2,x1-x2);
+            e2 = 2 * err;
+            if (e2 >= dx) {
+                x2++;
+                x1--;
+                err += dx += b1;
+            } /* x step */
+            if (e2 <= dy) {
+                y2++;
+                y1--;
+                err += dy += a;
+            }  /* y step */
+        } while (x2 <= x1);
+
+        while (y2 - y1 < b) {  /* too early stop of flat ellipses a=1 */
+            setPixel(x2 - 1, y2); /* -> finish tip of ellipse */
+            setPixel(x1 + 1, y2++);
+            setPixel(x2 - 1, y1);
+            setPixel(x1 + 1, y1--);
+        }
     }
 
     @Override
@@ -203,12 +354,30 @@ public class SDLGFX extends GFX {
         }
     }
 
+    private long getPixelValue(int x0, int y0, SDL_Surface image) {
+        return SDL.getPixel(image, x0 % image.getW(), y0 % image.getH());
+    }
+
     private void setPixel(int x0, int y0) {
-//        if (currentPaint != currentColor) {
-//            SDL.setPixel(this.surface, x0+translateX, y0+translateY, getPixelValue(x0, y0, currentPaint.getImage(surface)));
-//        } else {
+        if (paint != null && paint instanceof SDLSurfacePaint) {
+            SDLSurfacePaint pt = (SDLSurfacePaint) paint;
+            SDL.setPixel(this.surface, (int)(x0+translateX), (int)(y0+translateY),
+                    getPixelValue(x0, y0, pt.getImage(surface)));
+        } else {
             SDL.setPixel(surface, (int)(x0+translateX), (int)(y0+translateY), current_sdlcolor);
-//        }
+        }
+    }
+
+    public void drawVLine(int x, int y, int height) {
+        for (int i = 0; i < height + 1; i++) {
+            setPixel(x, y + i);
+        }
+    }
+
+    public void drawHLine(int x, int y, int width) {
+        for (int i = 0; i < width + 1; i++) {
+            setPixel(x + i, y);
+        }
     }
 
     public void translate(double x, double y) {
@@ -231,6 +400,12 @@ public class SDLGFX extends GFX {
                 (short) currentPaint.getRed(),
                 (short) currentPaint.getGreen(),
                 (short) currentPaint.getBlue());
+        this.paint = null;
+    }
+
+    @Override
+    public void setPaint(AminoPaint backgroundFill) {
+        this.paint = backgroundFill;
     }
 
     @Override
@@ -261,4 +436,12 @@ public class SDLGFX extends GFX {
         }
         return i;
     }
+
+    public static Color interpolate(Color A, Color B, double fraction) {
+        int r = (int)(A.getRed()*(1.0-fraction) + B.getRed()*fraction);
+        int g = (int)(A.getGreen()*(1.0-fraction) + B.getGreen()*fraction);
+        int b = (int)(A.getBlue()*(1.0-fraction) + B.getBlue()*fraction);
+        return new Color(r,g,b);
+    }
+
 }

@@ -118,6 +118,16 @@ public class SDLCoreImpl extends CoreImpl {
         return new SDLImage(file);
     }
 
+    @Override
+    public LinearGradient createVerticalLinearGradient(int start, int end) {
+        return new SDLVerticalLinearGradient(start,end);
+    }
+
+    @Override
+    public LinearGradient createHorizontalLinearGradient(int start, int end) {
+        return new SDLHorizontalLinearGradient(start,end);
+    }
+
     private void draw(Core core) {
         for(SDLWindow w : windows) {
             GFX gfx = new SDLGFX(w.surface);

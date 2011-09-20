@@ -85,4 +85,14 @@ public class Java2DCoreImpl extends CoreImpl {
         return new Java2DImage(file);
     }
 
+    @Override
+    public LinearGradient createVerticalLinearGradient(int start, int end) {
+        return new Java2DVerticalLinearGradient(start,end);
+    }
+
+    @Override
+    public LinearGradient createHorizontalLinearGradient(int start, int end) {
+        return new Java2DHorizontalLinearGradient(start,end);
+    }
+
 }

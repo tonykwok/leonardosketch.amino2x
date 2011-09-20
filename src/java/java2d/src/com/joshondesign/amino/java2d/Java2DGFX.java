@@ -1,9 +1,6 @@
 package com.joshondesign.amino.java2d;
 
-import com.joshondesign.amino.core.AminoFont;
-import com.joshondesign.amino.core.AminoImage;
-import com.joshondesign.amino.core.GFX;
-import com.joshondesign.amino.core.u;
+import com.joshondesign.amino.core.*;
 
 import java.awt.*;
 
@@ -16,6 +13,7 @@ import java.awt.*;
  */
 public class Java2DGFX extends GFX {
     private Graphics2D g;
+    private AminoPaint paint;
 
     public Java2DGFX(Graphics2D graphics2D) {
         super();
@@ -30,6 +28,12 @@ public class Java2DGFX extends GFX {
     @Override
     public void setPaint(Color backgroundFill) {
         g.setPaint(backgroundFill);
+        paint = null;
+    }
+
+    @Override
+    public void setPaint(AminoPaint backgroundFill) {
+        this.paint = backgroundFill;
     }
 
     @Override
@@ -40,6 +44,26 @@ public class Java2DGFX extends GFX {
     @Override
     public void fillRect(int x, int y, int w, int h) {
         g.fillRect(x,y,w,h);
+    }
+
+    @Override
+    public void drawRoundRect(int x, int y, int w, int h, int corner) {
+        g.drawRoundRect(x,y,w,h,corner,corner);
+    }
+
+    @Override
+    public void fillRoundRect(int x, int y, int w, int h, int corner) {
+        g.fillRoundRect(x,y,w,h,corner, corner);
+    }
+
+    @Override
+    public void drawEllipse(int x, int y, int w, int h) {
+        g.drawOval(x,y,w,h);
+    }
+
+    @Override
+    public void fillEllipse(int x, int y, int w, int h) {
+        g.fillOval(x,y,w,h);
     }
 
     @Override
@@ -64,8 +88,8 @@ public class Java2DGFX extends GFX {
     public void drawImage9Slice(AminoImage image, int left, int right, int top, int bottom, int x, int y, int w, int h) {
         //upper left
         drawImage(image,
-                0,0,left,top,
-                x,y,left,top);
+                0, 0, left, top,
+                x, y, left, top);
         //upper center
         drawImage(image,
                 left,0,image.getWidth()-left-right,top,
