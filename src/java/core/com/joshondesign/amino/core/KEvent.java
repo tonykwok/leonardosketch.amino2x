@@ -9,4 +9,11 @@ package com.joshondesign.amino.core;
  */
 public class KEvent {
     public int key;
+
+    @Override
+    public String toString() {
+        return "KEvent{" +
+                "key=" + key +
+                '}';
+    }
 }

@@ -51,6 +51,8 @@ public class Java2DCoreImpl extends CoreImpl {
             if(!w._frame.isVisible()) {
                 //w._frame.pack();
                 w._frame.show();
+                w._frame.requestFocus();
+                w._rootcomp.requestFocus();
             }
         }
 

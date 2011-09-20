@@ -32,4 +32,13 @@ public class MEvent {
     public Point2D getPoint() {
         return new Point2D.Double(x,y);
     }
+
+    @Override
+    public String toString() {
+        return "MEvent{" +
+                "x=" + x +
+                ", y=" + y +
+                ", node=" + node +
+                '}';
+    }
 }

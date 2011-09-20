@@ -204,6 +204,10 @@ public class Core {
         }
     }
 
+    public Core listen(Events type, Object eventTarget, Callback callback) {
+        return listen(type.toString(),eventTarget, callback);
+    }
+
     //@method Register an event listener. It will listen to events based on the eventType and eventTarget.  When events happen they will be sent to the *callback*.
     public Core listen(String eventType, Object eventTarget, Callback callback) {
         String key = "";
@@ -234,12 +238,13 @@ public class Core {
         this.anims.add(anim);
         return this;
     }
-
+    /*
     //@property root  set the root node
     public Core setRoot(Node root) {
         this.root = root;
         return this;
     }
+    */
 
     //@property fps set the desired FPS. Remember that this is simply a *target*
     public Core setFPS(int fps) {
@@ -345,5 +350,14 @@ public class Core {
 
     public interface InitCallback {
         public void call(Core core) throws Exception;
+    }
+
+
+    public static enum Events {
+        MOUSE_PRESS,
+        MOUSE_RELEASE,
+        MOUSE_DRAG,
+        KEY_PRESSED,
+        KEY_RELEASED,
     }
 }
