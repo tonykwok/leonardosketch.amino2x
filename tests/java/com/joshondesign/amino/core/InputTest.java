@@ -59,8 +59,8 @@ public class InputTest {
     }
     public static void main(String ... args) throws Exception {
         final Core r = new Core();
-        r.setSize(600,400);
-        r.setBackground(Color.WHITE);
+        //r.setSize(600,400);
+        //r.setBackground(Color.WHITE);
 
 
 
@@ -87,7 +87,7 @@ public class InputTest {
         r.setRoot(new Group().add(b1)
             .add(tran).add(tran2).add(tran3).add(tran4).add(group1)
             );
-        r.setBackground(Color.GREEN);
+        //r.setBackground(Color.GREEN);
         r.start();
     }
 }

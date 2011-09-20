@@ -22,7 +22,7 @@ public class FilledShapes implements Core.InitCallback {
 
     public void call(Core core) throws Exception {
         Window window = core.createResizableWindow(1000, 600);
-        window.setBackgroundFill(AminoColor.BLACK);
+        window.setBackgroundFill(AminoColor.GRAY);
 
         font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/Junction.ttf"));
 

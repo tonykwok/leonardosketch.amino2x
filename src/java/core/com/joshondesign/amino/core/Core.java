@@ -37,21 +37,28 @@ public class Core {
     private static CoreImpl _impl;
     private static Core _core;
 
+    protected Core() {
+    }
+
     public static void setImpl(CoreImpl impl) {
         _impl = impl;
     }
 
+    /*
     //@method Set the size of the window. This will be replaced once we have a proper *Frame* class.
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
     }
+    */
 
+    /*
     //@property background The color of the scene's background.
     public Core setBackground(Color white) {
         this.backgroundColor = white;
         return this;
     }
+    */
 
     //@method Start the rendering. If this isn't called then you won't see anything on the screen.
     public void start() {
