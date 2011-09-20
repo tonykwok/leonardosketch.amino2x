@@ -25,5 +25,5 @@ public abstract class CoreImpl {
 
     public abstract LinearGradient createVerticalLinearGradient(int start, int end);
     public abstract LinearGradient createHorizontalLinearGradient(int start, int end);
-    public abstract PatternPaint loadPattern(File file);
+    public abstract PatternPaint loadPattern(File file) throws IOException;
 }

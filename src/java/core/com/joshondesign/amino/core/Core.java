@@ -298,7 +298,7 @@ public class Core {
         return _impl.createHorizontalLinearGradient(start,end);
     }
 
-    public PatternPaint loadPattern(File file) {
+    public PatternPaint loadPattern(File file) throws IOException {
         return _impl.loadPattern(file);
     }
 
