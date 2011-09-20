@@ -21,7 +21,7 @@ public class FilledShapes implements Core.InitCallback {
     }
 
     public void call(Core core) throws Exception {
-        Window window = core.createResizableWindow(800, 600);
+        Window window = core.createResizableWindow(1000, 600);
         window.setBackgroundFill(Color.BLACK);
 
         font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/Junction.ttf"));
@@ -37,9 +37,9 @@ public class FilledShapes implements Core.InitCallback {
                 .addColor(0.3,Color.WHITE)
                 .addColor(0.7,Color.RED)
                 .addColor(1.0,Color.WHITE);
-        /*
-        final SPattern pattern = new SPattern(new File("src/resources/checkerboard.png"));
-        */
+
+        final PatternPaint pattern = core.loadPattern(new File("tests/java/com/joshondesign/amino/core/resources/checkerboard.png"));
+
         window.setRoot(new Node() {
 
             @Override
@@ -61,13 +61,12 @@ public class FilledShapes implements Core.InitCallback {
                 gfx.translate(250, 0);
                 doDrawing(gfx);
 
-                /*
+
                 gfx.setPaint(pattern);
                 gfx.translate(250,0);
                 doDrawing(gfx);
-                */
 
-                gfx.translate(-250*0,0);
+                gfx.translate(-250*3,0);
             }
         });
 

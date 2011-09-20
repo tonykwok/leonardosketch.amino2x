@@ -95,4 +95,9 @@ public class Java2DCoreImpl extends CoreImpl {
         return new Java2DHorizontalLinearGradient(start,end);
     }
 
+    @Override
+    public PatternPaint loadPattern(File file) {
+        return null;
+    }
+
 }
