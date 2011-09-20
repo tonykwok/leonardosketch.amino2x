@@ -72,6 +72,7 @@ public class Core {
     }
 
     private void realStart() {
+        /*
         JFrame frame = new JFrame();
         comp = new JComponent() {
             @Override
@@ -94,6 +95,7 @@ public class Core {
             }
         }).start();
         comp.requestFocus();
+        */
     }
 
     /*
@@ -181,6 +183,25 @@ public class Core {
         ctx.drawString("avg msec/frame  " + (fpsAverage), 10, 30);
         ctx.drawString("avg fps = " + ((1.0 / fpsAverage) * 1000*1000*1000), 10, 40);
         //ctx.restore();
+    }
+
+    public void fireEvent(String type, Object key, Object e) {
+        //u.p("firing event for key: " + key + " type = " + type);
+        String k = "";
+        if(key != null) {
+            k = key.hashCode()+"";
+        } else {
+            k = "*";
+        }
+        //u.p("Using real key: " + k);
+        //u.p("firing event for key: " + k + " type = " + type);
+        if(listeners.containsKey(k)) {
+            if(listeners.get(k).containsKey(type)) {
+                for(Callback c : listeners.get(k).get(type)) {
+                    c.call(e);
+                }
+            }
+        }
     }
 
     //@method Register an event listener. It will listen to events based on the eventType and eventTarget.  When events happen they will be sent to the *callback*.
@@ -321,159 +342,6 @@ public class Core {
     }
 
 
-    private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
-        private JComponent canvas;
-        private boolean _mouse_pressed = false;
-        private Node root;
-        private Node _drag_target = null;
-
-        private MasterListener(JComponent comp, Node root) {
-            this.canvas = comp;
-            this.root = root;
-        }
-
-        public void mouseClicked(MouseEvent mouseEvent) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void mousePressed(MouseEvent e) {
-            _mouse_pressed = true;
-            //send target node event first
-            Node node = findNode(root, e.getPoint());
-            //p("---------- found node --------");
-            //console.log(node);
-            MEvent evt = new MEvent();
-            evt.node = node;
-            evt.x = e.getX();
-            evt.y = e.getY();
-            if(node != null) {
-                Node start = node;
-                _drag_target = node;
-                while(start != null) {
-                    fireEvent("MOUSE_PRESS", start, evt);
-                    //p("blocked = " + start.isMouseBlocked());
-                    if(start.isMouseBlocked()) return;
-                    start = (Node) start.getParent();
-                }
-            }
-            //send general events next
-            fireEvent("MOUSE_PRESS", null, evt);
-            //p("---------------");
-        }
-
-        public void mouseReleased(MouseEvent e) {
-            _mouse_pressed = false;
-            _drag_target = null;
-            //send target node event first
-            Node node = findNode(root,e.getPoint());
-            //console.log(node);
-            MEvent evt = new MEvent();
-            evt.node = node;
-            evt.x = e.getX();
-            evt.y = e.getY();
-            if(node != null) {
-                Node start = node;
-                while(start != null) {
-                    fireEvent("MOUSE_RELEASE", start, evt);
-                    if(start.isMouseBlocked()) return;
-                    start = (Node) start.getParent();
-                }
-            }
-            //send general events next
-            fireEvent("MOUSE_RELEASE",null,evt);
-        }
-
-        public void mouseEntered(MouseEvent mouseEvent) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void mouseExited(MouseEvent mouseEvent) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public void mouseDragged(MouseEvent e) {
-            if(_mouse_pressed) {
-                Node node = findNode(root,e.getPoint());
-                MEvent evt = new MEvent();
-
-                //redirect events to current drag target, if applicable
-                if(_drag_target != null) {
-                    node = _drag_target;
-                }
-                evt.node = node;
-                evt.x = e.getX();
-                evt.y = e.getY();
-                if(node != null) {
-                    Node start = node;
-                    while(start != null) {
-                        fireEvent("MOUSE_DRAG", start, evt);
-                        if(start.isMouseBlocked()) return;
-                        start = (Node) start.getParent();
-                    }
-                }
-                //send general events next
-                fireEvent("MOUSE_DRAG", null, evt);
-            }
-        }
-
-        public void mouseMoved(MouseEvent e) {
-        }
-
-        private Node findNode(Node node, Point2D pt) {
-            //u.p("find node: " + node + " " + pt);
-            if(!node.isVisible()) return null;
-            if(node.contains(pt)) return node;
-            if(node instanceof Parent) {
-                Parent parent = (Parent) node;
-                if(parent.hasChildren()) {
-                    Point2D nc = parent.convertToChildCoords(pt);
-                    for(int i=parent.childCount()-1;i>=0;i--) {
-                        Node n2 = findNode(parent.getChild(i),nc);
-                        //u.p("Found " + n2);
-                        if(n2 != null) {
-                            return n2;
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        private void fireEvent(String type, Object key, Object e) {
-            //u.p("firing event for key: " + key + " type = " + type);
-            String k = "";
-            if(key != null) {
-                k = key.hashCode()+"";
-            } else {
-                k = "*";
-            }
-            //u.p("Using real key: " + k);
-            //u.p("firing event for key: " + k + " type = " + type);
-            if(listeners.containsKey(k)) {
-                if(listeners.get(k).containsKey(type)) {
-                    for(Callback c : listeners.get(k).get(type)) {
-                        c.call(e);
-                    }
-                }
-            }
-            comp.repaint();
-        }
-
-        public void keyTyped(KeyEvent keyEvent) {
-        }
-
-        public void keyPressed(KeyEvent keyEvent) {
-            KEvent evt = new KEvent();
-            evt.key = keyEvent.getKeyCode();
-            fireEvent("KEY_PRESSED", null, evt);
-        }
-
-        public void keyReleased(KeyEvent keyEvent) {
-            KEvent evt = new KEvent();
-            evt.key = keyEvent.getKeyCode();
-            fireEvent("KEY_RELEASED", null, evt);
-        }
-    }
 
     public interface InitCallback {
         public void call(Core core) throws Exception;
