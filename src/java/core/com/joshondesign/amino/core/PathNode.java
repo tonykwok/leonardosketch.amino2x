@@ -11,13 +11,13 @@ public class PathNode extends Shape {
     private Path path;
 
     @Override
-    public void draw(Graphics2D gfx) {
+    public void draw(GFX gfx) {
         gfx.setPaint(getFill());
         Path2D path2d = path.toPath2D();
-        gfx.fill(path2d);
+        //gfx.fill(path2d);
         if(getStrokeWidth() > 0) {
             gfx.setPaint(getStroke());
-            gfx.draw(path2d);
+            //gfx.draw(path2d);
         }
     }
 

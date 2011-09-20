@@ -45,7 +45,7 @@ public class Group extends Node implements Parent {
 
 
     @Override
-    public void draw(Graphics2D gfx) {
+    public void draw(GFX gfx) {
         if(!this.isVisible()) return;
         gfx.translate(this.x,this.y);
         for(Node n : nodes) {

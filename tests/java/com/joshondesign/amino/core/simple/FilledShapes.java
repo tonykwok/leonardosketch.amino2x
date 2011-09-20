@@ -22,34 +22,31 @@ public class FilledShapes implements Core.InitCallback {
 
     public void call(Core core) throws Exception {
         Window window = core.createResizableWindow(1000, 600);
-        window.setBackgroundFill(Color.BLACK);
+        window.setBackgroundFill(AminoColor.BLACK);
 
         font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/Junction.ttf"));
 
         final LinearGradient gradient = core.createVerticalLinearGradient(0,50)
-                .addColor(0.0,Color.BLUE)
-                .addColor(0.3,Color.WHITE)
-                .addColor(0.7, Color.RED)
-                .addColor(1.0, Color.WHITE);
+                .addColor(0.0,AminoColor.BLUE)
+                .addColor(0.3,AminoColor.WHITE)
+                .addColor(0.7, AminoColor.RED)
+                .addColor(1.0, AminoColor.WHITE);
 
         final LinearGradient gradient2 = core.createHorizontalLinearGradient(0,50)
-                .addColor(0.0,Color.BLUE)
-                .addColor(0.3,Color.WHITE)
-                .addColor(0.7,Color.RED)
-                .addColor(1.0,Color.WHITE);
+                .addColor(0.0,AminoColor.BLUE)
+                .addColor(0.3,AminoColor.WHITE)
+                .addColor(0.7,AminoColor.RED)
+                .addColor(1.0,AminoColor.WHITE);
 
         final PatternPaint pattern = core.loadPattern(new File("tests/java/com/joshondesign/amino/core/resources/checkerboard.png"));
 
         window.setRoot(new Node() {
 
-            @Override
-            public void draw(Graphics2D gfx) {
-            }
 
             @Override
             public void draw(GFX gfx) {
 
-                gfx.setPaint(Color.RED);
+                gfx.setPaint(AminoColor.RED);
                 doDrawing(gfx);
 
                 gfx.translate(250,0);
@@ -82,5 +79,7 @@ public class FilledShapes implements Core.InitCallback {
         gfx.drawEllipse(    0,  250,    200,    40);
         gfx.fillEllipse(    0,  300,    200,    40);
         gfx.fillText(font,"Some FILLED text!",0,400);
+        gfx.drawCircle(     50, 500, 50);
+        gfx.fillCircle(    150, 500, 50);
     }
 }

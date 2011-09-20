@@ -26,14 +26,11 @@ public class Java2DGFX extends GFX {
     }
 
     @Override
-    public void setPaint(Color backgroundFill) {
-        g.setPaint(backgroundFill);
-        paint = null;
-    }
-
-    @Override
     public void setPaint(AminoPaint backgroundFill) {
         this.paint = backgroundFill;
+        if(backgroundFill instanceof AminoColor) {
+            g.setPaint(toAWTColor((AminoColor) backgroundFill));
+        }
         if(backgroundFill instanceof Graphics2DPaint) {
             g.setPaint(((Graphics2DPaint)backgroundFill).getGraphics2DPaint());
         }
@@ -67,6 +64,16 @@ public class Java2DGFX extends GFX {
     @Override
     public void fillEllipse(int x, int y, int w, int h) {
         g.fillOval(x,y,w,h);
+    }
+
+    @Override
+    public void drawCircle(int cx, int cy, int radius) {
+        g.drawOval(cx-radius,cy-radius, radius*2,radius*2);
+    }
+
+    @Override
+    public void fillCircle(int cx, int cy, int radius) {
+        g.fillOval(cx-radius,cy-radius, radius*2,radius*2);
     }
 
     @Override
@@ -146,5 +153,9 @@ public class Java2DGFX extends GFX {
     @Override
     public void translate(double x, double y) {
         this.g.translate(x,y);
+    }
+
+    public static Color toAWTColor(AminoColor aminoColor) {
+        return new Color(aminoColor.getRed(),aminoColor.getGreen(),aminoColor.getBlue());
     }
 }

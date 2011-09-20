@@ -30,6 +30,10 @@ public class Java2DFont extends AminoFont {
         _font = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(14f);
     }
 
+    public Java2DFont(String fontName) {
+        _font = new Font(fontName,Font.PLAIN,14);
+    }
+
     @Override
     public AminoFont withSize(double size) {
         return new Java2DFont(_font.deriveFont((float)size));

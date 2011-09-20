@@ -76,6 +76,11 @@ public class Java2DCoreImpl extends CoreImpl {
     }
 
     @Override
+    public AminoFont loadFont(String fontName) throws IOException {
+        return new Java2DFont(fontName);
+    }
+
+    @Override
     public AminoImage loadImage(URL resource) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -98,6 +103,11 @@ public class Java2DCoreImpl extends CoreImpl {
     @Override
     public PatternPaint loadPattern(File file) throws IOException {
         return new Java2DPatternPaint(file);
+    }
+
+    @Override
+    public AminoPaint loadPattern(URL url) throws IOException {
+        return new Java2DPatternPaint(url);
     }
 
 }

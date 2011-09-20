@@ -2,6 +2,7 @@ package com.joshondesign.amino.core;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,16 +15,18 @@ public class InputTest {
     private static class Button extends Shape {
 
         private String txt;
+        private Core core;
 
         public Button(Core r, String s) {
             this.txt = s;
-            this.setFill(Color.RED);
+            this.core = r;
+            this.setFill(AminoColor.RED);
             r.listen("MOUSE_PRESS",this,new Callback() {
                 public void call(Object o) {
-                    if(getFill() == Color.RED) {
-                        setFill(Color.CYAN);
+                    if(getFill() == AminoColor.RED) {
+                        setFill(AminoColor.CYAN);
                     } else {
-                        setFill(Color.RED);
+                        setFill(AminoColor.RED);
                     }
                 }
             });
@@ -41,11 +44,17 @@ public class InputTest {
         }
 
         @Override
-        public void draw(Graphics2D gfx) {
+        public void draw(GFX gfx) {
             gfx.setPaint(this.getFill());
-            gfx.fillRect(0,0,80,30);
-            gfx.setPaint(Color.BLACK);
-            gfx.drawString(this.txt,5,20);
+            gfx.fillRect(0, 0, 80, 30);
+            gfx.setPaint(AminoColor.BLACK);
+            AminoFont font = null;
+            try {
+                font = core.loadFont("Arial").withSize(30);
+                gfx.fillText(font,this.txt,5,20);
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
     }
     public static void main(String ... args) throws Exception {

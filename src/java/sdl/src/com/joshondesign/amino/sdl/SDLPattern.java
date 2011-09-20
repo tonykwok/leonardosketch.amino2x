@@ -5,6 +5,7 @@ import com.joshondesign.sdljava.SDL;
 import com.joshondesign.sdljava.SDL_Surface;
 
 import java.io.File;
+import java.net.URL;
 
 import static com.joshondesign.sdljava.SDLUtil.p;
 
@@ -22,6 +23,10 @@ public class SDLPattern extends PatternPaint implements SDLSurfacePaint{
         p("trying to load image file: " + file.getAbsolutePath());
         p("exists = " + file.exists());
         this.image = SDL.IMG_Load(file.getAbsolutePath());
+    }
+
+    public SDLPattern(URL url) {
+        p("WARNING: =========== SDLPattern from URL not implemented!!!! ==========");
     }
 
     public SDL_Surface getImage(SDL_Surface surface) {

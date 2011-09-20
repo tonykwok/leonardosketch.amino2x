@@ -89,6 +89,7 @@ public class Core {
         comp.requestFocus();
     }
 
+    /*
     private void drawScene(Graphics2D ctx) {
         ctx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         if(isSmoothStrokes()) {
@@ -105,6 +106,7 @@ public class Core {
         //draw the scene
         root.draw(ctx);
     }
+    */
 
     private void _update(Graphics2D ctx) {
         long time = System.nanoTime();
@@ -134,6 +136,7 @@ public class Core {
 
         //var ctx = self.canvas.getContext("2d");
 
+        /*
         if(dirtyTrackingEnabled) {
             if(root.isDirty()) {
                 //console.log("drawing");
@@ -142,7 +145,7 @@ public class Core {
         } else {
             drawScene(ctx);
         }
-
+         */
 
         //ctx.save();
         ctx.translate(0,height-50);
@@ -282,6 +285,10 @@ public class Core {
         return _impl.loadFont(resource);
     }
 
+    public AminoFont loadFont(String fontName) throws IOException {
+        return _impl.loadFont(fontName);
+    }
+
     public AminoImage loadImage(URL resource) {
         return _impl.loadImage(resource);
     }
@@ -301,6 +308,11 @@ public class Core {
     public PatternPaint loadPattern(File file) throws IOException {
         return _impl.loadPattern(file);
     }
+
+    public AminoPaint loadPattern(URL url) throws IOException {
+        return _impl.loadPattern(url);
+    }
+
 
     private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;

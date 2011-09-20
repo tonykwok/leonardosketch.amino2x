@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
-import java.awt.geom.Path2D;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,7 +11,8 @@ import java.util.ArrayList;
  * Time: 11:27 AM
  * To change this template use File | Settings | File Templates.
  */
-public class DragBlocks {
+public class DragBlocks implements Core.InitCallback {
+
     static class BlockImageView extends ImageView {
         BlockImageView(URL src) throws IOException {
             super(src);
@@ -22,9 +21,12 @@ public class DragBlocks {
         public boolean solved = false;
     }
     public static void main(String ... args) throws IOException {
-        final Core runner = new Core();
-        runner.setSize(1024,740);
-        runner.setBackground(Color.BLACK);
+        Core.init(new DragBlocks());
+    }
+
+    public void call(Core core) throws Exception {
+        Window window = core.createResizableWindow(1024, 740);
+        window.setBackgroundFill(AminoColor.BLACK);
 
         BlockImageView bg = new BlockImageView(DragBlocks.class.getResource("images/background.png"));
         final BlockImageView block1 = new BlockImageView(DragBlocks.class.getResource("images/block1.png"));
@@ -40,9 +42,10 @@ public class DragBlocks {
 
         final Shape block1spot = new Shape() {
             @Override
-            public void draw(Graphics2D g) {
-                Graphics2D ctx = (Graphics2D) g.create();
-                ctx.setPaint(Color.BLACK);
+            public void draw(GFX g) {
+                //Graphics2D ctx = (Graphics2D) g.create();
+                g.setPaint(AminoColor.BLACK);
+                /*
                 ctx.setComposite(AlphaComposite.SrcOver.derive(0.5f));
                 ctx.translate(105 + 5, 60 + 10);
                 Path2D pth = new Path2D.Double();
@@ -52,6 +55,7 @@ public class DragBlocks {
                 pth.closePath();
                 ctx.fill(pth);
                 ctx.dispose();
+                */
             }
         };
         block1spot.setX(105);
@@ -60,7 +64,8 @@ public class DragBlocks {
 
         final Shape block2spot = new Shape() {
             @Override
-            public void draw(Graphics2D g) {
+            public void draw(GFX g) {
+                /*
                 Graphics2D ctx = (Graphics2D) g.create();
                 ctx.setPaint(Color.BLACK);
                 ctx.setComposite(AlphaComposite.SrcOver.derive(0.5f));
@@ -73,6 +78,7 @@ public class DragBlocks {
                 pth.closePath();
                 ctx.fill(pth);
                 ctx.dispose();
+                */
             }
         };
         block2spot.setX(105);
@@ -80,7 +86,8 @@ public class DragBlocks {
 
         final Shape block3spot = new Shape() {
             @Override
-            public void draw(Graphics2D g) {
+            public void draw(GFX g) {
+                /*
                 Graphics2D ctx = (Graphics2D) g.create();
                 ctx.setPaint(Color.BLACK);
                 ctx.setComposite(AlphaComposite.SrcOver.derive(0.5f));
@@ -88,6 +95,7 @@ public class DragBlocks {
                 double r = 83;
                 ctx.fillOval(0, 0, (int) r * 2, (int) r * 2);
                 ctx.dispose();
+                */
             }
         };
         block3spot.setX(705);
@@ -102,27 +110,33 @@ public class DragBlocks {
         final Group solvedOverlay = new Group();
         solvedOverlay.add(new Rect()
                 .set(100, 100, 1024 - 200, 740 - 200)
-                .setFill(new Color(100, 100, 100, 128)));//"rgba(100,100,100,0.5)"));
-        solvedOverlay.add(new Text().setText("Solved").setFont(new Font("Georgia",Font.PLAIN,100)).setFill(Color.WHITE).setX(320).setY(390));
+                .setFill(new AminoColor(100, 100, 100, 128)));//"rgba(100,100,100,0.5)"));
+        AminoFont font = core.loadFont("Georgia").withSize(100);
+        solvedOverlay.add(new Text()
+                .setText("Solved")
+                .setFont(font)
+                .setFill(AminoColor.WHITE)
+                .setX(320)
+                .setY(390));
         solvedOverlay.setVisible(false);
 
         Group blocksGroup = new Group().add(block1).add(block2).add(block3);
-        runner.root = new Group()
+        core.root = new Group()
                 .add(bg)
                 .add(block1spot).add(block2spot).add(block3spot)
                 .add(blocksGroup)
                 .add(solvedOverlay);
 
-        runner.addCallback(new Callback() {
+        core.addCallback(new Callback() {
             public void call(Object o) {
                 boolean s = true;
-                for(int i =0; i<blocks.size(); i++) {
-                    if(!blocks.get(i).solved) {
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (!blocks.get(i).solved) {
                         s = false;
                     }
                 }
-                if(s) {
-                    if(!solvedOverlay.isVisible()) {
+                if (s) {
+                    if (!solvedOverlay.isVisible()) {
                         solvedOverlay.setVisible(true);
                     }
                 }
@@ -130,11 +144,11 @@ public class DragBlocks {
         });
 
 
-        new Dragger(runner,block1,block1spot);
-        new Dragger(runner,block2,block2spot);
-        new Dragger(runner,block3,block3spot);
+        new Dragger(core,block1,block1spot);
+        new Dragger(core,block2,block2spot);
+        new Dragger(core,block3,block3spot);
 
-        runner.start();
+        core.start();
     }
 
     static class Dragger {

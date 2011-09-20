@@ -35,13 +35,13 @@ public class Transform extends Node implements Parent {
     }
 
     @Override
-    public void draw(Graphics2D gfx) {
-        Graphics2D ctx = (Graphics2D) gfx.create();
-        ctx.translate(this.translateX,this.translateY);
-        ctx.rotate(this.rotate * Math.PI / 180.0, 0, 0);
-        ctx.scale(this.scaleX,this.scaleY);
-        this.node.draw(ctx);
-        ctx.dispose();
+    public void draw(GFX gfx) {
+        //Graphics2D ctx = (Graphics2D) gfx.create();
+        gfx.translate(this.translateX,this.translateY);
+        //ctx.rotate(this.rotate * Math.PI / 180.0, 0, 0);
+        //ctx.scale(this.scaleX,this.scaleY);
+        this.node.draw(gfx);
+        //ctx.dispose();
         this.clearDirty();
     }
 

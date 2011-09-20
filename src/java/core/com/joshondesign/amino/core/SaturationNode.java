@@ -34,7 +34,7 @@ public class SaturationNode extends Node implements Parent {
         return this;
     }
 
-    public void draw(Graphics2D ctx) {
+    public void draw(GFX ctx) {
         Bounds bounds = this.node.getVisualBounds();
         if(this.buf1==null) {
             this.buf1 = new Buffer(
@@ -56,7 +56,7 @@ public class SaturationNode extends Node implements Parent {
             ctx1.translate(
                 -bounds.getX()
                 ,-bounds.getY());
-            this.node.draw(ctx1);
+            //this.node.draw(ctx1);
             //ctx1.restore();
             ctx1.dispose();
 
@@ -67,7 +67,7 @@ public class SaturationNode extends Node implements Parent {
         }
         //ctx.save();
         ctx.translate(bounds.getX(),bounds.getY());
-        ctx.drawImage(this.buf2.buf, 0, 0, null);
+        //ctx.drawImage(this.buf2.buf, 0, 0, null);
         ctx.translate(-bounds.getX(), -bounds.getY());
         //ctx.restore();
 

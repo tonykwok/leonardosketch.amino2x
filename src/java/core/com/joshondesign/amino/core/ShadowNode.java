@@ -39,7 +39,7 @@ public class ShadowNode extends BlurNode {
             -bounds.getX()+this.blurRadius*2
             ,-bounds.getY()+this.blurRadius*2);
         ctx1.translate(this.offsetX,this.offsetY);
-        this.node.draw(ctx1);
+        //this.node.draw(ctx1);
         //ctx1.restore();
         ctx1.dispose();
 
@@ -53,7 +53,7 @@ public class ShadowNode extends BlurNode {
         ctx2.translate(
                 -bounds.getX() + this.blurRadius * 2
                 , -bounds.getY() + this.blurRadius * 2);
-        this.node.draw(ctx2);
+        //this.node.draw(ctx2);
         ctx2.dispose();
     }
 

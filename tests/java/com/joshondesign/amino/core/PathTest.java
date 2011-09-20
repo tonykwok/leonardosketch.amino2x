@@ -22,9 +22,9 @@ public class PathTest {
                 .curveTo(120,70, 80,100, 60,90)
                 .closeTo()
                 .build();
-        Node p = new PathNode().setPath(path).setFill(Color.YELLOW).setStroke(Color.MAGENTA).setStrokeWidth(5);
+        Node p = new PathNode().setPath(path).setFill(AminoColor.YELLOW).setStroke(AminoColor.MAGENTA).setStrokeWidth(5);
 
-        Shape c = new Circle().set(200,200,10).setFill(Color.BLUE);
+        Shape c = new Circle().set(200,200,10).setFill(AminoColor.BLUE);
         PathAnim anim = new PathAnim(c,path,10.0).setLoop(true);
 
         Group g = new Group().add(p).add(c);

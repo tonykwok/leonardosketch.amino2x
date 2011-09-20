@@ -7,9 +7,9 @@ import java.awt.*;
 @category shape
  */
 public abstract class Shape extends Node {
-    protected Paint fill = Color.GRAY;
+    protected AminoPaint fill = AminoColor.GRAY;
     protected double strokeWidth;
-    protected Paint stroke = Color.BLACK;
+    protected AminoPaint stroke = AminoColor.BLACK;
 
     //@property strokeWidth the width of the stroke for this shape. If set to *0* the shape will not be stroked.
     public Node setStrokeWidth(double strokeWidth) {
@@ -17,17 +17,17 @@ public abstract class Shape extends Node {
         return this;
     }
     //@property fill the color to fill the shape with
-    public Shape setFill(Paint fill) {
+    public Shape setFill(AminoPaint fill) {
         this.fill = fill;
         return this;
     }
     //@property stroke the color to draw the shape's stroke with
-    public Shape setStroke(Paint stroke) {
+    public Shape setStroke(AminoPaint stroke) {
         this.stroke = stroke;
         return this;
     }
 
-    public Paint getFill() {
+    public AminoPaint getFill() {
         return fill;
     }
 
@@ -35,7 +35,7 @@ public abstract class Shape extends Node {
         return strokeWidth;
     }
 
-    public Paint getStroke() {
+    public AminoPaint getStroke() {
         return stroke;
     }
 }

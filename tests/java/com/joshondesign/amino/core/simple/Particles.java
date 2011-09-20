@@ -25,12 +25,8 @@ public class Particles implements Core.InitCallback {
     public void call(Core core) throws AminoException {
 
         Window window = core.createResizableWindow(800,600);
-        window.setBackgroundFill(Color.BLACK);
+        window.setBackgroundFill(AminoColor.BLACK);
         window.setRoot(new Node() {
-            @Override
-            public void draw(Graphics2D gfx) {
-
-            }
             @Override
             public void draw(GFX gfx) {
                 if(particles.size() < 100) {
@@ -41,7 +37,7 @@ public class Particles implements Core.InitCallback {
                     ));
                 }
 
-                gfx.setPaint(Color.BLACK);
+                gfx.setPaint(AminoColor.BLACK);
                 //clear old particles
                 for(Particle part : particles) {
                     gfx.fillRect(part.x,(int)part.y,20,20);
@@ -52,7 +48,7 @@ public class Particles implements Core.InitCallback {
                     if(part.y < -40) part.y = 700;
                 }
 
-                gfx.setPaint(Color.WHITE);
+                gfx.setPaint(AminoColor.WHITE);
                 for(Particle part : particles) {
                     gfx.fillRect(part.x,(int)part.y,20,20);
                 }

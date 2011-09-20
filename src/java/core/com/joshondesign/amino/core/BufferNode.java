@@ -20,7 +20,7 @@ public class BufferNode extends Node implements Parent {
     }
 
     @Override
-    public void draw(Graphics2D ctx) {
+    public void draw(GFX ctx) {
         Bounds bounds = this.node.getVisualBounds();
         if(this.buf == null) {
             this.buf = new Buffer(bounds.getWidth(),bounds.getHeight());
@@ -30,11 +30,11 @@ public class BufferNode extends Node implements Parent {
 
             Graphics2D ctx2 = this.buf.getContext();
             ctx2.translate(-bounds.getX(),-bounds.getY());
-            this.node.draw(ctx2);
+            //this.node.draw(ctx2);
             ctx2.dispose();
         }
         ctx.translate(bounds.getX(),bounds.getY());
-        ctx.drawImage(this.buf.buf,0,0,null);
+        //ctx.drawImage(this.buf.buf,0,0,null);
         ctx.translate(-bounds.getX(),-bounds.getY());
         this.clearDirty();
     }

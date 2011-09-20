@@ -1,5 +1,6 @@
 package com.joshondesign.amino.sdl;
 
+import com.joshondesign.amino.core.AminoColor;
 import com.joshondesign.amino.core.LinearGradient;
 import com.joshondesign.sdljava.SDL;
 import com.joshondesign.sdljava.SDLConstants;
@@ -37,18 +38,18 @@ public class SDLVerticalLinearGradient extends LinearGradient implements SDLSurf
             format.delete();
 
             double v = values.get(0);
-            Color c = colors.get(0);
+            AminoColor c = colors.get(0);
             int currentIndex = 0;
             //for each span
             for(int i=1; i<values.size(); i++) {
                 double nv = values.get(i);
-                Color nc = colors.get(i);
+                AminoColor nc = colors.get(i);
                 double spanFract = nv-v;
                 int spanLength = (int) (length*spanFract);
 
                 for(int j=0; j<spanLength; j++) {
                     double colorFraction = ((double)j)/spanLength;
-                    Color finalColor = interpolate(c,nc,colorFraction);
+                    AminoColor finalColor = interpolate(c,nc,colorFraction);
                     int sdlcolor = (finalColor.getBlue()<<24) | (finalColor.getGreen() << 16) | (finalColor.getRed()<<8) | 0xFF;
                     SDL.setPixel(surface2,0,currentIndex+j,sdlcolor);
                 }

@@ -27,7 +27,7 @@ public class BlurNode extends Node implements Parent {
     }
     
     @Override
-    public void draw(Graphics2D ctx) {
+    public void draw(GFX ctx) {
         Bounds bounds = this.node.getVisualBounds();
         if(this.buf1==null) {
             allocateBuffers(bounds);
@@ -39,7 +39,7 @@ public class BlurNode extends Node implements Parent {
         }
         //ctx.save();
         ctx.translate(bounds.getX(),bounds.getY());
-        ctx.drawImage(this.buf2.buf, 0, 0, null);
+        //ctx.drawImage(this.buf2.buf, 0, 0, null);
         ctx.translate(-bounds.getX(), -bounds.getY());
         //ctx.restore();
 
@@ -66,8 +66,7 @@ public class BlurNode extends Node implements Parent {
         ctx1.translate(
             -bounds.getX()+this.blurRadius*2
             ,-bounds.getY()+this.blurRadius*2);
-        this.node.draw(ctx1);
-        //ctx1.restore();
+        //this.node.draw(ctx1);
         ctx1.dispose();
 
         //apply affect from buf1 into buf2

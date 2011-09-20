@@ -20,19 +20,16 @@ public class TextSamples implements Core.InitCallback {
 
     public void call(Core core) throws Exception {
         Window window = core.createResizableWindow(800, 600);
-        window.setBackgroundFill(Color.BLACK);
+        window.setBackgroundFill(AminoColor.BLACK);
         final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/Junction.ttf"));
         final AminoFont font2  = font.withSize(40);
         window.setRoot(new Node() {
-            @Override
-            public void draw(Graphics2D gfx) {
-            }
 
             @Override
             public void draw(GFX gfx) {
-                gfx.setPaint(Color.WHITE);
+                gfx.setPaint(AminoColor.WHITE);
                 gfx.fillText(font, "webOS + Java", 50, 200);
-                gfx.setPaint(Color.BLUE);
+                gfx.setPaint(AminoColor.BLUE);
                 gfx.fillText(font2, "webOS + Java", 50, 300);
             }
         });

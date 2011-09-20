@@ -20,14 +20,10 @@ public class ImageStretches implements Core.InitCallback {
 
     public void call(Core core) throws Exception {
         Window window = core.createResizableWindow(800, 600);
-        window.setBackgroundFill(Color.WHITE);
+        window.setBackgroundFill(AminoColor.WHITE);
         final AminoImage image = core.loadImage(new File("tests/java/com/joshondesign/amino/core/resources/andromeda.jpg"));
 
         window.setRoot(new Node() {
-            @Override
-            public void draw(Graphics2D gfx) {
-            }
-
             @Override
             public void draw(GFX gfx) {
                 //draw image

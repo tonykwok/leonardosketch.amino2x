@@ -19,6 +19,7 @@ public abstract class CoreImpl {
 
     public abstract AminoFont loadFont(URL resource) throws IOException, FontFormatException;
     public abstract AminoFont loadFont(File resource) throws IOException, FontFormatException;
+    public abstract AminoFont loadFont(String fontName) throws IOException;
 
     public abstract AminoImage loadImage(URL resource);
     public abstract AminoImage loadImage(File file) throws IOException;
@@ -26,4 +27,6 @@ public abstract class CoreImpl {
     public abstract LinearGradient createVerticalLinearGradient(int start, int end);
     public abstract LinearGradient createHorizontalLinearGradient(int start, int end);
     public abstract PatternPaint loadPattern(File file) throws IOException;
+    public abstract AminoPaint loadPattern(URL url) throws IOException;
+
 }

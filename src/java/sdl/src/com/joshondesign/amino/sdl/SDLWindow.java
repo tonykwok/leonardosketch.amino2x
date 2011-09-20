@@ -1,5 +1,6 @@
 package com.joshondesign.amino.sdl;
 
+import com.joshondesign.amino.core.AminoColor;
 import com.joshondesign.amino.core.Core;
 import com.joshondesign.amino.core.Window;
 import com.joshondesign.sdljava.SDL_Surface;
@@ -23,7 +24,7 @@ public class SDLWindow extends Window {
         this.surface = surface;
     }
 
-    public Color getBackgroundFill() {
+    public AminoColor getBackgroundFill() {
         return backgroundFill;
     }
 
