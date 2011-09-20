@@ -13,9 +13,9 @@ import java.util.*;
  */
 public class LinearGradient implements AminoPaint {
     protected java.util.List<Double> values = new ArrayList<Double>();
-    protected java.util.List<Color> colors = new ArrayList<Color>();
+    protected java.util.List<AminoColor> colors = new ArrayList<AminoColor>();
 
-    public LinearGradient addColor(double value, Color color) {
+    public LinearGradient addColor(double value, AminoColor color) {
         this.values.add(value);
         this.colors.add(color);
         return this;

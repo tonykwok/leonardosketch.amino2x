@@ -74,10 +74,7 @@ public abstract class Node {
 
 
     //@method draw the node. This method is overridden by subclasses
-    public abstract void draw(Graphics2D gfx);
-    public void draw(GFX gfx) {
-
-    }
+    public abstract void draw(GFX gfx);
 
     //@property x the x coordinate of this node. Nodes may draw to the left of the 'x' coordinate.
     protected double x;

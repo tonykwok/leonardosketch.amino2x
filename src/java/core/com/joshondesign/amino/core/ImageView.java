@@ -31,8 +31,8 @@ public class ImageView extends Node {
     }
 
     @Override
-    public void draw(Graphics2D gfx) {
-        gfx.drawImage(img,(int)x,(int)y,null);
+    public void draw(GFX gfx) {
+        //gfx.drawImage(img,(int)x,(int)y,null);
         clearDirty();
     }
 

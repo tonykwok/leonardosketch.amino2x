@@ -1,5 +1,6 @@
 package com.joshondesign.amino.java2d;
 
+import com.joshondesign.amino.core.AminoColor;
 import com.joshondesign.amino.core.LinearGradient;
 
 import java.awt.*;
@@ -28,7 +29,7 @@ public class Java2DVerticalLinearGradient extends LinearGradient implements Grap
 
             for(int i=0; i<vs.length; i++) {
                 vs[i] = this.values.get(i).floatValue();
-                cs[i] = this.colors.get(i);
+                cs[i] = Java2DGFX.toAWTColor(this.colors.get(i));
             }
             _paint = new LinearGradientPaint(new Point(0,start), new Point(0,end),vs,cs, MultipleGradientPaint.CycleMethod.REPEAT);
         }

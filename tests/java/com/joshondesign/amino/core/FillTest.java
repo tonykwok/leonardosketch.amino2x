@@ -20,7 +20,7 @@ public class FillTest implements Core.InitCallback {
         Core.init(new FillTest());
     }
 
-    public void call(Core core) throws AminoException {
+    public void call(Core core) throws AminoException, IOException {
         final Core r = new Core();
         r.setSize(600,400);
         r.setBackground(Color.WHITE);
@@ -30,27 +30,20 @@ public class FillTest implements Core.InitCallback {
         //offsets.  So a rect at 50,50 won't be the same as a rect at 0,0 in a transform of 50,50
 
         //linear gradient
-        Paint grad0 = new LinearGradientPaint(0,0,100,0,
-                new float[]{0,1},
-                new Color[]{Color.RED,Color.BLUE}
-        );
+        AminoPaint grad0 = core.createHorizontalLinearGradient(0,100)
+                .addColor(0,AminoColor.RED)
+                .addColor(1,AminoColor.BLUE);
 
         //radial gradient
-        Paint grad1 = new RadialGradientPaint(0,0,100,
-                new float[]{0,0.5f,1},
-                new Color[]{Color.WHITE,Color.BLACK,Color.WHITE}
-                );
+        AminoPaint grad1 = core.createVerticalLinearGradient(0,100)
+                .addColor(0,AminoColor.WHITE)
+                .addColor(0.5,AminoColor.BLACK)
+                .addColor(1,AminoColor.WHITE);
 
         //texture fill
-        Shape textRect = new Rect().set(0, 0, 100, 40).setFill(Color.YELLOW);
+        Shape textRect = new Rect().set(0, 0, 100, 40).setFill(AminoColor.YELLOW);
 
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(FillTest.class.getResource("checkerboard.png"));
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        textRect.setFill(new TexturePaint(img,new Rectangle(0,0,img.getWidth(),img.getHeight())));
+        textRect.setFill(r.loadPattern(FillTest.class.getResource("checkerboard.png")));
 
         r.setRoot(new Group()
             //radial gradient

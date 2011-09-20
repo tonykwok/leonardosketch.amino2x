@@ -17,7 +17,6 @@ public abstract class GFX {
 
 
     // ========= state changes =============
-    public abstract void setPaint(Color backgroundFill);
     public abstract void setPaint(AminoPaint backgroundFill);
 
 
@@ -30,6 +29,8 @@ public abstract class GFX {
     public abstract void fillRoundRect(int x, int y, int w, int h, int corner);
     public abstract void drawEllipse(int x, int y, int w, int h);
     public abstract void fillEllipse(int x, int y, int w, int h);
+    public abstract void drawCircle(int cx, int cy, int radius);
+    public abstract void fillCircle(int cx, int cy, int radius);
 
 
 

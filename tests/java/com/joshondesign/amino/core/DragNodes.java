@@ -21,11 +21,11 @@ public class DragNodes {
         runner.root = g;
 
         Rect r1 = new Rect().set(200, 10, 100, 100).setCorner(10);
-        r1.setFill(new Color(0xccddff)).setStrokeWidth(4);
+        r1.setFill(AminoColor.fromRGB(0xccddff)).setStrokeWidth(4);
         Rect r2 = new Rect().set(40, 200, 100, 100).setCorner(10);
-        r2.setFill(new Color(0xffccdd)).setStrokeWidth(4);
+        r2.setFill(AminoColor.fromRGB(0xffccdd)).setStrokeWidth(4);
         Rect r3 = new Rect().set(300, 200, 100, 100).setCorner(10);
-        r3.setFill(new Color(0xccffdd)).setStrokeWidth(4);
+        r3.setFill(AminoColor.fromRGB(0xccffdd)).setStrokeWidth(4);
 
         Connector c1 = new Connector(r1,r2);
         Connector c2 = new Connector(r1,r3);
@@ -88,9 +88,9 @@ class Connector extends Shape {
     }
 
     @Override
-    public void draw(Graphics2D gfx) {
-        gfx.setPaint(Color.BLACK);
-        gfx.setStroke(new BasicStroke(3));
+    public void draw(GFX gfx) {
+        gfx.setPaint(AminoColor.BLACK);
+        //gfx.setStroke(new BasicStroke(3));
         gfx.drawLine((int)(r1.getX()+r1.getWidth()/2),
                 (int)(r1.getY()+r1.getHeight()/2),
                 (int)(r2.getX()+r2.getWidth()/2),

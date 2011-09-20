@@ -31,6 +31,10 @@ public class SDLFont extends AminoFont {
         this.file = file;
     }
 
+    public SDLFont(String fontName) {
+        u.p("WARNING: SDLFont does not support loading by system font name");
+    }
+
     @Override
     public AminoFont withSize(double size) {
         return new SDLFont(this.file,(int)size);

@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,6 +23,10 @@ public class Java2DPatternPaint extends PatternPaint implements Graphics2DPaint 
 
     public Java2DPatternPaint(File file) throws IOException {
         this.image = ImageIO.read(file);
+    }
+
+    public Java2DPatternPaint(URL url) throws IOException {
+        this.image = ImageIO.read(url);
     }
 
     public Paint getGraphics2DPaint() {

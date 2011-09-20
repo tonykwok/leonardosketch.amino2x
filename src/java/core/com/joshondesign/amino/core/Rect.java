@@ -31,7 +31,7 @@ public class Rect extends Shape {
     }
 
     @Override
-    public void draw(Graphics2D gfx) {
+    public void draw(GFX gfx) {
         gfx.setPaint(fill);
         gfx.fillRect((int)x,(int)y,(int)width, (int)height);
 
@@ -41,12 +41,12 @@ public class Rect extends Shape {
         } else {
             r = new Rectangle2D.Double(x, y, width, height);
         }
-        gfx.fill(r);
+        //gfx.fill(r);
         if(strokeWidth > 0) {
             gfx.setPaint(stroke);
-            gfx.setStroke(new BasicStroke((float) strokeWidth));
-            gfx.draw(r);
-            gfx.setStroke(new BasicStroke(1));
+            //gfx.setStroke(new BasicStroke((float) strokeWidth));
+            //gfx.draw(r);
+            //gfx.setStroke(new BasicStroke(1));
         }
         this.clearDirty();
     }

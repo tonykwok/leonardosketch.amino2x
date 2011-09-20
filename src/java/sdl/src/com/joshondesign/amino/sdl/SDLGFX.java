@@ -23,9 +23,9 @@ public class SDLGFX extends GFX {
 
     protected double translateX;
     protected double translateY;
-    private Color currentPaint;
     private long current_sdlcolor;
     private AminoPaint paint;
+    private AminoColor current_color = AminoColor.BLACK;
 
     public SDLGFX(SDL_Surface surface) {
         super();
@@ -203,6 +203,33 @@ public class SDLGFX extends GFX {
     }
 
     @Override
+    public void drawCircle(int cx, int cy, int radius) {
+        int x = -radius, y = 0, err = 2 - 2 * radius; /* II. Quadrant */
+        do {
+            setPixel(cx-x,cy+y);
+            setPixel(cx-y,cy-x);
+
+            drawHLine(cx-y,cy-x,y);
+            drawHLine(cx,cy-x,y);
+
+            //setPixel(cx+x,cy-y);
+            //setPixel(cx+y,cy+x);
+            //SDL.setPixel((SDL_Surface) gfx.getNative(), cx - x, cy + y, current_sdlcolor); /*   I. Quadrant */
+            //SDL.setPixel((SDL_Surface) gfx.getNative(), cx - y, cy - x, current_sdlcolor); /*  II. Quadrant */
+            //SDL.setPixel((SDL_Surface) gfx.getNative(), cx + x, cy - y, current_sdlcolor); /* III. Quadrant */
+            //SDL.setPixel((SDL_Surface) gfx.getNative(), cx + y, cy + x, current_sdlcolor); /*  IV. Quadrant */
+            radius = err;
+            if (radius > x) err += ++x * 2 + 1; /* e_xy+e_x > 0 */
+            if (radius <= y) err += ++y * 2 + 1; /* e_xy+e_y < 0 */
+        } while (x < 0);
+    }
+
+    @Override
+    public void fillCircle(int cx, int cy, int radius) {
+        drawCircle(cx,cy,radius);
+    }
+
+    @Override
     public void drawRect(int x, int y, int w, int h) {
         //h lines
         for (int i = 0; i < w + 1; i++) {
@@ -311,9 +338,9 @@ public class SDLGFX extends GFX {
     public void fillText(AminoFont aminoFont, String s, int dx, int dy) {
         SDLFont font = (SDLFont) aminoFont;
         SDL_Color fg = new SDL_Color();
-        fg.setR((short) currentPaint.getRed());
-        fg.setG((short) currentPaint.getGreen());
-        fg.setB((short) currentPaint.getBlue());
+        fg.setR((short) current_color.getRed());
+        fg.setG((short) current_color.getGreen());
+        fg.setB((short) current_color.getBlue());
         fg.setUnused((short) 0);
 
         SDL_Color bg = new SDL_Color();
@@ -394,18 +421,17 @@ public class SDLGFX extends GFX {
         format.delete();
     }
 
-    public void setPaint(Color color) {
-        this.currentPaint = color;
-        this.current_sdlcolor = SDL.SDL_MapRGB(format,
-                (short) currentPaint.getRed(),
-                (short) currentPaint.getGreen(),
-                (short) currentPaint.getBlue());
-        this.paint = null;
-    }
-
     @Override
     public void setPaint(AminoPaint backgroundFill) {
         this.paint = backgroundFill;
+        if(backgroundFill instanceof AminoColor) {
+            this.current_color = (AminoColor)backgroundFill;
+            this.current_sdlcolor = SDL.SDL_MapRGB(format,
+                    (short) current_color.getRed(),
+                    (short) current_color.getGreen(),
+                    (short) current_color.getBlue());
+
+        }
     }
 
     @Override
@@ -437,11 +463,11 @@ public class SDLGFX extends GFX {
         return i;
     }
 
-    public static Color interpolate(Color A, Color B, double fraction) {
+    public static AminoColor interpolate(AminoColor A, AminoColor B, double fraction) {
         int r = (int)(A.getRed()*(1.0-fraction) + B.getRed()*fraction);
         int g = (int)(A.getGreen()*(1.0-fraction) + B.getGreen()*fraction);
         int b = (int)(A.getBlue()*(1.0-fraction) + B.getBlue()*fraction);
-        return new Color(r,g,b);
+        return AminoColor.fromRGB(r,g,b);
     }
 
 }

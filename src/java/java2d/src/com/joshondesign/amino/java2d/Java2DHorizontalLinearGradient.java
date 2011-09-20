@@ -1,8 +1,11 @@
 package com.joshondesign.amino.java2d;
 
+import com.joshondesign.amino.core.AminoColor;
 import com.joshondesign.amino.core.LinearGradient;
 
 import java.awt.*;
+
+import static com.joshondesign.amino.java2d.Java2DGFX.toAWTColor;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,9 +31,9 @@ public class Java2DHorizontalLinearGradient extends LinearGradient implements Gr
 
             for(int i=0; i<vs.length; i++) {
                 vs[i] = this.values.get(i).floatValue();
-                cs[i] = this.colors.get(i);
+                cs[i] = Java2DGFX.toAWTColor(this.colors.get(i));
             }
-            _paint = new LinearGradientPaint(new Point(start,0), new Point(end,0),vs,cs, MultipleGradientPaint.CycleMethod.REPEAT);
+            _paint = new LinearGradientPaint(new Point(start,0), new Point(end,0), vs,cs, MultipleGradientPaint.CycleMethod.REPEAT);
         }
         return _paint;
     }

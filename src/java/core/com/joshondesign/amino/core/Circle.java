@@ -13,23 +13,23 @@ public class Circle extends Shape {
     private boolean intAlign = false;
 
     @Override
-    public void draw(Graphics2D gfx) {
+    public void draw(GFX gfx) {
 
         if(intAlign) {
             gfx.setPaint(getFill());
-            gfx.fillOval((int)(getX()-getRadius())
+            gfx.fillEllipse((int)(getX()-getRadius())
                     ,(int)(getY()-getRadius())
                     ,(int)(getRadius()*2)
                     ,(int)(getRadius()*2));
             if(getStrokeWidth() > 0) {
                 gfx.setPaint(getStroke());
-                Stroke s = gfx.getStroke();
-                gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
-                gfx.drawOval((int) (getX() - getRadius())
+                //Stroke s = gfx.getStroke();
+                //gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
+                gfx.drawEllipse((int) (getX() - getRadius())
                         , (int) (getY() - getRadius())
                         , (int) (getRadius() * 2)
                         , (int) (getRadius() * 2));
-                gfx.setStroke(s);
+                //gfx.setStroke(s);
             }
         } else {
             gfx.setPaint(getFill());
@@ -37,13 +37,13 @@ public class Circle extends Shape {
                     , (getY() - getRadius())
                     , (getRadius() * 2)
                     , (getRadius() * 2));
-            gfx.fill(shape);
+            //gfx.fill(shape);
             if(getStrokeWidth() > 0) {
                 gfx.setPaint(getStroke());
-                Stroke s = gfx.getStroke();
-                gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
-                gfx.draw(shape);
-                gfx.setStroke(s);
+                //Stroke s = gfx.getStroke();
+                //gfx.setStroke(new BasicStroke((float) getStrokeWidth()));
+                //gfx.draw(shape);
+                //gfx.setStroke(s);
             }
         }
     }

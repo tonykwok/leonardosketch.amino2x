@@ -109,6 +109,11 @@ public class SDLCoreImpl extends CoreImpl {
     }
 
     @Override
+    public AminoFont loadFont(String fontName) throws IOException {
+        return new SDLFont(fontName);
+    }
+
+    @Override
     public AminoImage loadImage(URL resource) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -131,6 +136,11 @@ public class SDLCoreImpl extends CoreImpl {
     @Override
     public PatternPaint loadPattern(File file) {
         return new SDLPattern(file);
+    }
+
+    @Override
+    public AminoPaint loadPattern(URL url) throws IOException {
+        return new SDLPattern(url);
     }
 
     private void draw(Core core) {

@@ -11,7 +11,7 @@ import java.awt.*;
  */
 public class Window {
     protected Node root;
-    protected Color backgroundFill;
+    protected AminoColor backgroundFill;
 
     public void setRoot(Node root) {
         this.root = root;
@@ -22,7 +22,7 @@ public class Window {
     }
 
 
-    public void setBackgroundFill(Color backgroundFill) {
+    public void setBackgroundFill(AminoColor backgroundFill) {
         this.backgroundFill = backgroundFill;
     }
 }
