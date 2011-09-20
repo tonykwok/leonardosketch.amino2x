@@ -298,6 +298,10 @@ public class Core {
         return _impl.createHorizontalLinearGradient(start,end);
     }
 
+    public PatternPaint loadPattern(File file) {
+        return _impl.loadPattern(file);
+    }
+
     private class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;

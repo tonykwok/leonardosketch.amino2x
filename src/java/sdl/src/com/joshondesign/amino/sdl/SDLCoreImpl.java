@@ -128,6 +128,11 @@ public class SDLCoreImpl extends CoreImpl {
         return new SDLHorizontalLinearGradient(start,end);
     }
 
+    @Override
+    public PatternPaint loadPattern(File file) {
+        return new SDLPattern(file);
+    }
+
     private void draw(Core core) {
         for(SDLWindow w : windows) {
             GFX gfx = new SDLGFX(w.surface);
