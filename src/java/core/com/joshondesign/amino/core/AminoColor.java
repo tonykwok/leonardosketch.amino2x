@@ -62,4 +62,14 @@ public class AminoColor implements AminoPaint {
     public int getBlue() {
         return b;
     }
+
+    @Override
+    public String toString() {
+        return "AminoColor{" +
+                "r=" + r +
+                ", g=" + g +
+                ", b=" + b +
+                ", a=" + a +
+                '}';
+    }
 }

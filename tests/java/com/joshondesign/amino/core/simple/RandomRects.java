@@ -25,8 +25,8 @@ public class RandomRects implements Core.InitCallback {
                     gfx.fillRect(
                         (int)(Math.random()*800),
                         (int)(Math.random()*600),
-                        (int)(Math.random()*600),
-                        (int)(Math.random()*400)
+                        (int)(Math.random()*200),
+                        (int)(Math.random()*200)
                     );
                 }
             }

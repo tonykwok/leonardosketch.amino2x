@@ -298,6 +298,14 @@ public class Core {
             return;
         }
 
+        if("jogl".equals(System.getProperty("com.joshondesign.amino.impl"))) {
+            u.p("need to do jogl");
+            Class clazz = Class.forName("com.joshondesign.amino.jogl.JoglCore");
+            CoreImplProvider provider = (CoreImplProvider) clazz.newInstance();
+            setImpl(provider.createImpl());
+            return;
+        }
+
         u.p("no Core impl specified. Will try falling back to Java2D");
         Class clazz = Class.forName("com.joshondesign.amino.java2d.Java2DCore");
         CoreImplProvider provider = (CoreImplProvider) clazz.newInstance();
