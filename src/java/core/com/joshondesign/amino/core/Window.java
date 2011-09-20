@@ -25,4 +25,6 @@ public class Window {
     public void setBackgroundFill(AminoColor backgroundFill) {
         this.backgroundFill = backgroundFill;
     }
+
+
 }
