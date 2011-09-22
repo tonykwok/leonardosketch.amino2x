@@ -70,6 +70,11 @@ public class JOGLWindow extends Window {
         gl.glTranslated(2,0,0);
     }
 
+    @Override
+    public int getWidth() {
+        return this.frame.getWidth();
+    }
+
     private static class JoglHandler implements GLEventListener {
         private JOGLWindow window;
 
@@ -102,6 +107,8 @@ public class JOGLWindow extends Window {
             //gl.glEnable(GL2.GL_BLEND);
             //gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_DST_ALPHA);
             //gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+
+            u.p("jogl window created");
         }
 
         public void dispose(GLAutoDrawable glAutoDrawable) {

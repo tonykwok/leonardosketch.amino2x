@@ -5,7 +5,6 @@ import com.joshondesign.amino.core.Core;
 import com.joshondesign.amino.core.Window;
 import com.joshondesign.sdljava.SDL_Surface;
 
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,4 +27,8 @@ public class SDLWindow extends Window {
         return backgroundFill;
     }
 
+    @Override
+    public int getWidth() {
+        return this.surface.getW();
+    }
 }

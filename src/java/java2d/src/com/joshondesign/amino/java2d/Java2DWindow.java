@@ -51,6 +51,11 @@ public class Java2DWindow extends Window {
         root.draw(ctx);
     }
 
+    @Override
+    public int getWidth() {
+        return _frame.getWidth();
+    }
+
     private static class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;

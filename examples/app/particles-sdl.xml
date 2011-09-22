@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<app name="Amino Particles">
+    <jar name="Amino2.jar"/>
+    <jar name="amino_sdl.jar"/>
+    <jar name="examples.jar" main-class="com.joshondesign.amino.examples.Particles"/>
+
+    <property name="com.joshondesign.amino.impl" value="sdl"/>
+    <native name="sdl"/>
+</app>
+

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<app name="Amino Particles">
+    <jar name="Amino2.jar"/>
+    <jar name="amino_java2d.jar"/>
+    <jar name="examples.jar" main-class="com.joshondesign.amino.examples.Particles"/>
+</app>

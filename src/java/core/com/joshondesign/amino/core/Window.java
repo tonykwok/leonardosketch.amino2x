@@ -9,7 +9,7 @@ import java.awt.*;
  * Time: 12:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Window {
+public abstract class Window {
     protected Node root;
     protected AminoColor backgroundFill = AminoColor.WHITE;
 
@@ -27,4 +27,5 @@ public class Window {
     }
 
 
+    public abstract int getWidth();
 }
