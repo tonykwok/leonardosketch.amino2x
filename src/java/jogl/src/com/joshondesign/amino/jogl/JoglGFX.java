@@ -1,6 +1,7 @@
 package com.joshondesign.amino.jogl;
 
 import com.joshondesign.amino.core.*;
+import com.sun.opengl.util.texture.Texture;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -39,23 +40,76 @@ public class JoglGFX extends GFX {
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        gl.glBegin(GL2.GL_LINES);
+        setColor(this.color);
+        gl.glVertex2f(x1,y1);
+        gl.glVertex2f(x2,y2);
+        gl.glEnd();
     }
 
     @Override
     public void drawRect(int x, int y, int w, int h) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        gl.glBegin(GL2.GL_LINES);
+        setColor(this.color);
+        gl.glVertex2f(x, y);
+        gl.glVertex2f(x + w, y);
+        gl.glVertex2f(x + w, y);
+        gl.glVertex2f(x + w, y + h);
+        gl.glVertex2f(x + w, y + h);
+        gl.glVertex2f(x, y + h);
+        gl.glVertex2f(x,y+h);
+        gl.glVertex2f(x,y);
+        gl.glEnd();
     }
 
     @Override
     public void fillRect(int x, int y, int w, int h) {
+        /*
+        if(this.paint instanceof JoglPatternPaint) {
+            JoglPatternPaint paint = (JoglPatternPaint) this.paint;
+            Texture texture = paint.getTexture();
+            texture.enable();
+            texture.bind();
+            gl.glTranslated((double)x,(double)y,0);
+            gl.glBegin(GL2.GL_QUADS);
+                gl.glTexCoord2f(0f, 0f); gl.glVertex2f(0, 0);
+                gl.glTexCoord2f(0f, 1f); gl.glVertex2f(0, h);
+                gl.glTexCoord2f(1f, 1f); gl.glVertex2f( w,h );
+                gl.glTexCoord2f( 1f, 0f ); gl.glVertex2f(w, 0);
+            gl.glEnd();
+            gl.glTranslated(-(double)x,-(double)y,0);
 
-        gl.glBegin(GL2.GL_QUADS);
-            setColor(this.color); gl.glVertex2i(x, y);
-            setColor(this.color); gl.glVertex2f(x, y+h);
-            setColor(this.color); gl.glVertex2f(x+w, y+h);
-            setColor(this.color); gl.glVertex2f(x+w, y);
-        gl.glEnd();
+        }
+        */
+
+        if(this.paint instanceof TextureProviderPaint) {
+            TextureProviderPaint paint = (TextureProviderPaint) this.paint;
+            Texture texture = paint.getTexture();
+            texture.enable();
+            texture.bind();
+            //u.p("coords = " + texture.getImageTexCoords().left() + " " + texture.getImageTexCoords().right());
+            gl.glTranslated((double) x, (double) y, 0);
+
+            float mulH = paint.getWrapMultiplierH(w, h);
+            float mulV = paint.getWrapMultiplierV(w, h);
+            gl.glBegin(GL2.GL_QUADS);
+                gl.glTexCoord2f(0f, 0f); gl.glVertex2f(0, 0);
+                gl.glTexCoord2f(0f, mulV); gl.glVertex2f(0, h);
+                gl.glTexCoord2f(mulH, mulV); gl.glVertex2f(w, h );
+                gl.glTexCoord2f(mulH, 0f); gl.glVertex2f(w, 0);
+            gl.glEnd();
+            gl.glTranslated(-(double)x,-(double)y,0);
+
+        }
+
+        if(this.paint instanceof AminoColor) {
+            gl.glBegin(GL2.GL_QUADS);
+                setColor(this.color); gl.glVertex2i(x, y);
+                setColor(this.color); gl.glVertex2f(x, y+h);
+                setColor(this.color); gl.glVertex2f(x+w, y+h);
+                setColor(this.color); gl.glVertex2f(x+w, y);
+            gl.glEnd();
+        }
 
     }
 
@@ -69,32 +123,32 @@ public class JoglGFX extends GFX {
 
     @Override
     public void drawRoundRect(int x, int y, int w, int h, int corner) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        drawRect(x,y,w,h);
     }
 
     @Override
     public void fillRoundRect(int x, int y, int w, int h, int corner) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        fillRect(x,y,w,h);
     }
 
     @Override
     public void drawEllipse(int x, int y, int w, int h) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        drawRect(x,y,w,h);
     }
 
     @Override
     public void fillEllipse(int x, int y, int w, int h) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        fillRect(x,y,w,h);
     }
 
     @Override
     public void drawCircle(int cx, int cy, int radius) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        drawRect(cx-radius,cy-radius,radius*2,radius*2);
     }
 
     @Override
     public void fillCircle(int cx, int cy, int radius) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
     }
 
     @Override
@@ -119,6 +173,6 @@ public class JoglGFX extends GFX {
 
     @Override
     public void translate(double x, double y) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        gl.glTranslated(x,y,0);
     }
 }

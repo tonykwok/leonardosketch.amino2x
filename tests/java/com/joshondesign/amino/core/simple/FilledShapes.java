@@ -32,6 +32,7 @@ public class FilledShapes implements Core.InitCallback {
                 .addColor(0.7, AminoColor.RED)
                 .addColor(1.0, AminoColor.WHITE);
 
+
         final LinearGradient gradient2 = core.createHorizontalLinearGradient(0,50)
                 .addColor(0.0,AminoColor.BLUE)
                 .addColor(0.3,AminoColor.WHITE)
@@ -49,21 +50,26 @@ public class FilledShapes implements Core.InitCallback {
                 gfx.setPaint(AminoColor.RED);
                 doDrawing(gfx);
 
-                gfx.translate(250,0);
+                gfx.translate(200,0);
+                gfx.setPaint(AminoColor.fromRGBA(255,255,255,128));
+                doDrawing(gfx);
+
+                gfx.translate(200,0);
                 gfx.setPaint(gradient);
                 doDrawing(gfx);
 
 
+                gfx.translate(200, 0);
                 gfx.setPaint(gradient2);
-                gfx.translate(250, 0);
                 doDrawing(gfx);
 
 
                 gfx.setPaint(pattern);
-                gfx.translate(250,0);
+                gfx.translate(200,0);
                 doDrawing(gfx);
 
-                gfx.translate(-250*3,0);
+                gfx.translate(-200*4,0);
+
             }
         });
 
@@ -71,15 +77,16 @@ public class FilledShapes implements Core.InitCallback {
     }
 
     private void doDrawing(GFX gfx) {
-        gfx.drawLine(       0,  0,      200,    40);
-        gfx.drawRect(       0,  50,     200,    40);
-        gfx.fillRect(       0,  100,    200,    40);
-        gfx.drawRoundRect(  0,  150,    200,    40,     10);
-        gfx.fillRoundRect(  0,  200,    200,    40,     10);
-        gfx.drawEllipse(    0,  250,    200,    40);
-        gfx.fillEllipse(    0,  300,    200,    40);
+        int w = 150;
+        gfx.drawLine(       0,  0,      w,    40);
+        gfx.drawRect(       0,  50,     w,    40);
+        gfx.fillRect(       0,  100,    w,    40);
+        gfx.drawRoundRect(  0,  150,    w,    40,     10);
+        gfx.fillRoundRect(  0,  200,    w,    40,     10);
+        gfx.drawEllipse(    0,  250,    w,    40);
+        gfx.fillEllipse(    0,  300,    w,    40);
         gfx.fillText(font,"Some FILLED text!",0,400);
-        gfx.drawCircle(     50, 500, 50);
-        gfx.fillCircle(    150, 500, 50);
+        gfx.drawCircle(     30, 450, 30);
+        gfx.fillCircle(    110, 450, 30);
     }
 }

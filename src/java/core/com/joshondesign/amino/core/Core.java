@@ -212,7 +212,11 @@ public class Core {
     public Core listen(String eventType, Object eventTarget, Callback callback) {
         String key = "";
         if(eventTarget != null) {
-            key = eventTarget.hashCode()+"";
+            if("*".equals(eventTarget)) {
+                key = "*";
+            } else {
+                key = eventTarget.hashCode()+"";
+            }
         } else {
             key = "*";
         }
