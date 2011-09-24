@@ -156,6 +156,6 @@ public class Java2DGFX extends GFX {
     }
 
     public static Color toAWTColor(AminoColor aminoColor) {
-        return new Color(aminoColor.getRed(),aminoColor.getGreen(),aminoColor.getBlue());
+        return new Color(aminoColor.getRed(),aminoColor.getGreen(),aminoColor.getBlue(),aminoColor.getAlpha());
     }
 }

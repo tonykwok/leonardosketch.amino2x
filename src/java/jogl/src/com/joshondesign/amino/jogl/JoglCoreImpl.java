@@ -70,17 +70,17 @@ public class JoglCoreImpl extends CoreImpl {
 
     @Override
     public LinearGradient createVerticalLinearGradient(int start, int end) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new JoglVerticalLinearGradient(start,end);
     }
 
     @Override
     public LinearGradient createHorizontalLinearGradient(int start, int end) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new JoglHorizontalLinearGradient(start, end);
     }
 
     @Override
     public PatternPaint loadPattern(File file) throws IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new JoglPatternPaint(file);
     }
 
     @Override

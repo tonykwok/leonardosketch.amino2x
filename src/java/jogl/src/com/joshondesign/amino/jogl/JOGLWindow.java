@@ -75,6 +75,11 @@ public class JOGLWindow extends Window {
         return this.frame.getWidth();
     }
 
+    @Override
+    public int getHeight() {
+        return this.frame.getHeight();
+    }
+
     private static class JoglHandler implements GLEventListener {
         private JOGLWindow window;
 
@@ -146,7 +151,7 @@ public class JOGLWindow extends Window {
             gl.glTranslated(2, 0, 0);
 
 
-
+            /*
             float right = 50+counter;
             gl.glBegin(GL2.GL_QUADS);
                 gl.glColor3f(1,0,0); gl.glVertex2f(0, 0);
@@ -154,7 +159,7 @@ public class JOGLWindow extends Window {
                 gl.glColor3f(1,0,0); gl.glVertex2f(right, 100);
                 gl.glColor3f(1,0,0); gl.glVertex2f(right, 0);
             gl.glEnd();
-
+            */
 
             //gl.glPushMatrix();
             //cb.draw(fx);

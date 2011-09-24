@@ -31,4 +31,9 @@ public class SDLWindow extends Window {
     public int getWidth() {
         return this.surface.getW();
     }
+
+    @Override
+    public int getHeight() {
+        return this.surface.getH();
+    }
 }

@@ -38,6 +38,11 @@ public class AminoColor implements AminoPaint {
     public static AminoColor fromRGB(int r, int g, int b) {
         return new AminoColor(r,g,b,255);
     }
+
+    public static AminoPaint fromRGBA(int r, int g, int b, int a) {
+        return new AminoColor(r,g,b,a);
+    }
+
     public static AminoColor fromRGB(float r, float g, float b) {
         return new AminoColor((int)(r*255),(int)(g*255),(int)(b*255),255);
     }
@@ -71,5 +76,9 @@ public class AminoColor implements AminoPaint {
                 ", b=" + b +
                 ", a=" + a +
                 '}';
+    }
+
+    public int getAlpha() {
+        return this.a;
     }
 }
