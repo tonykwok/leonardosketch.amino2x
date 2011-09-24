@@ -213,7 +213,7 @@
         </java>
     </target>
     
-    <target name="testwebossdl-particles2">
+    <target name="webos-particles">
         <java
             classpath="lib/AppBundler.jar;lib/XMLLib.jar"
             classname="com.joshondesign.appbundler.Bundler" fork="true">
