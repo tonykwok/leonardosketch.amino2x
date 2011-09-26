@@ -36,4 +36,9 @@ public class SDLWindow extends Window {
     public int getHeight() {
         return this.surface.getH();
     }
+
+    @Override
+    public Core getCore() {
+        return this.core;
+    }
 }

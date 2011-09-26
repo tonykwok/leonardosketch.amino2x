@@ -84,6 +84,11 @@ public class JOGLWindow extends Window {
         return this.frame.getHeight();
     }
 
+    @Override
+    public Core getCore() {
+        return this.core;
+    }
+
     private static class JoglHandler implements GLEventListener {
         private JOGLWindow window;
 
@@ -181,9 +186,9 @@ public class JOGLWindow extends Window {
         private Component canvas;
         private boolean _mouse_pressed = false;
         private Node _drag_target = null;
-        private JOGLWindow window;
+        private Window window;
 
-        private MasterListener(Component comp, JOGLWindow java2DWindow) {
+        private MasterListener(Component comp, Window java2DWindow) {
             this.canvas = comp;
             this.window = java2DWindow;
         }
@@ -295,7 +300,7 @@ public class JOGLWindow extends Window {
         }
 
         private void fireEvent(String type, Object key, Object e) {
-            window.core.fireEvent(type, key, e);
+            window.getCore().fireEvent(type, key, e);
             canvas.repaint();
         }
 

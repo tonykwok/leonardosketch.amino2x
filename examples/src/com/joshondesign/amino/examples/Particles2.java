@@ -60,8 +60,7 @@ public class Particles2 implements Core.InitCallback {
 
                 }
 
-                //gfx.setPaint(AminoColor.WHITE.withAlpha(0.5));
-                gfx.setPaint(AminoColor.fromRGBA(255,0,255,128));
+                gfx.setPaint(AminoColor.WHITE.withAlpha(0.5));
                 for(Particle part : particles) {
                     gfx.fillRect((int)part.x,(int)part.y,20,20);
                 }
