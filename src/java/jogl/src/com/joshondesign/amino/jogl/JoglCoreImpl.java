@@ -24,6 +24,7 @@ public class JoglCoreImpl extends CoreImpl {
     public void init(Core core, Core.InitCallback initCallback) throws AminoException {
         try {
             initCallback.call(core);
+            core.start();
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -50,7 +51,7 @@ public class JoglCoreImpl extends CoreImpl {
 
     @Override
     public AminoFont loadFont(File resource) throws IOException, FontFormatException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new JoglFont(resource);
     }
 
     @Override
