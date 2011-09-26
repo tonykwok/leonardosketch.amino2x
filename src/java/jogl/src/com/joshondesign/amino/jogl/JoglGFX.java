@@ -67,30 +67,11 @@ public class JoglGFX extends GFX {
 
     @Override
     public void fillRect(int x, int y, int w, int h) {
-        /*
-        if(this.paint instanceof JoglPatternPaint) {
-            JoglPatternPaint paint = (JoglPatternPaint) this.paint;
-            Texture texture = paint.getTexture();
-            texture.enable();
-            texture.bind();
-            gl.glTranslated((double)x,(double)y,0);
-            gl.glBegin(GL2.GL_QUADS);
-                gl.glTexCoord2f(0f, 0f); gl.glVertex2f(0, 0);
-                gl.glTexCoord2f(0f, 1f); gl.glVertex2f(0, h);
-                gl.glTexCoord2f(1f, 1f); gl.glVertex2f( w,h );
-                gl.glTexCoord2f( 1f, 0f ); gl.glVertex2f(w, 0);
-            gl.glEnd();
-            gl.glTranslated(-(double)x,-(double)y,0);
-
-        }
-        */
-
         if(this.paint instanceof TextureProviderPaint) {
             TextureProviderPaint paint = (TextureProviderPaint) this.paint;
             Texture texture = paint.getTexture();
             texture.enable();
             texture.bind();
-            //u.p("coords = " + texture.getImageTexCoords().left() + " " + texture.getImageTexCoords().right());
             gl.glTranslated((double) x, (double) y, 0);
 
             float mulH = paint.getWrapMultiplierH(w, h);
@@ -117,11 +98,13 @@ public class JoglGFX extends GFX {
     }
 
     private void setColor(AminoColor color) {
-        //gl.glColor3f(0.5f,0.5f,0.5f);
-        gl.glColor3f(
+        //gl.glColor4f(0.5f,0.5f,0.5f,0.5f);
+        gl.glColor4f(
                 color.getRed()/255f,
                 color.getGreen()/255f,
-                color.getBlue()/255f);
+                color.getBlue()/255f,
+                color.getAlpha()/255f
+        );
     }
 
     @Override

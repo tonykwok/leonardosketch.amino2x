@@ -81,4 +81,8 @@ public class AminoColor implements AminoPaint {
     public int getAlpha() {
         return this.a;
     }
+
+    public AminoColor withAlpha(double alpha) {
+        return new AminoColor(getRed(),getGreen(),getBlue(),(int)(alpha*255));
+    }
 }

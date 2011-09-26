@@ -1,16 +1,16 @@
 package com.joshondesign.amino.jogl;
 
-import com.joshondesign.amino.core.Core;
-import com.joshondesign.amino.core.GFX;
+import com.joshondesign.amino.core.*;
 import com.joshondesign.amino.core.Window;
-import com.joshondesign.amino.core.u;
 import com.sun.opengl.util.Animator;
+import com.sun.opengl.util.FPSAnimator;
 
 import javax.media.opengl.*;
 import javax.media.opengl.awt.GLCanvas;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,7 +47,10 @@ public class JOGLWindow extends Window {
             }
         });
 
-
+        MasterListener ml = new MasterListener(canvas, this);
+        canvas.addMouseListener(ml);
+        canvas.addMouseMotionListener(ml);
+        canvas.addKeyListener(ml);
 
     }
 
@@ -55,6 +58,7 @@ public class JOGLWindow extends Window {
         canvas.addGLEventListener(new JoglHandler(this));
         //use a regular animator to let the OS handle frame rate throttling for us
         animator = new Animator(canvas);
+        //animator = new FPSAnimator(canvas,60);
         animator.add(canvas);
         animator.start();
     }
@@ -105,13 +109,10 @@ public class JOGLWindow extends Window {
             //gl.glCullFace(GL_BACK);
 
 
-            //width = drawable.getWidth();
-            //height = drawable.getHeight();
-            //fx = new DelegatingFullGfx(new JoglGfx(this, gl));
             //gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            //gl.glEnable(GL2.GL_BLEND);
-            //gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_DST_ALPHA);
-            //gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA,GL2.GL_ONE_MINUS_SRC_ALPHA);
 
             u.p("jogl window created");
         }
@@ -176,4 +177,142 @@ public class JOGLWindow extends Window {
             //To change body of implemented methods use File | Settings | File Templates.
         }
     }
+    private static class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
+        private Component canvas;
+        private boolean _mouse_pressed = false;
+        private Node _drag_target = null;
+        private JOGLWindow window;
+
+        private MasterListener(Component comp, JOGLWindow java2DWindow) {
+            this.canvas = comp;
+            this.window = java2DWindow;
+        }
+
+        public void mouseClicked(MouseEvent mouseEvent) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void mousePressed(MouseEvent e) {
+            _mouse_pressed = true;
+            //send target node event first
+            Node node = findNode(window.getRoot(), e.getPoint());
+            //p("---------- found node --------");
+            //console.log(node);
+            MEvent evt = new MEvent();
+            evt.node = node;
+            evt.x = e.getX();
+            evt.y = e.getY();
+            if(node != null) {
+                Node start = node;
+                _drag_target = node;
+                while(start != null) {
+                    fireEvent("MOUSE_PRESS", start, evt);
+                    //p("blocked = " + start.isMouseBlocked());
+                    if(start.isMouseBlocked()) return;
+                    start = (Node) start.getParent();
+                }
+            }
+            //send general events next
+            fireEvent("MOUSE_PRESS", null, evt);
+            //p("---------------");
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            _mouse_pressed = false;
+            _drag_target = null;
+            //send target node event first
+            Node node = findNode(window.getRoot(),e.getPoint());
+            //console.log(node);
+            MEvent evt = new MEvent();
+            evt.node = node;
+            evt.x = e.getX();
+            evt.y = e.getY();
+            if(node != null) {
+                Node start = node;
+                while(start != null) {
+                    fireEvent("MOUSE_RELEASE", start, evt);
+                    if(start.isMouseBlocked()) return;
+                    start = (Node) start.getParent();
+                }
+            }
+            //send general events next
+            fireEvent("MOUSE_RELEASE",null,evt);
+        }
+
+        public void mouseEntered(MouseEvent mouseEvent) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void mouseExited(MouseEvent mouseEvent) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void mouseDragged(MouseEvent e) {
+            if(_mouse_pressed) {
+                Node node = findNode(window.getRoot(),e.getPoint());
+                MEvent evt = new MEvent();
+
+                //redirect events to current drag target, if applicable
+                if(_drag_target != null) {
+                    node = _drag_target;
+                }
+                evt.node = node;
+                evt.x = e.getX();
+                evt.y = e.getY();
+                if(node != null) {
+                    Node start = node;
+                    while(start != null) {
+                        fireEvent("MOUSE_DRAG", start, evt);
+                        if(start.isMouseBlocked()) return;
+                        start = (Node) start.getParent();
+                    }
+                }
+                //send general events next
+                fireEvent("MOUSE_DRAG", null, evt);
+            }
+        }
+
+        public void mouseMoved(MouseEvent e) {
+        }
+
+        private Node findNode(Node node, Point2D pt) {
+            if(!node.isVisible()) return null;
+            if(node.contains(pt)) return node;
+            if(node instanceof Parent) {
+                Parent parent = (Parent) node;
+                if(parent.hasChildren()) {
+                    Point2D nc = parent.convertToChildCoords(pt);
+                    for(int i=parent.childCount()-1;i>=0;i--) {
+                        Node n2 = findNode(parent.getChild(i),nc);
+                        //u.p("Found " + n2);
+                        if(n2 != null) {
+                            return n2;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void fireEvent(String type, Object key, Object e) {
+            window.core.fireEvent(type, key, e);
+            canvas.repaint();
+        }
+
+        public void keyTyped(KeyEvent keyEvent) {
+        }
+
+        public void keyPressed(KeyEvent keyEvent) {
+            KEvent evt = new KEvent();
+            evt.key = keyEvent.getKeyCode();
+            fireEvent("KEY_PRESSED", null, evt);
+        }
+
+        public void keyReleased(KeyEvent keyEvent) {
+            KEvent evt = new KEvent();
+            evt.key = keyEvent.getKeyCode();
+            fireEvent("KEY_RELEASED", null, evt);
+        }
+    }
+
 }
