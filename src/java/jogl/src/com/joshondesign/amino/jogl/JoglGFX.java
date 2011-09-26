@@ -67,6 +67,11 @@ public class JoglGFX extends GFX {
 
     @Override
     public void fillRect(int x, int y, int w, int h) {
+        fillRect((float)x,(float)y,(float)w,(float)h);
+    }
+
+    @Override
+    public void fillRect(float x, float y, float w, float h) {
         if(this.paint instanceof TextureProviderPaint) {
             TextureProviderPaint paint = (TextureProviderPaint) this.paint;
             Texture texture = paint.getTexture();
@@ -74,8 +79,8 @@ public class JoglGFX extends GFX {
             texture.bind();
             gl.glTranslated((double) x, (double) y, 0);
 
-            float mulH = paint.getWrapMultiplierH(w, h);
-            float mulV = paint.getWrapMultiplierV(w, h);
+            float mulH = paint.getWrapMultiplierH((int)w, (int)h);
+            float mulV = paint.getWrapMultiplierV((int)w, (int)h);
             gl.glBegin(GL2.GL_QUADS);
                 gl.glTexCoord2f(0f, 0f); gl.glVertex2f(0, 0);
                 gl.glTexCoord2f(0f, mulV); gl.glVertex2f(0, h);
@@ -88,13 +93,12 @@ public class JoglGFX extends GFX {
 
         if(this.paint instanceof AminoColor) {
             gl.glBegin(GL2.GL_QUADS);
-                setColor(this.color); gl.glVertex2i(x, y);
+                setColor(this.color); gl.glVertex2f(x, y);
                 setColor(this.color); gl.glVertex2f(x, y+h);
                 setColor(this.color); gl.glVertex2f(x+w, y+h);
-                setColor(this.color); gl.glVertex2f(x+w, y);
+                setColor(this.color); gl.glVertex2f(x + w, y);
             gl.glEnd();
         }
-
     }
 
     private void setColor(AminoColor color) {

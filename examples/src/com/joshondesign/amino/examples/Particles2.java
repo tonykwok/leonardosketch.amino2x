@@ -11,6 +11,7 @@ public class Particles2 implements Core.InitCallback {
 
     private Window window;
     private Slider spreadSlider;
+    private Slider gravitySlider;
 
     private class Particle {
 
@@ -18,6 +19,8 @@ public class Particles2 implements Core.InitCallback {
         private double y;
         private double a;
         private double v;
+        public double dy;
+        public double dx;
 
         public Particle() {
         }
@@ -30,10 +33,11 @@ public class Particles2 implements Core.InitCallback {
     }
 
     public void call(Core core) throws Exception {
-        window = core.createResizableWindow(800,650);
+        window = core.createResizableWindow(1024,700);
         window.setBackgroundFill(AminoColor.BLACK);
         final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/Junction.ttf")).withSize(30);
         spreadSlider = new Slider(core);
+        gravitySlider = new Slider(core);
 
         Node particleLayer = new Node() {
             @Override
@@ -52,9 +56,13 @@ public class Particles2 implements Core.InitCallback {
                 }
 
                 for(Particle part : particles) {
-                    part.y += Math.sin(part.a)*part.v;
-                    part.x += Math.cos(part.a)*part.v;
-                    if(part.y < -40) {
+                    //part.v -= gravitySlider.getValue();
+                    //part.y += Math.sin(part.a)*part.v;
+                    //part.x += Math.cos(part.a)*part.v;
+                    part.dy += gravitySlider.getValue()/3f;
+                    part.x += part.dx;
+                    part.y += part.dy;
+                    if(part.y < -40 || part.y > 800) {
                         resetParticle(window, part);
                     }
 
@@ -62,7 +70,7 @@ public class Particles2 implements Core.InitCallback {
 
                 gfx.setPaint(AminoColor.WHITE.withAlpha(0.5));
                 for(Particle part : particles) {
-                    gfx.fillRect((int)part.x,(int)part.y,20,20);
+                    gfx.fillRect((float)part.x,(float)part.y,20f,20f);
                 }
             }
         };
@@ -73,9 +81,15 @@ public class Particles2 implements Core.InitCallback {
             .add(new Text()
                     .setText("Spread:")
                     .setFont(font)
-                    .setX(20)
-                    .setY(600))
-            .add(spreadSlider.setX(170).setY(565))
+                    .setX(800)
+                    .setY(100))
+            .add(spreadSlider.setX(800).setY(150))
+            .add(new Text()
+                    .setText("Gravity:")
+                    .setFont(font)
+                    .setX(800)
+                    .setY(300))
+            .add(gravitySlider.setX(800).setY(350))
         );
 
 
@@ -84,15 +98,17 @@ public class Particles2 implements Core.InitCallback {
     private void resetParticle(Window window, Particle p) {
         p.x = window.getWidth()/2;
         p.y = window.getHeight()-200;
-        p.v = 3;
+        p.v = 6;
         p.a = Math.toRadians(270) + (Math.random()-0.5)*4.0*spreadSlider.getValue();
+        p.dy = Math.sin(p.a)*p.v;
+        p.dx = Math.cos(p.a)*p.v;
     }
 
     private static class Slider extends Node {
         private double value = 0.3;
 
         private Slider(Core core) {
-            core.listen(Core.Events.MOUSE_DRAG, "*", new Callback<MEvent>() {
+            core.listen(Core.Events.MOUSE_DRAG, this, new Callback<MEvent>() {
                 public void call(MEvent mEvent) {
                     double x = mEvent.getX()-getX();
                     double v = x/200.0;

@@ -62,6 +62,11 @@ public class SDLGFX extends GFX {
     }
 
     @Override
+    public void fillRect(float x, float y, float w, float h) {
+        fillRect((int)x,(int)y,(int)w,(int)h);
+    }
+
+    @Override
     public void drawRoundRect(int x1, int y1, int w, int h, int r) {
         int width = w - r - r;
         int height = h - r - r;
