@@ -1,6 +1,7 @@
 package com.joshondesign.amino.jogl;
 
 import com.joshondesign.amino.core.*;
+import com.sun.opengl.util.awt.TextRenderer;
 import com.sun.opengl.util.texture.Texture;
 
 import javax.media.opengl.GL2;
@@ -18,6 +19,8 @@ public class JoglGFX extends GFX {
     private AminoPaint paint = AminoColor.WHITE;
     private AminoColor color = AminoColor.WHITE;
     private GL2 gl;
+    private double translateX = 0;
+    private double translateY = 0;
 
     public JoglGFX(GLAutoDrawable drawable) {
         super();
@@ -168,11 +171,19 @@ public class JoglGFX extends GFX {
 
     @Override
     public void fillText(AminoFont font, String s, int x, int y) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        if(!(font instanceof JoglFont)) return;
+        JoglFont f = (JoglFont) font;
+        TextRenderer rend = f.getText();
+        rend.beginRendering(drawable.getWidth(), drawable.getHeight());
+        rend.setColor(this.color.getRed()/255.0f,this.color.getGreen()/255.0f,this.color.getBlue()/255.0f,this.color.getAlpha()/255.0f);
+        rend.draw(s, (int)(x+translateX), drawable.getHeight() - y);
+        rend.endRendering();
     }
 
     @Override
     public void translate(double x, double y) {
+        this.translateX += x;
+        this.translateY += y;
         gl.glTranslated(x,y,0);
     }
 }

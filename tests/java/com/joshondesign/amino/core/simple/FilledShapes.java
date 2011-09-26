@@ -73,7 +73,6 @@ public class FilledShapes implements Core.InitCallback {
             }
         });
 
-        core.start();
     }
 
     private void doDrawing(GFX gfx) {

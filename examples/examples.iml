@@ -10,6 +10,7 @@
     <orderEntry type="module" module-name="Amino2" />
     <orderEntry type="module" module-name="java2d" />
     <orderEntry type="module" module-name="sdl" />
+    <orderEntry type="module" module-name="jogl" />
   </component>
 </module>
 
