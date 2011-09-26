@@ -54,6 +54,7 @@ public class FilledShapes implements Core.InitCallback {
                 gfx.setPaint(AminoColor.fromRGBA(255,255,255,128));
                 doDrawing(gfx);
 
+                gfx.setPaint(AminoColor.fromRGBA(255,255,255,255));
                 gfx.translate(200,0);
                 gfx.setPaint(gradient);
                 doDrawing(gfx);

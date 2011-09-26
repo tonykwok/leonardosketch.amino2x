@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
-
 /**
 @class Text A shape which draws text in a particular font.
 @category shape
@@ -9,6 +7,10 @@ import java.awt.*;
 public class Text extends Shape {
     String text = "-no text-";
     AminoFont font;
+
+    public Text() {
+        this.setFill(AminoColor.WHITE);
+    }
 
     @Override
     public void draw(GFX ctx) {
