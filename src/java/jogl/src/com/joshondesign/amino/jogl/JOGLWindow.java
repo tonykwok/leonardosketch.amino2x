@@ -33,6 +33,10 @@ public class JOGLWindow extends Window {
         this.height = height;
         GLProfile glp = GLProfile.get(GLProfile.GL2);
         GLCapabilities caps = new GLCapabilities(glp);
+
+        //turn on fullscreen antialiasing
+        caps.setSampleBuffers(true);
+        caps.setNumSamples(2);
         canvas = new GLCanvas(caps);
 
         frame = new Frame("AWT Frame");
@@ -115,9 +119,9 @@ public class JOGLWindow extends Window {
 
 
             //gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
             gl.glEnable(GL2.GL_BLEND);
             gl.glBlendFunc(GL2.GL_SRC_ALPHA,GL2.GL_ONE_MINUS_SRC_ALPHA);
+
 
             u.p("jogl window created");
         }

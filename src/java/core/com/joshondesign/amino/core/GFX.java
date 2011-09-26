@@ -25,6 +25,7 @@ public abstract class GFX {
     public abstract void drawLine(int x1, int y1, int x2, int y2);
     public abstract void drawRect(int x, int y, int w, int h);
     public abstract void fillRect(int x, int y, int w, int h);
+    public abstract void fillRect(float x, float y, float w, float h);
     public abstract void drawRoundRect(int x, int y, int w, int h, int corner);
     public abstract void fillRoundRect(int x, int y, int w, int h, int corner);
     public abstract void drawEllipse(int x, int y, int w, int h);

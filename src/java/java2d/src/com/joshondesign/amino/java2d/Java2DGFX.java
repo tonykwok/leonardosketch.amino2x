@@ -47,6 +47,11 @@ public class Java2DGFX extends GFX {
     }
 
     @Override
+    public void fillRect(float x, float y, float w, float h) {
+        g.fillRect((int)x,(int)y,(int)w,(int)h);
+    }
+
+    @Override
     public void drawRoundRect(int x, int y, int w, int h, int corner) {
         g.drawRoundRect(x,y,w,h,corner,corner);
     }
