@@ -29,4 +29,6 @@ public abstract class Window {
 
     public abstract int getWidth();
     public abstract int getHeight();
+
+    public abstract Core getCore();
 }
