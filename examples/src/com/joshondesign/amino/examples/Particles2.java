@@ -35,9 +35,13 @@ public class Particles2 implements Core.InitCallback {
     public void call(Core core) throws Exception {
         window = core.createResizableWindow(1024,700);
         window.setBackgroundFill(AminoColor.BLACK);
-        final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/Junction.ttf")).withSize(30);
+        final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/OpenSans-Regular.ttf"))
+                .withSize(18);
         spreadSlider = new Slider(core);
         gravitySlider = new Slider(core);
+
+        final AminoImage image = core.loadImage(new File("examples/src/com/joshondesign/amino/examples/particle.png"));
+        final PatternPaint pattern = core.loadPattern(new File("examples/src/com/joshondesign/amino/examples/particle.png"));
 
         Node particleLayer = new Node() {
             @Override
@@ -70,7 +74,7 @@ public class Particles2 implements Core.InitCallback {
 
                 gfx.setPaint(AminoColor.WHITE.withAlpha(0.5));
                 for(Particle part : particles) {
-                    gfx.fillRect((float)part.x,(float)part.y,20f,20f);
+                    gfx.drawImage(image,(int)part.x,(int)part.y);
                 }
             }
         };

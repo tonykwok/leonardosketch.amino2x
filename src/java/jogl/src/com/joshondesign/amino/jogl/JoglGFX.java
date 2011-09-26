@@ -3,6 +3,7 @@ package com.joshondesign.amino.jogl;
 import com.joshondesign.amino.core.*;
 import com.sun.opengl.util.awt.TextRenderer;
 import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureCoords;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -143,7 +144,25 @@ public class JoglGFX extends GFX {
 
     @Override
     public void drawImage(AminoImage image, int x, int y) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        setColor(AminoColor.WHITE);
+        Texture texture = ((JoglImage)image).getTexture();
+        texture.enable();
+        texture.bind();
+        gl.glTranslated((double) x, (double) y, 0);
+
+        TextureCoords tc = texture.getImageTexCoords();
+        float mulH = tc.right();//paint.getWrapMultiplierH((int)w, (int)h);
+        float mulV = tc.bottom();//paint.getWrapMultiplierV((int)w, (int)h);
+        //u.p("drawing at: " + x + " " + y + " " + image.getWidth() + " " + image.getHeight());
+        //u.p("mul = " + mulH + " " + mulV);
+        gl.glBegin(GL2.GL_QUADS);
+            gl.glTexCoord2f(0f, 0f);      gl.glVertex2f(0, 0);
+            gl.glTexCoord2f(0f, mulV);    gl.glVertex2f(0, image.getHeight());
+            gl.glTexCoord2f(mulH, mulV);  gl.glVertex2f(image.getWidth(), image.getHeight());
+            gl.glTexCoord2f(mulH, 0f);    gl.glVertex2f(image.getWidth(), 0);
+        gl.glEnd();
+        gl.glTranslated(-(double)x,-(double)y,0);
+        texture.disable();
     }
 
     @Override
@@ -162,6 +181,7 @@ public class JoglGFX extends GFX {
         JoglFont f = (JoglFont) font;
         TextRenderer rend = f.getText();
         rend.beginRendering(drawable.getWidth(), drawable.getHeight());
+        //this.color = AminoColor.WHITE;
         rend.setColor(this.color.getRed()/255.0f,this.color.getGreen()/255.0f,this.color.getBlue()/255.0f,this.color.getAlpha()/255.0f);
         rend.draw(s, (int)(x+translateX), drawable.getHeight() - y);
         rend.endRendering();

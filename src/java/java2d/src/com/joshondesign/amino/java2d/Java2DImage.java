@@ -22,6 +22,7 @@ public class Java2DImage extends AminoImage {
     public Java2DImage(File file) throws IOException {
         this.file = file;
         u.p("trying to read image: " + file.getAbsolutePath());
+        u.p("exists = " + file.exists());
         this._image = ImageIO.read(file);
     }
 

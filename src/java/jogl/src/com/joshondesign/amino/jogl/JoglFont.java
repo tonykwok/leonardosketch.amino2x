@@ -1,7 +1,6 @@
 package com.joshondesign.amino.jogl;
 
 import com.joshondesign.amino.core.AminoFont;
-import com.joshondesign.amino.core.u;
 import com.sun.opengl.util.awt.TextRenderer;
 
 import java.awt.*;
@@ -19,19 +18,19 @@ public class JoglFont extends AminoFont {
     private double size = 12;
     private TextRenderer _renderer;
 
-    public JoglFont(File resource) {
+    public JoglFont(File resource, double size) {
         this.file = resource;
+        this.size = size;
     }
 
     @Override
     public AminoFont withSize(double size) {
-        this.size = size;
-        return this;
+        return new JoglFont(this.file,size);
     }
 
     public TextRenderer getText() {
         if(_renderer == null) {
-            _renderer = new TextRenderer(new Font("SansSerif",Font.BOLD, (int) this.size),true,true);
+            _renderer = new TextRenderer(new Font("SansSerif",Font.PLAIN, (int) this.size),true,true);
         }
         return _renderer;
     }

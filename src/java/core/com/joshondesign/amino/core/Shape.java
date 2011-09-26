@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
-
 /**
 @class Shape The base class of all shape *Node*s.
 @category shape
