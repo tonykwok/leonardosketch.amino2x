@@ -1,7 +1,6 @@
 package com.joshondesign.amino.core;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 
 /**
 @class SaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
@@ -107,7 +106,7 @@ public class SaturationNode extends Node implements Parent {
         return node;
     }
 
-    public Point2D convertToChildCoords(Point2D pt) {
+    public AminoPoint convertToChildCoords(AminoPoint pt) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

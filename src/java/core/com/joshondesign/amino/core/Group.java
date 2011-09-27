@@ -89,7 +89,7 @@ public class Group extends Node implements Parent {
         return nodes.get(i);
     }
 
-    public Point2D convertToChildCoords(Point2D pt) {
-        return new Point2D.Double(pt.getX()-this.getX(),pt.getY()-this.getY());
+    public AminoPoint convertToChildCoords(AminoPoint pt) {
+        return new AminoPoint(pt.getX()-this.getX(),pt.getY()-this.getY());
     }
 }

@@ -1,8 +1,6 @@
 package com.joshondesign.amino.core;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -37,7 +35,7 @@ public class ImageView extends Node {
     }
 
     @Override
-    public boolean contains(Point2D pt) {
+    public boolean contains(AminoPoint pt) {
         double x = pt.getX();
         double y = pt.getY();
         if(x >= this.x && x <= this.x + this.width) {

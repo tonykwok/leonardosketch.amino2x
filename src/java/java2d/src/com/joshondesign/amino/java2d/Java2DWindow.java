@@ -6,7 +6,6 @@ import com.joshondesign.amino.core.Window;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Point2D;
 
 /**
  * Created by IntelliJ IDEA.
@@ -84,7 +83,7 @@ public class Java2DWindow extends Window {
         public void mousePressed(MouseEvent e) {
             _mouse_pressed = true;
             //send target node event first
-            Node node = window.findNode(e.getPoint());
+            Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
             //p("---------- found node --------");
             //console.log(node);
             MEvent evt = new MEvent();
@@ -110,7 +109,7 @@ public class Java2DWindow extends Window {
             _mouse_pressed = false;
             _drag_target = null;
             //send target node event first
-            Node node = window.findNode(e.getPoint());
+            Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
             //console.log(node);
             MEvent evt = new MEvent();
             evt.node = node;
@@ -138,7 +137,7 @@ public class Java2DWindow extends Window {
 
         public void mouseDragged(MouseEvent e) {
             if(_mouse_pressed) {
-                Node node = window.findNode(e.getPoint());
+                Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
                 MEvent evt = new MEvent();
 
                 //redirect events to current drag target, if applicable
@@ -164,13 +163,13 @@ public class Java2DWindow extends Window {
         public void mouseMoved(MouseEvent e) {
         }
 
-        private Node findNode(Node node, Point2D pt) {
+        private Node findNode(Node node, AminoPoint pt) {
             if(!node.isVisible()) return null;
             if(node.contains(pt)) return node;
             if(node instanceof Parent) {
                 Parent parent = (Parent) node;
                 if(parent.hasChildren()) {
-                    Point2D nc = parent.convertToChildCoords(pt);
+                    AminoPoint nc = parent.convertToChildCoords(pt);
                     for(int i=parent.childCount()-1;i>=0;i--) {
                         Node n2 = findNode(parent.getChild(i),nc);
                         //u.p("Found " + n2);

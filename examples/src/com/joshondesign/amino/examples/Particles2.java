@@ -2,7 +2,6 @@ package com.joshondesign.amino.examples;
 
 import com.joshondesign.amino.core.*;
 
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,18 +34,18 @@ public class Particles2 implements Core.InitCallback {
     public void call(Core core) throws Exception {
         window = core.createResizableWindow(1024,700);
         window.setBackgroundFill(AminoColor.BLACK);
-        final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/OpenSans-Regular.ttf"))
-                .withSize(18);
+        //final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/OpenSans-Regular.ttf"))
+//                .withSize(18);
         spreadSlider = new Slider(core);
         gravitySlider = new Slider(core);
 
-        final AminoImage image = core.loadImage(new File("examples/src/com/joshondesign/amino/examples/particle.png"));
-        final PatternPaint pattern = core.loadPattern(new File("examples/src/com/joshondesign/amino/examples/particle.png"));
+        final AminoImage image = core.loadImage(new File("particle.png"));
+        //final PatternPaint pattern = core.loadPattern(new File("examples/src/com/joshondesign/amino/examples/particle.png"));
 
         Node particleLayer = new Node() {
             @Override
             public void draw(GFX gfx) {
-                if(particles.size() < 1000) {
+                if(particles.size() < 100) {
                     Particle p = new Particle();
                     resetParticle(window, p);
                     particles.add(p);
@@ -82,17 +81,17 @@ public class Particles2 implements Core.InitCallback {
 
         window.setRoot(new Group()
             .add(particleLayer)
-            .add(new Text()
+            /*.add(new Text()
                     .setText("Spread:")
                     .setFont(font)
                     .setX(800)
-                    .setY(100))
+                    .setY(100))*/
             .add(spreadSlider.setX(800).setY(150))
-            .add(new Text()
+            /*.add(new Text()
                     .setText("Gravity:")
                     .setFont(font)
                     .setX(800)
-                    .setY(300))
+                    .setY(300))*/
             .add(gravitySlider.setX(800).setY(350))
         );
 
@@ -103,7 +102,8 @@ public class Particles2 implements Core.InitCallback {
         p.x = window.getWidth()/2;
         p.y = window.getHeight()-200;
         p.v = 6;
-        p.a = Math.toRadians(270) + (Math.random()-0.5)*4.0*spreadSlider.getValue();
+        //p.a = Math.toRadians(270) + (Math.random()-0.5)*4.0*spreadSlider.getValue();
+        p.a = 270*Math.PI/180.0 + (Math.random()-0.5)*4.0*spreadSlider.getValue();
         p.dy = Math.sin(p.a)*p.v;
         p.dx = Math.cos(p.a)*p.v;
     }
@@ -132,7 +132,7 @@ public class Particles2 implements Core.InitCallback {
         }
 
         @Override
-        public boolean contains(Point2D pt) {
+        public boolean contains(AminoPoint pt) {
             return new Bounds((int)getX(),(int)getY(),200,50).inside(pt);
         }
 

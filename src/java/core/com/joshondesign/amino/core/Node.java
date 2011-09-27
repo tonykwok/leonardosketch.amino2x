@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
 
 /**
 @class Node the base class for all nodes
@@ -68,7 +66,7 @@ public abstract class Node {
 
 
     //@method returns true if the node contains the point. The point should be in local coordinates.
-    public boolean contains(Point2D pt) {
+    public boolean contains(AminoPoint pt) {
         return false;
     }
 

@@ -1,6 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.geom.Point2D;
 
 /**
 @class MEvent a mouse event. It contains the x and y coordinates of where
@@ -29,8 +28,8 @@ public class MEvent {
     }
 
     //@property point a Point2D containing the x and y coordinates
-    public Point2D getPoint() {
-        return new Point2D.Double(x,y);
+    public AminoPoint getPoint() {
+        return new AminoPoint(x,y);
     }
 
     @Override
