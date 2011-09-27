@@ -1,5 +1,6 @@
 package com.joshondesign.amino.jogl;
 
+
 import com.joshondesign.amino.core.*;
 import com.sun.opengl.util.awt.TextRenderer;
 import com.sun.opengl.util.texture.Texture;

@@ -24,6 +24,7 @@ public class SDLCoreImpl extends CoreImpl {
     private List<SDLWindow> windows = new ArrayList<SDLWindow>();
     private boolean mouseDown;
     private Core core;
+    private Node _drag_target;
 
     @Override
     public void init(final Core core, final Core.InitCallback initCallback) {
@@ -174,9 +175,23 @@ public class SDLCoreImpl extends CoreImpl {
         if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONDOWN) {
             mouseDown = true;
             MEvent e = new MEvent();
-            e.node = null;
             e.x = event.getButton().getX();
             e.y = event.getButton().getY();
+
+            Window window = windows.get(0);
+            Node node = window.findNode(e.getPoint());
+            e.node = node;
+            if(node != null) {
+                Node start = node;
+                _drag_target = node;
+                while(start != null) {
+                    core.fireEvent(Core.Events.MOUSE_PRESS.toString(), start, e);
+                    //p("blocked = " + start.isMouseBlocked());
+                    if(start.isMouseBlocked()) return;
+                    start = (Node) start.getParent();
+                }
+            }
+            //send general events next
             core.fireEvent(Core.Events.MOUSE_PRESS.toString(), null, e);
         }
         if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONUP) {
@@ -186,6 +201,27 @@ public class SDLCoreImpl extends CoreImpl {
             e.x = event.getButton().getX();
             e.y = event.getButton().getY();
             core.fireEvent(Core.Events.MOUSE_RELEASE.toString(), null, e);
+
+            mouseDown = false;
+            _drag_target = null;
+            //send target node event first
+            Window window = windows.get(0);
+            Node node = window.findNode(e.getPoint());
+            //console.log(node);
+            //MEvent evt = new MEvent();
+            e.node = node;
+            if(node != null) {
+                Node start = node;
+                while(start != null) {
+                    //fireEvent("MOUSE_RELEASE", start, e);
+                    core.fireEvent(Core.Events.MOUSE_RELEASE.toString(),start, e);
+                    if(start.isMouseBlocked()) return;
+                    start = (Node) start.getParent();
+                }
+            }
+            //send general events next
+            //fireEvent("MOUSE_RELEASE",null,evt);
+            core.fireEvent(Core.Events.MOUSE_RELEASE.toString(),null,e);
         }
         if(event.getType() == SDL_EventType.SDL_MOUSEMOTION && mouseDown) {
             MEvent e = new MEvent();
@@ -193,6 +229,31 @@ public class SDLCoreImpl extends CoreImpl {
             e.x = event.getMotion().getX();
             e.y = event.getMotion().getY();
             core.fireEvent(Core.Events.MOUSE_DRAG.toString(), null, e);
+
+            if(mouseDown) {
+                Window window = windows.get(0);
+                Node node = window.findNode(e.getPoint());
+                //MEvent evt = new MEvent();
+
+                //redirect events to current drag target, if applicable
+                if(_drag_target != null) {
+                    node = _drag_target;
+                }
+                //evt.node = node;
+                e.node = node;
+                //evt.x = e.getX();
+                //evt.y = e.getY();
+                if(node != null) {
+                    Node start = node;
+                    while(start != null) {
+                        core.fireEvent(Core.Events.MOUSE_DRAG.toString(),start, e);
+                        if(start.isMouseBlocked()) return;
+                        start = (Node) start.getParent();
+                    }
+                }
+                //send general events next
+                core.fireEvent(Core.Events.MOUSE_DRAG.toString(),null,e);
+            }
         }
         /*
         if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONDOWN) {

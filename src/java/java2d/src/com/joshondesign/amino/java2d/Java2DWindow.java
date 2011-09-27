@@ -84,7 +84,7 @@ public class Java2DWindow extends Window {
         public void mousePressed(MouseEvent e) {
             _mouse_pressed = true;
             //send target node event first
-            Node node = findNode(window.getRoot(), e.getPoint());
+            Node node = window.findNode(e.getPoint());
             //p("---------- found node --------");
             //console.log(node);
             MEvent evt = new MEvent();
@@ -110,7 +110,7 @@ public class Java2DWindow extends Window {
             _mouse_pressed = false;
             _drag_target = null;
             //send target node event first
-            Node node = findNode(window.getRoot(),e.getPoint());
+            Node node = window.findNode(e.getPoint());
             //console.log(node);
             MEvent evt = new MEvent();
             evt.node = node;
@@ -138,7 +138,7 @@ public class Java2DWindow extends Window {
 
         public void mouseDragged(MouseEvent e) {
             if(_mouse_pressed) {
-                Node node = findNode(window.getRoot(),e.getPoint());
+                Node node = window.findNode(e.getPoint());
                 MEvent evt = new MEvent();
 
                 //redirect events to current drag target, if applicable
