@@ -1,8 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
-
 /**
 @class Transform A parent node which transforms it's child with rotation, translation, and scaling.
 @extends Node
@@ -30,7 +27,7 @@ public class Transform extends Node implements Parent {
     }
 
     @Override
-    public boolean contains(Point2D pt) {
+    public boolean contains(AminoPoint pt) {
         return false;
     }
 
@@ -57,7 +54,7 @@ public class Transform extends Node implements Parent {
         return this.node;
     }
 
-    public Point2D convertToChildCoords(Point2D pt) {
+    public AminoPoint convertToChildCoords(AminoPoint pt) {
         double x = pt.getX();
         double y = pt.getY();
         double x1 = x-this.translateX;
@@ -67,7 +64,7 @@ public class Transform extends Node implements Parent {
         double y2 = x1*Math.sin(a) + y1*Math.cos(a);
         x2 = x2/this.scaleX;
         y2 = y2/this.scaleY;
-        return new Point2D.Double(x2,y2);
+        return new AminoPoint(x2,y2);
     }
 
     //@property translateX the X translation of the node

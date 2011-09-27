@@ -201,7 +201,7 @@ public class JOGLWindow extends Window {
         public void mousePressed(MouseEvent e) {
             _mouse_pressed = true;
             //send target node event first
-            Node node = window.findNode(e.getPoint());
+            Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
             //p("---------- found node --------");
             //console.log(node);
             MEvent evt = new MEvent();
@@ -227,7 +227,7 @@ public class JOGLWindow extends Window {
             _mouse_pressed = false;
             _drag_target = null;
             //send target node event first
-            Node node = window.findNode(e.getPoint());
+            Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
             //console.log(node);
             MEvent evt = new MEvent();
             evt.node = node;
@@ -255,7 +255,7 @@ public class JOGLWindow extends Window {
 
         public void mouseDragged(MouseEvent e) {
             if(_mouse_pressed) {
-                Node node = window.findNode(e.getPoint());
+                Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
                 MEvent evt = new MEvent();
 
                 //redirect events to current drag target, if applicable

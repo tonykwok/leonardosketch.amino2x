@@ -225,9 +225,10 @@
             <arg value="--jardir=out/artifacts/amino_sdl/"/>
             <arg value="--jardir=lib/"/>
         </java>
-        <exec command="palm-package 'dist/sdl/webos/Amino Particles'"/>        
-        <exec command="palm-install com.joshondesign.amino.examples.particles_0.0.1_all.ipk"/>
-        <exec command="palm-launch com.joshondesign.amino.examples.particles"/>
+        <copy todir="dist/sdl/webos/Amino Particles" file="examples/src/com/joshondesign/amino/examples/particle.png"/>
+        <exec command="palm-package 'dist/sdl/webos/Amino Particles'"/>
+        <exec command="palm-install com.joshondesign.amino.examples.particles2_0.0.1_all.ipk"/>
+        <exec command="palm-launch com.joshondesign.amino.examples.particles2"/>
     </target>
     <!--
     <target name="testwebossdl-particles">

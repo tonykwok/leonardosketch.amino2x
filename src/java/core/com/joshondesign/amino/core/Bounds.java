@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.geom.Point2D;
-
 /**
  @class Bounds An immutable class representing the bounds of a node. It is usually used to represent visual bounds.
  @category resource
@@ -39,7 +37,7 @@ public class Bounds {
         return height;
     }
 
-    public boolean inside(Point2D point) {
+    public boolean inside(AminoPoint point) {
         if(point.getX() >= x && point.getX() <= x + width) {
             if(point.getY() >=y && point.getY()<= y+height) {
                 return true;

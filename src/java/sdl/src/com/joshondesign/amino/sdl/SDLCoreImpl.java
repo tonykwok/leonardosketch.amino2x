@@ -179,7 +179,7 @@ public class SDLCoreImpl extends CoreImpl {
             e.y = event.getButton().getY();
 
             Window window = windows.get(0);
-            Node node = window.findNode(e.getPoint());
+            Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
             e.node = node;
             if(node != null) {
                 Node start = node;
@@ -206,7 +206,7 @@ public class SDLCoreImpl extends CoreImpl {
             _drag_target = null;
             //send target node event first
             Window window = windows.get(0);
-            Node node = window.findNode(e.getPoint());
+            Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
             //console.log(node);
             //MEvent evt = new MEvent();
             e.node = node;
@@ -232,7 +232,7 @@ public class SDLCoreImpl extends CoreImpl {
 
             if(mouseDown) {
                 Window window = windows.get(0);
-                Node node = window.findNode(e.getPoint());
+                Node node = window.findNode(new AminoPoint(e.getPoint().getX(),e.getPoint().getY()));
                 //MEvent evt = new MEvent();
 
                 //redirect events to current drag target, if applicable

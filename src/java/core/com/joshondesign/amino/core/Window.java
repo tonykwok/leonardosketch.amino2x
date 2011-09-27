@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.geom.Point2D;
-
 /**
  * Created by IntelliJ IDEA.
  * User: josh
@@ -32,17 +30,17 @@ public abstract class Window {
 
     public abstract Core getCore();
 
-    public Node findNode(Point2D pt) {
+    public Node findNode(AminoPoint pt) {
         return findNode(getRoot(),pt);
     }
 
-    private Node findNode(Node node, Point2D pt) {
+    private Node findNode(Node node, AminoPoint pt) {
         if(!node.isVisible()) return null;
         if(node.contains(pt)) return node;
         if(node instanceof Parent) {
             Parent parent = (Parent) node;
             if(parent.hasChildren()) {
-                Point2D nc = parent.convertToChildCoords(pt);
+                AminoPoint nc = parent.convertToChildCoords(pt);
                 for(int i=parent.childCount()-1;i>=0;i--) {
                     Node n2 = findNode(parent.getChild(i),nc);
                     //u.p("Found " + n2);
