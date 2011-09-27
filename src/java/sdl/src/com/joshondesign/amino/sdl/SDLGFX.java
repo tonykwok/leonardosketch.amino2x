@@ -3,8 +3,6 @@ package com.joshondesign.amino.sdl;
 import com.joshondesign.amino.core.*;
 import com.joshondesign.sdljava.*;
 
-import java.awt.*;
-
 /**
  * Created by IntelliJ IDEA.
  * User: josh
@@ -55,7 +53,7 @@ public class SDLGFX extends GFX {
             fillRect_rect.setY((short) (y + this.translateY));
             fillRect_rect.setW(w);
             fillRect_rect.setH(h);
-            System.out.println("filling rect with: " + Long.toHexString(current_sdlcolor));
+            //System.out.println("filling rect with: " + Long.toHexString(current_sdlcolor));
             SDL.SDL_FillRect(surface, fillRect_rect, current_sdlcolor);
             //SDL.SDL_FillRect(surface, fillRect_rect, 0xFFFFFFAA);
         }
@@ -434,7 +432,7 @@ public class SDLGFX extends GFX {
         if(backgroundFill instanceof AminoColor) {
             this.current_color = (AminoColor)backgroundFill;
             //TODO we should probably have a separate path for non-alpha stuff
-            u.p("color = " + current_color);
+            //u.p("color = " + current_color);
             this.current_sdlcolor = SDL.SDL_MapRGBA(format,
                     (short) current_color.getRed(),
                     (short) current_color.getGreen(),

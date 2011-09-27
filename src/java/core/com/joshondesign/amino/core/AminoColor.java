@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
-
 /**
  * Created by IntelliJ IDEA.
  * User: josh
@@ -68,6 +66,14 @@ public class AminoColor implements AminoPaint {
         return b;
     }
 
+    public int getAlpha() {
+        return this.a;
+    }
+
+    public AminoColor withAlpha(double alpha) {
+        return new AminoColor(getRed(),getGreen(),getBlue(),(int)(alpha*255));
+    }
+
     @Override
     public String toString() {
         return "AminoColor{" +
@@ -78,11 +84,5 @@ public class AminoColor implements AminoPaint {
                 '}';
     }
 
-    public int getAlpha() {
-        return this.a;
-    }
 
-    public AminoColor withAlpha(double alpha) {
-        return new AminoColor(getRed(),getGreen(),getBlue(),(int)(alpha*255));
-    }
 }
