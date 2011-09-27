@@ -34,13 +34,12 @@ public class Particles2 implements Core.InitCallback {
     public void call(Core core) throws Exception {
         window = core.createResizableWindow(1024,700);
         window.setBackgroundFill(AminoColor.BLACK);
-        //final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/OpenSans-Regular.ttf"))
-//                .withSize(18);
+        final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/OpenSans-Regular.ttf"))
+                .withSize(18);
         spreadSlider = new Slider(core);
         gravitySlider = new Slider(core);
 
         final AminoImage image = core.loadImage(new File("particle.png"));
-        //final PatternPaint pattern = core.loadPattern(new File("examples/src/com/joshondesign/amino/examples/particle.png"));
 
         Node particleLayer = new Node() {
             @Override
@@ -59,9 +58,6 @@ public class Particles2 implements Core.InitCallback {
                 }
 
                 for(Particle part : particles) {
-                    //part.v -= gravitySlider.getValue();
-                    //part.y += Math.sin(part.a)*part.v;
-                    //part.x += Math.cos(part.a)*part.v;
                     part.dy += gravitySlider.getValue()/3f;
                     part.x += part.dx;
                     part.y += part.dy;
@@ -81,17 +77,17 @@ public class Particles2 implements Core.InitCallback {
 
         window.setRoot(new Group()
             .add(particleLayer)
-            /*.add(new Text()
+            .add(new Text()
                     .setText("Spread:")
                     .setFont(font)
                     .setX(800)
-                    .setY(100))*/
+                    .setY(100))
             .add(spreadSlider.setX(800).setY(150))
-            /*.add(new Text()
+            .add(new Text()
                     .setText("Gravity:")
                     .setFont(font)
                     .setX(800)
-                    .setY(300))*/
+                    .setY(300))
             .add(gravitySlider.setX(800).setY(350))
         );
 
@@ -102,7 +98,6 @@ public class Particles2 implements Core.InitCallback {
         p.x = window.getWidth()/2;
         p.y = window.getHeight()-200;
         p.v = 6;
-        //p.a = Math.toRadians(270) + (Math.random()-0.5)*4.0*spreadSlider.getValue();
         p.a = 270*Math.PI/180.0 + (Math.random()-0.5)*4.0*spreadSlider.getValue();
         p.dy = Math.sin(p.a)*p.v;
         p.dx = Math.cos(p.a)*p.v;

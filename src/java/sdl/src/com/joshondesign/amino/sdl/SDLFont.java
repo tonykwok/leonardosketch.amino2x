@@ -6,6 +6,8 @@ import com.joshondesign.sdljava.SDL;
 import com.joshondesign.sdljava.SWIGTYPE_p__TTF_Font;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 
 import static com.joshondesign.sdljava.SDLUtil.p;
@@ -15,7 +17,7 @@ public class SDLFont extends AminoFont {
     private File file;
 
     public SDLFont(URL resource) {
-        u.p("resource = " + resource);
+        this(resource, 12);
     }
 
     public SDLFont(File file) {
@@ -29,6 +31,31 @@ public class SDLFont extends AminoFont {
         }
         _font = SDL.TTF_OpenFont(file.getAbsolutePath(), size);
         this.file = file;
+    }
+
+    protected SDLFont(URL url, int size) {
+        p("trying to load _sdlfont: " + url.toString());
+        try {
+            File file = File.createTempFile("sdltest","foo");
+            FileOutputStream fout = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            InputStream in = url.openStream();
+            while(true) {
+                int n = in.read(buf);
+                if(n <0)break;
+                fout.write(buf,0,n);
+            }
+            fout.close();
+            if(SDL.TTF_Init() == -1) {
+                p("TTF_Init failed: " + SDL.SDL_GetError());
+            }
+            u.p("reading from tempfile: " + file.getAbsolutePath());
+            _font = SDL.TTF_OpenFont(file.getAbsolutePath(), size);
+            this.file = file;
+            file.deleteOnExit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public SDLFont(String fontName) {
