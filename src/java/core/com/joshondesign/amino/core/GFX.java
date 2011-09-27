@@ -1,7 +1,5 @@
 package com.joshondesign.amino.core;
 
-import java.awt.*;
-
 /**
  * Created by IntelliJ IDEA.
  * User: josh

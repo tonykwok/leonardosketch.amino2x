@@ -46,7 +46,7 @@ public class JoglCoreImpl extends CoreImpl {
 
     @Override
     public AminoFont loadFont(URL resource) throws IOException, FontFormatException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new JoglFont(resource, 16);
     }
 
     @Override
