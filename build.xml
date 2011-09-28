@@ -230,44 +230,22 @@
         <exec command="palm-install com.joshondesign.amino.examples.particles2_0.0.1_all.ipk"/>
         <exec command="palm-launch com.joshondesign.amino.examples.particles2"/>
     </target>
-    <!--
-    <target name="testwebossdl-particles">
-        <property name="staging" value="build/device-staging"/>
-        <property name="appid" value="com.joshondesign.amino.particles"/>
-        <mkdir dir="${staging}"/>
-        <copy todir="${staging}">
-            <fileset dir="tools/webos/">
-                <include name="*"/>
-            </fileset>
-        </copy>            
-        <copy file="out/artifacts/examples_jar/examples.jar" todir="${staging}"/>
-        <copy file="out/artifacts/amino_sdl/amino_sdl.jar" todir="${staging}"/>
-        <copy file="out/artifacts/amino2_core_jar/Amino2.jar" todir="${staging}"/>
-        
-        <echo file="${staging}/appinfo.json">
-{
-	"id": "${appid}",
-	"version": "0.0.1",
-	"vendor": "josh",
-	"type": "pdk",
-	"main": "runit.sh",
-	"title": "jpart",
-    "icon": "icon.png",
-    "requiredMemory": 64
-}
-</echo>
-        <echo file="${staging}/runit.sh">#!/bin/sh
-echo "trying to start avian" > /tmp/blah.txt
-echo $PWD >> /tmp/blah.txt
-export LD_LIBRARY_PATH=.
-./avian -Dcom.joshondesign.amino.impl=sdl -cp classpath.jar:sdljava.jar:sdljava_test.jar:examples.jar:amino_sdl.jar:Amino2.jar com.joshondesign.amino.examples.Particles &amp;> /tmp/avian.out        
-</echo>
-
-        
-        <exec command="palm-package build/device-staging"/>
-        
-        <exec command="palm-install ${appid}_0.0.1_all.ipk"/>        
-        
+    
+    <target name="webos-fontcomparison">
+        <java
+            classpath="lib/AppBundler.jar;lib/XMLLib.jar"
+            classname="com.joshondesign.appbundler.Bundler" fork="true">
+            <arg value="--file=examples/app/fontcomparison-sdl.xml"/>
+            <arg value="--target=webos"/>
+            <arg value="--outdir=dist/sdl"/>
+            <arg value="--jardir=out/artifacts/java_tests/"/>
+            <arg value="--jardir=out/artifacts/amino2_core_jar/"/>
+            <arg value="--jardir=out/artifacts/amino_sdl/"/>
+            <arg value="--jardir=lib/"/>
+        </java>
+        <exec command="palm-package 'dist/sdl/webos/Amino Font Comparison'"/>
+        <exec command="palm-install com.joshondesign.amino.core.text.fontcomparison_0.0.1_all.ipk"/>
+        <exec command="palm-launch com.joshondesign.amino.core.text.fontcomparison"/>
     </target>
-    -->
+    
 </project>
