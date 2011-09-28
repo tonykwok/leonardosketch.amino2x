@@ -2,7 +2,6 @@ package com.joshondesign.amino.examples;
 
 import com.joshondesign.amino.core.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,12 +33,12 @@ public class Particles2 implements Core.InitCallback {
     public void call(Core core) throws Exception {
         window = core.createResizableWindow(1024,700);
         window.setBackgroundFill(AminoColor.BLACK);
-        final AminoFont font = core.loadFont(new File("tests/java/com/joshondesign/amino/core/resources/OpenSans-Regular.ttf"))
+        final AminoFont font = core.loadFont(this.getClass().getResource("OpenSans-Regular.ttf"))
                 .withSize(18);
         spreadSlider = new Slider(core);
         gravitySlider = new Slider(core);
 
-        final AminoImage image = core.loadImage(new File("particle.png"));
+        final AminoImage image = core.loadImage(this.getClass().getResource("particle.png"));
 
         Node particleLayer = new Node() {
             @Override
