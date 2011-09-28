@@ -334,7 +334,7 @@ public class Core {
         return _impl.loadFont(fontName);
     }
 
-    public AminoImage loadImage(URL resource) {
+    public AminoImage loadImage(URL resource) throws IOException {
         return _impl.loadImage(resource);
     }
 

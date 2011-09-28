@@ -195,15 +195,25 @@ public class Java2DWindow extends Window {
 
         public void keyPressed(KeyEvent keyEvent) {
             KEvent evt = new KEvent();
-            evt.key = keyEvent.getKeyCode();
+            //evt.key = keyEvent.getKeyCode();
+            evt.key = awtToAminoKeycode(keyEvent.getKeyCode());
             fireEvent("KEY_PRESSED", null, evt);
         }
 
         public void keyReleased(KeyEvent keyEvent) {
             KEvent evt = new KEvent();
-            evt.key = keyEvent.getKeyCode();
+            evt.key = awtToAminoKeycode(keyEvent.getKeyCode());
             fireEvent("KEY_RELEASED", null, evt);
         }
+
+        private static KEvent.KeyCode awtToAminoKeycode(int keyCode) {
+            switch(keyCode) {
+                case 37: return KEvent.KeyCode.LEFT;
+                case 39: return KEvent.KeyCode.RIGHT;
+            }
+            return KEvent.KeyCode.UNKNOWN;
+        }
+
     }
 
 }

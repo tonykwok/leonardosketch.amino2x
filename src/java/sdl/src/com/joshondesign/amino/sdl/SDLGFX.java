@@ -363,8 +363,9 @@ public class SDLGFX extends GFX {
         int[] maxy = {0};
         int[] advance = {0};
         for (int i = 0; i < s.length(); i++) {
-            //SDL_Surface glyph_surface = SDL.TTF_RenderGlyph_Shaded(font._sdlfont, s.charAt(i), fg, bg);
+            //SDL_Surface glyph_surface = SDL.TTF_RenderGlyph_Shaded(font._font, s.charAt(i), fg, bg);
             SDL_Surface glyph_surface = SDL.TTF_RenderGlyph_Blended(font._font, s.charAt(i), fg);
+            //SDL_Surface glyph_surface = SDL.TTF_RenderGlyph_Solid(font._font, s.charAt(i), fg);
             int ret = SDL.TTF_GlyphMetrics(font._font, s.charAt(i)
                     , minx
                     , maxx
