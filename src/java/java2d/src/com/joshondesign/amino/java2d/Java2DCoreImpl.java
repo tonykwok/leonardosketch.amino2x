@@ -2,7 +2,6 @@ package com.joshondesign.amino.java2d;
 
 import com.joshondesign.amino.core.*;
 import com.joshondesign.amino.core.Window;
-import com.joshondesign.amino.java2d.Java2DWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,8 +82,8 @@ public class Java2DCoreImpl extends CoreImpl {
     }
 
     @Override
-    public AminoImage loadImage(URL resource) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public AminoImage loadImage(URL resource) throws IOException {
+        return new Java2DImage(resource);
     }
 
     @Override

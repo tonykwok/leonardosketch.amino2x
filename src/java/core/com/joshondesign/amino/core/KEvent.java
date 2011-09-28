@@ -8,7 +8,13 @@ package com.joshondesign.amino.core;
  * To change this template use File | Settings | File Templates.
  */
 public class KEvent {
-    public int key;
+    public static enum KeyCode {
+        LEFT,
+        RIGHT,
+        UNKNOWN,
+    }
+
+    public KeyCode key;
 
     @Override
     public String toString() {
@@ -16,4 +22,5 @@ public class KEvent {
                 "key=" + key +
                 '}';
     }
+
 }

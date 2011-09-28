@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,14 +17,17 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Java2DImage extends AminoImage {
-    private File file;
     BufferedImage _image;
 
     public Java2DImage(File file) throws IOException {
-        this.file = file;
         u.p("trying to read image: " + file.getAbsolutePath());
         u.p("exists = " + file.exists());
         this._image = ImageIO.read(file);
+    }
+
+    public Java2DImage(URL url) throws IOException {
+        u.p("trying to read image: " + url);
+        this._image = ImageIO.read(url);
     }
 
     @Override

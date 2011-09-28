@@ -60,8 +60,8 @@ public class JoglCoreImpl extends CoreImpl {
     }
 
     @Override
-    public AminoImage loadImage(URL resource) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public AminoImage loadImage(URL resource) throws IOException {
+        return new JoglImage(resource);
     }
 
     @Override

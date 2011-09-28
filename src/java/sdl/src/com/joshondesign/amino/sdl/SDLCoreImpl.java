@@ -118,7 +118,7 @@ public class SDLCoreImpl extends CoreImpl {
 
     @Override
     public AminoImage loadImage(URL resource) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new SDLImage(resource);
     }
 
     @Override
@@ -255,6 +255,18 @@ public class SDLCoreImpl extends CoreImpl {
                 core.fireEvent(Core.Events.MOUSE_DRAG.toString(),null,e);
             }
         }
+        if(event.getType() == SDL_EventType.SDL_KEYDOWN) {
+            KEvent e = new KEvent();
+            //e.key = event.getKey().getKeysym().getScancode();
+            e.key = sdlToAminoKeycode(event.getKey());
+            core.fireEvent(Core.Events.KEY_PRESSED.toString(),null,e);
+        }
+        if(event.getType() == SDL_EventType.SDL_KEYUP) {
+            KEvent e = new KEvent();
+            e.key = sdlToAminoKeycode(event.getKey());
+            core.fireEvent(Core.Events.KEY_RELEASED.toString(),null,e);
+        }
+
         /*
         if(event.getType() == SDL_EventType.SDL_MOUSEBUTTONDOWN) {
             mouseDown = true;
@@ -348,6 +360,14 @@ public class SDLCoreImpl extends CoreImpl {
         }
 
         */
+    }
+
+    private KEvent.KeyCode sdlToAminoKeycode(SDL_KeyboardEvent key) {
+        switch(key.getKeysym().getScancode()) {
+            case 123: return KEvent.KeyCode.LEFT;
+            case 124: return KEvent.KeyCode.RIGHT;
+        }
+        return KEvent.KeyCode.UNKNOWN;
     }
 
     private void p(String s) {

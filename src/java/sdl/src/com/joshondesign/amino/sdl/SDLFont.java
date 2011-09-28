@@ -36,7 +36,7 @@ public class SDLFont extends AminoFont {
     protected SDLFont(URL url, int size) {
         p("trying to load _sdlfont: " + url.toString());
         try {
-            File file = File.createTempFile("sdltest","foo");
+            File file = new File("/tmp/temp"+Math.random()+"font");//File.createTempFile("sdltest","foo");
             FileOutputStream fout = new FileOutputStream(file);
             byte[] buf = new byte[1024];
             InputStream in = url.openStream();
@@ -52,7 +52,7 @@ public class SDLFont extends AminoFont {
             u.p("reading from tempfile: " + file.getAbsolutePath());
             _font = SDL.TTF_OpenFont(file.getAbsolutePath(), size);
             this.file = file;
-            file.deleteOnExit();
+            //file.deleteOnExit();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

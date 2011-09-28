@@ -1,15 +1,14 @@
 package com.joshondesign.amino.jogl;
 
 import com.joshondesign.amino.core.AminoImage;
-import com.joshondesign.amino.core.u;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.awt.AWTTextureIO;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,13 +18,17 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class JoglImage extends AminoImage {
-    private File file;
+    //private File file;
     private BufferedImage image;
     private Texture _texture;
 
     public JoglImage(File file) throws IOException {
-        this.file = file;
+        //this.file = file;
         this.image = ImageIO.read(file);
+    }
+
+    public JoglImage(URL resource) throws IOException {
+        this.image = ImageIO.read(resource);
     }
 
     @Override
@@ -40,16 +43,7 @@ public class JoglImage extends AminoImage {
 
     public Texture getTexture() {
         if(_texture == null) {
-            Graphics2D g = this.image.createGraphics();
-            g.setPaint(Color.RED);
-            g.fillRect(0,0,50,50);
-            g.dispose();
-            try {
-                _texture = AWTTextureIO.newTexture(this.file,false);
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            u.p("created texture for image: " + this.image.getWidth() + " " + this.getHeight());
+            _texture = AWTTextureIO.newTexture(this.image,false);
         }
         return _texture;
     }

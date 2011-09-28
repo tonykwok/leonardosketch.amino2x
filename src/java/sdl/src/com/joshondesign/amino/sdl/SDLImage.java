@@ -5,6 +5,9 @@ import com.joshondesign.sdljava.SDL;
 import com.joshondesign.sdljava.SDL_Surface;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 
 import static com.joshondesign.sdljava.SDLUtil.p;
 
@@ -23,6 +26,25 @@ public class SDLImage extends AminoImage {
         p("exists = " + file.exists());
         SDL_Surface image = SDL.IMG_Load(file.getAbsolutePath());
         this._image = image;
+    }
+    protected SDLImage(URL url) {
+        p("trying to load image: " + url.toString());
+        try {
+            File file = new File("/tmp/temp"+Math.random()+"font");//File.createTempFile("sdltest","foo");
+            FileOutputStream fout = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            InputStream in = url.openStream();
+            while(true) {
+                int n = in.read(buf);
+                if(n <0)break;
+                fout.write(buf,0,n);
+            }
+            fout.close();
+            SDL_Surface image = SDL.IMG_Load(file.getAbsolutePath());
+            this._image = image;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
