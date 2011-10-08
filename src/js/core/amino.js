@@ -645,11 +645,28 @@ Group.extend(Node, {});
 */
 function ImageView(url) {
     Node.call(this);
-    this.src = url;
-    this.img = new Image();
-    this.loaded = false;
-    this.width = 10;
-    this.height = 10;
+    var self = this;
+    if(url instanceof Image) {
+        this.img = url;
+        this.loaded = true;
+        this.width = url.width;
+        this.height = url.height;
+    } else {
+        this.src = url;
+        this.img = new Image();
+        this.loaded = false;
+        this.width = 10;
+        this.height = 10;
+        this.img.onload = function() {
+            console.log("loaded");
+            self.loaded = true;
+            self.setDirty();
+            self.width = self.img.width;
+            self.height = self.img.height;
+            console.log("self = " + self.width + " " + self.height);
+        }
+        this.img.src = url;
+    }
     
     //@property x  The Y coordinate of the upper left corner of the image.
     this.x = 0.0;
@@ -661,17 +678,7 @@ function ImageView(url) {
     this.setY = function(y) {  this.y = y;  this.setDirty();  return this;  };
     this.getY = function() { return this.y; };
     
-    var self = this;
     
-    this.img.onload = function() {
-        console.log("loaded");
-        self.loaded = true;
-        self.setDirty();
-        self.width = self.img.width;
-        self.height = self.img.height;
-        console.log("self = " + self.width + " " + self.height);
-    }
-    this.img.src = url;
     
     this.hasChildren = function() { return false; }
     
