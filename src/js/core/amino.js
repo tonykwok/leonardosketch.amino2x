@@ -417,6 +417,29 @@ function Transform(n) {
         return this.scaleY;
     };
     
+    //@property anchorX scale in the X direction
+    this.anchorX = 0;
+    this.setAnchorX = function(sx) {
+        this.anchorX = sx;
+        this.setDirty();
+        return this;
+    };
+    this.getAnchorX = function() {
+        return this.anchorX;
+    };
+        
+        
+    //@property anchorY scale in the X direction
+    this.anchorY = 0;
+    this.setAnchorY = function(sy) {
+        this.anchorY = sy;
+        this.setDirty();
+        return this;
+    };
+    this.getAnchorY = function() {
+        return this.anchorY;
+    };
+    
     //@property rotate set the rotation, in degrees
     this.rotate = 0;
     this.setRotate = function(rotate) {
@@ -427,6 +450,9 @@ function Transform(n) {
     this.getRotate = function() {
         return this.rotate;
     };
+    
+    
+    
     
     this.contains = function(x,y) {
         return false;
@@ -444,17 +470,23 @@ function Transform(n) {
     this.convertToChildCoords = function(x,y) {
         var x1 = x-this.translateX;
         var y1 = y-this.translateY;
+        x1 -= this.anchorX;
+        y1 -= this.anchorY;
         var a = -this.rotate * Math.PI/180;
         var x2 = x1*Math.cos(a) - y1*Math.sin(a);
         var y2 = x1*Math.sin(a) + y1*Math.cos(a);
         x2 = x2/this.scaleX;
         y2 = y2/this.scaleY;
+        x2 += this.anchorX;
+        y2 += this.anchorY;
         return [x2,y2];
     };
     
     this.draw = function(ctx) {
         ctx.save();
-        ctx.translate(self.translateX,this.translateY);
+        ctx.translate(self.translateX,self.translateY);
+        
+        ctx.translate(self.anchorX,self.anchorY);
         var r = this.rotate % 360;
         if(ROTATE_BACKWARDS) {
             r = 360-r;
@@ -463,6 +495,7 @@ function Transform(n) {
         if(self.scaleX != 1 || self.scaleY != 1) {
             ctx.scale(self.scaleX,self.scaleY);
         }
+        ctx.translate(-self.anchorX,-self.anchorY);
         this.node.draw(ctx);
         ctx.restore();
         this.clearDirty();
@@ -1170,9 +1203,9 @@ function Runner() {
     this.clearBackground = true;
     this.DEBUG = true;
     
-    //this.paintStrategy = new SimplePaintStrategy();
+    this.paintStrategy = new SimplePaintStrategy();
     //this.paintStrategy = new CachingPaintStrategy();
-    this.paintStrategy = new BoundsPaintStrategy();
+    //this.paintStrategy = new BoundsPaintStrategy();
     
     var self = this;
 
