@@ -24,7 +24,6 @@ public class ScrollTest implements Core.InitCallback {
     public void call(Core core) throws Exception {
         Window window = core.createResizableWindow(1024, 768);
         URL url = ScrollTest.class.getResource("Block-Normal.png");
-        u.p("url = " + url);
         tile = core.loadImage(url);
         window.setRoot(new Node() {
             @Override
@@ -46,25 +45,18 @@ public class ScrollTest implements Core.InitCallback {
                     case LEFT: leftDown = false; break;
                     case RIGHT: rightDown = false; break;
                 }
-                /*
-                if(o.key == 37 || o.key == 123) {
-                    leftDown = false;
-                }
-                if(o.key == 39 || o.key == 124) {
-                    rightDown = false;
-                }
-                */
             }
         });
     }
 
     private void doit(GFX gfx) {
+        double inc = 15.5;
         //counter += 3;
         if(leftDown) {
-            counter += 3;
+            counter += inc;
         }
         if(rightDown) {
-            counter -= 3;
+            counter -= inc;
         }
         int w = 1024;
         int sw = w/70+1;
