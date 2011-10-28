@@ -11,6 +11,15 @@
     <orderEntry type="module" module-name="java2d" />
     <orderEntry type="module" module-name="sdl" />
     <orderEntry type="module" module-name="jogl" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/jlayer.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
