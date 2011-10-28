@@ -19,6 +19,9 @@ public class JoglLayerTest implements Core.InitCallback {
     }
 
     public void call(Core core) throws Exception {
+        final AminoFont font = core.loadFont(this.getClass().getResource("OpenSans-Regular.ttf"))
+                .withSize(22);
+
         window = core.createResizableWindow(1024,700);
         window.setBackgroundFill(AminoColor.BLACK);
 
@@ -35,12 +38,23 @@ public class JoglLayerTest implements Core.InitCallback {
                 ,Transform.Axis.Y
                 )
                 ;
+
+        Group g2 = new Group()
+                .add(t1)
+                .add(new Text()
+                        .setFont(font)
+                        .setText("demo mixing orthographic and perspective transforms")
+                        .setFill(AminoColor.WHITE)
+                        .setX(100)
+                        .setY(100)
+                );
         window.setRoot(new Group()
                 .add(new PerspectiveLayer().setChild(t2))
-                .add(new OrthoLayer().setChild(t1))
+                .add(new OrthoLayer().setChild(g2))
         );
+
         core.addAnim(new PropAnim(t1, "rotate", 0, 360, 3).setAutoReverse(false).setLoop(true));
-        core.addAnim(new PropAnim(t2,"rotate",0,360,3).setAutoReverse(false).setLoop(true));
+        core.addAnim(new PropAnim(t2, "rotate", 0, 360,3).setAutoReverse(false).setLoop(true));
     }
 
 }
