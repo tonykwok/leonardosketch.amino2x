@@ -7,21 +7,30 @@ package com.joshondesign.amino.core;
 @category misc
  */
 public class Transform extends Node implements Parent {
+    public static enum Axis { X, Y, Z};
+
     private Node node;
-    
     private double rotate;
     private double translateX;
     private double translateY;
     private double scaleX;
     private double scaleY;
+    private Axis axis;
 
     //@constructor create a new Transform node around the child *node* .
     public Transform(Node node) {
+        this(node,Axis.Z);
+    }
+
+
+    public Transform(Node node, Axis axis) {
+        //To change body of created methods use File | Settings | File Templates.
+        this.axis = axis;
         this.node = node;
         node.setParent(this);
         this.rotate = 0.0;
-        this.translateX = 0.0;
-        this.translateY = 0.0;
+        this.translateX = 0.0f;
+        this.translateY = 0.0f;
         this.scaleX = 1.0;
         this.scaleY = 1.0;
     }
@@ -34,10 +43,12 @@ public class Transform extends Node implements Parent {
     @Override
     public void draw(GFX gfx) {
         //Graphics2D ctx = (Graphics2D) gfx.create();
-        gfx.translate(this.translateX,this.translateY);
-        //ctx.rotate(this.rotate * Math.PI / 180.0, 0, 0);
+        gfx.translate(this.translateX, this.translateY);
+        gfx.rotate((float) (this.rotate * Math.PI / 180.0f), 0, 0, axis);
         //ctx.scale(this.scaleX,this.scaleY);
         this.node.draw(gfx);
+        gfx.rotate(-(float) (this.rotate * Math.PI / 180.0f), 0, 0, axis);
+        gfx.translate(-this.translateX, -this.translateY);
         //ctx.dispose();
         this.clearDirty();
     }
@@ -68,7 +79,7 @@ public class Transform extends Node implements Parent {
     }
 
     //@property translateX the X translation of the node
-    public Transform setTranslateX(double translateX) {
+    public Transform setTranslateX(float translateX) {
         this.translateX = translateX;
         markDirty();
         return this;
@@ -78,7 +89,7 @@ public class Transform extends Node implements Parent {
     }
 
     //@property translateY the Y translation of the node
-    public Transform setTranslateY(double translateY) {
+    public Transform setTranslateY(float translateY) {
         this.translateY = translateY;
         markDirty();
         return this;

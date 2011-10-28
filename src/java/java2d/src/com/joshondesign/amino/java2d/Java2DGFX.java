@@ -160,6 +160,16 @@ public class Java2DGFX extends GFX {
         this.g.translate(x,y);
     }
 
+    @Override
+    public void rotate(double rotate, double anchorX, double anchorY, Transform.Axis axis) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void scale(double x, double y) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public static Color toAWTColor(AminoColor aminoColor) {
         return new Color(aminoColor.getRed(),aminoColor.getGreen(),aminoColor.getBlue(),aminoColor.getAlpha());
     }

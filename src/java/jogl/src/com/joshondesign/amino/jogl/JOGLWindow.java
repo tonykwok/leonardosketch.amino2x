@@ -129,6 +129,9 @@ public class JOGLWindow extends Window {
 
         int counter = 0;
         public void display(GLAutoDrawable drawable) {
+            window.core.processAnims();
+
+
             GL2 gl = drawable.getGL().getGL2();
             int width = drawable.getWidth();
             int height = drawable.getHeight();

@@ -45,8 +45,10 @@ public abstract class GFX {
 
 
 
-    // ========= floating point drawing functions =========
+    // ========= transformation functions =========
     public abstract void translate(double x, double y);
+    public abstract void rotate(double rotate, double anchorX, double anchorY, Transform.Axis axis);
+    public abstract void scale(double x, double y);
 
 
 }

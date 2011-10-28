@@ -2,8 +2,6 @@ package com.joshondesign.amino.core;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -116,6 +114,31 @@ public class Core {
         root.draw(ctx);
     }
     */
+    public void processAnims() {
+        long time = System.nanoTime();
+
+        //process animation
+        for(int i=0;i<this.anims.size(); i++) {
+            Anim a = anims.get(i);
+            if(!a.isStarted()) {
+                try {
+                    a.start(time);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
+            try {
+                a.update(time);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //process callbacks
+        for(int i=0;i<callbacks.size();i++) {
+            callbacks.get(i).call(null);
+        }
+    }
 
     private void _update(Graphics2D ctx) {
         long time = System.nanoTime();
