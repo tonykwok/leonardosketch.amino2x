@@ -214,4 +214,7 @@ public class JoglGFX extends GFX {
     public GL2 getGL() {
         return gl;
     }
+    public Buffer createBuffer() {
+        return null;
+    }
 }
