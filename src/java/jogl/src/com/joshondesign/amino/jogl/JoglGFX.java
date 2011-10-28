@@ -194,4 +194,8 @@ public class JoglGFX extends GFX {
         this.translateY += y;
         gl.glTranslated(x,y,0);
     }
+
+    public GL2 getGL() {
+        return gl;
+    }
 }
