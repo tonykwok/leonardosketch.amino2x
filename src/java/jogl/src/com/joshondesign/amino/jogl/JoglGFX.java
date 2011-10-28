@@ -195,6 +195,22 @@ public class JoglGFX extends GFX {
         gl.glTranslated(x,y,0);
     }
 
+    @Override
+    public void rotate(double rotate, double anchorX, double anchorY, Transform.Axis axis) {
+        switch (axis) {
+            case X: gl.glRotated(rotate*180f/Math.PI,1,0,0); break;
+            case Y: gl.glRotated(rotate*180f/Math.PI,0,1,0); break;
+            case Z: gl.glRotated(rotate*180f/Math.PI,0,0,1); break;
+        }
+        //gl.glRotated(rotate*180f/Math.PI,0,0,1);
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void scale(double x, double y) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public GL2 getGL() {
         return gl;
     }

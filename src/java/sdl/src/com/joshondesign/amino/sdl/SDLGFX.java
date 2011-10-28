@@ -418,6 +418,16 @@ public class SDLGFX extends GFX {
         this.translateY += y;
     }
 
+    @Override
+    public void rotate(double rotate, double anchorX, double anchorY, Transform.Axis axis) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void scale(double x, double y) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void dispose() {
         fillRect_rect.delete();
         imgsrc_rect.delete();
