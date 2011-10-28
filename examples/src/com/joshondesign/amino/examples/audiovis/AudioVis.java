@@ -35,28 +35,6 @@ public class AudioVis implements Core.InitCallback {
         thread.start();
     }
 
-    private static class AudioProcessor implements FrequenciesDataProcessor {
-        private FrequenciesDispatcher dispatcher;
-        private float[] leftData;
-        private float[] rightData;
-
-        private AudioProcessor() {
-            dispatcher = FrequenciesDispatcher.getInstance();
-            dispatcher.addProcessor(this);
-            leftData = new float[dispatcher.getFrequenciesBandCount()];
-            rightData = new float[dispatcher.getFrequenciesBandCount()];
-        }
-
-        public void process(float[] leftData, float[] rightData) {
-            this.leftData = leftData;
-            this.rightData = rightData;
-        }
-
-        public float getData(int index) {
-            return leftData[index];
-        }
-    }
-
     private static class AudioVisualizerNode extends Node {
         private float[] latestFreq = new float[16*2];
         float count = 0;

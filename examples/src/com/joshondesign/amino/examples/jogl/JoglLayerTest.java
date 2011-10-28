@@ -1,4 +1,4 @@
-package com.joshondesign.amino.jogl.test;
+package com.joshondesign.amino.examples.jogl;
 
 import com.joshondesign.amino.core.*;
 import com.joshondesign.amino.jogl.OrthoLayer;
