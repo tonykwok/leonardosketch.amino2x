@@ -176,7 +176,7 @@ public class JOGLWindow extends Window {
             //gl.glPopMatrix();
             //JoglFrame.viewPerspective(gl);
 
-            GFX gfx = new JoglGFX(drawable);
+            GFX gfx = new JoglGFX(drawable,width,height);
             window.root.draw(gfx);
             gfx.dispose();
             counter++;

@@ -23,11 +23,23 @@ public class JoglGFX extends GFX {
     private GL2 gl;
     private double translateX = 0;
     private double translateY = 0;
+    private static Shader copyBufferShader;
+    private Object defaultBuffer = new String("DEFAULT_BUFFER");
+    private int WIDTH = 0;
+    private int HEIGHT = 0;
 
-    public JoglGFX(GLAutoDrawable drawable) {
+    public JoglGFX(GLAutoDrawable drawable, int width, int height) {
         super();
+        this.WIDTH = width;
+        this.HEIGHT = height;
         this.drawable = drawable;
         gl = drawable.getGL().getGL2();
+        if(copyBufferShader == null) {
+            copyBufferShader = Shader.load(gl,
+                    JoglGFX.class.getResource("shaders/PassThrough.vert"),
+                    JoglGFX.class.getResource("shaders/SimpleTexture.frag")
+            );
+        }
     }
 
     @Override
@@ -69,7 +81,7 @@ public class JoglGFX extends GFX {
 
     @Override
     public void fillRect(int x, int y, int w, int h) {
-        fillRect((float)x,(float)y,(float)w,(float)h);
+        fillRect((float) x, (float) y, (float) w, (float) h);
     }
 
     @Override
@@ -115,27 +127,27 @@ public class JoglGFX extends GFX {
 
     @Override
     public void drawRoundRect(int x, int y, int w, int h, int corner) {
-        drawRect(x,y,w,h);
+        drawRect(x, y, w, h);
     }
 
     @Override
     public void fillRoundRect(int x, int y, int w, int h, int corner) {
-        fillRect(x,y,w,h);
+        fillRect(x, y, w, h);
     }
 
     @Override
     public void drawEllipse(int x, int y, int w, int h) {
-        drawRect(x,y,w,h);
+        drawRect(x, y, w, h);
     }
 
     @Override
     public void fillEllipse(int x, int y, int w, int h) {
-        fillRect(x,y,w,h);
+        fillRect(x, y, w, h);
     }
 
     @Override
     public void drawCircle(int cx, int cy, int radius) {
-        drawRect(cx-radius,cy-radius,radius*2,radius*2);
+        drawRect(cx - radius, cy - radius, radius * 2, radius * 2);
     }
 
     @Override
@@ -192,7 +204,7 @@ public class JoglGFX extends GFX {
     public void translate(double x, double y) {
         this.translateX += x;
         this.translateY += y;
-        gl.glTranslated(x,y,0);
+        gl.glTranslated(x, y, 0);
     }
 
     @Override
@@ -214,7 +226,123 @@ public class JoglGFX extends GFX {
     public GL2 getGL() {
         return gl;
     }
-    public Buffer createBuffer() {
-        return null;
+
+    public void copyBuffer(GL2 gl, Rect sourceRect, FrameBufferObject sourceBuffer, Rect targetRect, FrameBufferObject targetBuffer) {
+        gl.glPushMatrix();
+        //gl.glTranslated(targetRect.x,targetRect.y,0);
+        renderBufferWithShader(gl, copyBufferShader, sourceBuffer, targetBuffer);
+        gl.glPopMatrix();
+    }
+
+    private void renderBufferWithShader(GL2 gl, Shader shader, FrameBufferObject source, FrameBufferObject target) {
+        //p("rendering from a buffer with a shader");
+
+
+        //set the render target, if needed
+        if(target != null && target != getDefaultBuffer()) {
+            //p("rendering to a buffer");
+            gl.glPushMatrix();
+            gl.glTranslated(-2,HEIGHT,0);
+            //gl.glTranslated(0,0,0);
+            gl.glScaled(1,-1,1);
+            FrameBufferObject tbuf = target;
+            tbuf.bind(gl);
+        }
+
+        //turn on the shader
+        shader.use(gl);
+        gl.glActiveTexture(GL2.GL_TEXTURE0);
+        gl.glBindTexture(GL2.GL_TEXTURE_2D, source.colorId);
+        shader.setIntParameter(gl, "tex0", 0);
+
+        //draw
+        gl.glBegin(GL2.GL_QUADS);
+            gl.glTexCoord2f(0f, 0f); gl.glVertex2f(0, 0);
+            gl.glTexCoord2f(0f, 1f); gl.glVertex2f(0, source.getHeight());
+            gl.glTexCoord2f(1f, 1f); gl.glVertex2f( source.getWidth(), source.getHeight() );
+            gl.glTexCoord2f( 1f, 0f ); gl.glVertex2f(source.getWidth(), 0);
+        gl.glEnd();
+
+
+        //turn off the shader again
+        gl.glUseProgramObjectARB(0);
+        gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+        gl.glActiveTexture(GL2.GL_TEXTURE0);
+        gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+
+
+        ///debugging
+
+        if(false) {
+            QRect rect = QRect.build(0, 0, 100, 100);
+            float r = 0; float g = 1.0f; float b = 0.5f; float a = 0.2f;
+            gl.glBegin(GL2.GL_QUADS);
+                gl.glColor4f(r,g,b,a); gl.glVertex2f(rect.x, rect.y);
+                gl.glColor4f(r,g,b,a); gl.glVertex2f(rect.x, rect.y+rect.h);
+                gl.glColor4f(r,g,b,a); gl.glVertex2f(rect.x+rect.w, rect.y+rect.h);
+                gl.glColor4f(r,g,b,a); gl.glVertex2f(rect.x+rect.w, rect.y);
+            gl.glEnd();
+        }
+
+
+        //restore the render target, if needed
+        if(target != null && target != getDefaultBuffer()) {
+            gl.glPopMatrix();
+            gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+            gl.glViewport(0, 0, WIDTH, HEIGHT);
+        }
+
+
+    }
+
+    public FrameBufferObject createBuffer(int width, int height) {
+        FrameBufferObject buffer1 = FrameBufferObject.create(gl, width, height, false);
+        buffer1.bind(gl);
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        buffer1.clear(gl);
+        gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+        return buffer1;
+    }
+
+    public Object getDefaultBuffer() {
+        return defaultBuffer;
+    }
+
+    public void fillRect(QRect rect, AminoPaint fill, FrameBufferObject target, QRect clip) {
+        float r = 0;
+        float g = 0;
+        float b = 0;
+        if(fill instanceof AminoColor) {
+            AminoColor c = (AminoColor) fill;
+            r = (float) c.getRed()/255f;
+            g = (float) c.getGreen()/255f;
+            b = (float) c.getBlue()/255f;
+        }
+
+        //turn on alt buffer
+        if(target != null && target != getDefaultBuffer()) {
+            gl.glPushMatrix();
+            gl.glTranslated(0,HEIGHT,0);
+            gl.glScaled(1,-1,1);
+            FrameBufferObject tbuf = target;
+            tbuf.bind(gl);
+        }
+
+
+        gl.glBegin(GL2.GL_QUADS);
+            gl.glColor3f(r,g,b); gl.glVertex2f(rect.x, rect.y);
+            gl.glColor3f(r,g,b); gl.glVertex2f(rect.x, rect.y + rect.h);
+            gl.glColor3f(r,g,b); gl.glVertex2f(rect.x + rect.w, rect.y + rect.h);
+            gl.glColor3f(r, g, b); gl.glVertex2f(rect.x+rect.w, rect.y);
+        gl.glEnd();
+
+
+        //turn off alt buffer
+        if(target != null && target != getDefaultBuffer()) {
+            gl.glPopMatrix();
+            gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+            gl.glViewport(0, 0, WIDTH, HEIGHT);
+        }
+
     }
 }
