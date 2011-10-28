@@ -227,14 +227,14 @@ public class JoglGFX extends GFX {
         return gl;
     }
 
-    public void copyBuffer(GL2 gl, Rect sourceRect, FrameBufferObject sourceBuffer, Rect targetRect, FrameBufferObject targetBuffer) {
+    public void copyBuffer(Rect sourceRect, FrameBufferObject sourceBuffer, Rect targetRect, FrameBufferObject targetBuffer) {
         gl.glPushMatrix();
         //gl.glTranslated(targetRect.x,targetRect.y,0);
-        renderBufferWithShader(gl, copyBufferShader, sourceBuffer, targetBuffer);
+        renderBufferWithShader(copyBufferShader, sourceBuffer, targetBuffer);
         gl.glPopMatrix();
     }
 
-    private void renderBufferWithShader(GL2 gl, Shader shader, FrameBufferObject source, FrameBufferObject target) {
+    private void renderBufferWithShader(Shader shader, FrameBufferObject source, FrameBufferObject target) {
         //p("rendering from a buffer with a shader");
 
 
@@ -344,5 +344,42 @@ public class JoglGFX extends GFX {
             gl.glViewport(0, 0, WIDTH, HEIGHT);
         }
 
+    }
+
+    public void fillRect2(QRect rect, AminoPaint fill, QRect clip) {
+        float r = 0;
+        float g = 0;
+        float b = 0;
+        if(fill instanceof AminoColor) {
+            AminoColor c = (AminoColor) fill;
+            r = (float) c.getRed()/255f;
+            g = (float) c.getGreen()/255f;
+            b = (float) c.getBlue()/255f;
+        }
+
+        gl.glBegin(GL2.GL_QUADS);
+            gl.glColor3f(r,g,b); gl.glVertex2f(rect.x, rect.y);
+            gl.glColor3f(r,g,b); gl.glVertex2f(rect.x, rect.y + rect.h);
+            gl.glColor3f(r,g,b); gl.glVertex2f(rect.x + rect.w, rect.y + rect.h);
+            gl.glColor3f(r, g, b); gl.glVertex2f(rect.x+rect.w, rect.y);
+        gl.glEnd();
+
+
+    }
+
+    public void setTargetBuffer(FrameBufferObject target) {
+        if(target != null) {
+            //set to real target buffer
+            gl.glPushMatrix();
+            gl.glTranslated(0,HEIGHT,0);
+            gl.glScaled(1,-1,1);
+            FrameBufferObject tbuf = target;
+            tbuf.bind(gl);
+        } else {
+            //set back to the screen
+            gl.glPopMatrix();
+            gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+            gl.glViewport(0, 0, WIDTH, HEIGHT);
+        }
     }
 }

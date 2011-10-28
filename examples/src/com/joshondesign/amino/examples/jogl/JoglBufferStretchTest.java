@@ -1,11 +1,13 @@
-package com.joshondesign.amino.jogl.test;
+package com.joshondesign.amino.examples.jogl;
 
 import com.joshondesign.amino.core.*;
+import com.joshondesign.amino.examples.audiovis.AudioProcessor;
+import com.joshondesign.amino.examples.audiovis.PlayThread;
 import com.joshondesign.amino.jogl.FrameBufferObject;
 import com.joshondesign.amino.jogl.JoglGFX;
-import com.joshondesign.amino.jogl.QRect;
 
 import javax.media.opengl.GL2;
+import java.io.File;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,12 +25,14 @@ public class JoglBufferStretchTest implements Core.InitCallback {
     private FrameBufferObject buffer2;
     private Object defaultBuffer = new String("DEFAULT_BUFFER");
     private static final boolean BUFFER_DEBUG = false;
+    private AudioProcessor ap;
 
     public static void main(String ... args) {
         Core.init(new JoglBufferStretchTest());
     }
 
     public void call(Core core) throws Exception {
+        ap = new AudioProcessor();
         window = core.createResizableWindow(WIDTH,HEIGHT+20);
         window.setBackgroundFill(AminoColor.BLACK);
         window.setRoot(new Node() {
@@ -36,22 +40,26 @@ public class JoglBufferStretchTest implements Core.InitCallback {
             public void draw(GFX gfx) {
                 JoglGFX g = (JoglGFX) gfx;
                 GL2 gl = g.getGL();
-                JoglBufferStretchTest.this.draw(g,gl);
+                JoglBufferStretchTest.this.draw(g, gl);
             }
         });
-
+        File file = new File("../forever.mp3");
+        PlayThread thread = new PlayThread(file.toURL().toString());
+        //"http://projects.joshy.org/MaiTai/b1/Samples/Forever_Young.mp3");
+        thread.start();
     }
 
+    int counter = 0;
     private void draw(JoglGFX g, GL2 gl) {
         g.setPaint(AminoColor.RED);
         g.drawRect(100,100,50,50);
 
         if(buffer1 == null) {
-            buffer1 = g.createBuffer(WIDTH,HEIGHT);
+            buffer1 = g.createBuffer(WIDTH, HEIGHT);
 
         }
         if(buffer2 == null) {
-            buffer2 = g.createBuffer(WIDTH,HEIGHT);
+            buffer2 = g.createBuffer(WIDTH, HEIGHT);
         }
 
 
@@ -60,24 +68,49 @@ public class JoglBufferStretchTest implements Core.InitCallback {
         double cx = WIDTH/2;
         double cy = HEIGHT/2;
         gl.glTranslated(cx,cy,0);
-        gl.glScaled(1.01, 1.01, 1);
-        gl.glRotated(0.3,0,0,1);
+        gl.glScaled(1.005, 1.005, 1);
+        //gl.glRotated(0.2,0,0,1);
         gl.glTranslated(-cx, -cy, 0);
-        g.copyBuffer(gl,null,buffer2,null,buffer1);
+        g.copyBuffer(null, buffer2, null, buffer1);
         gl.glPopMatrix();
 
         // draw shapes to buffer1
         double x = Math.random()*WIDTH-100;
         double y = Math.random()*HEIGHT-100;
-        g.fillRect(QRect.build((int)x, (int)y, 100, 100)
-                , AminoColor.fromRGB((float)Math.random(),0.1f,0.1f)
-                , buffer1, null);
+        g.setTargetBuffer(buffer1);
+        /*
+        g.fillRect2(QRect.build((int) x, (int) y, 100, 100)
+                , AminoColor.fromRGB((float) Math.random(), 0.1f, 0.1f)
+                , null);
+                */
+
+
+        GFX gfx = g;
+        gfx.setPaint(AminoColor.fromHSV(counter%360,1,1));
+        //gfx.fillRect(150f,200,600,300);
+        float[] freq = ap.getLeftData();
+
+        for(int i=0; i<freq.length-1; i++) {
+            float h = freq[i]*200;
+            float h2 = freq[i+1]*200;
+            //gfx.fillRect(i*50+50f,350-h,40,h);
+            //gfx.fillRect(i*50+50f,370,40,h);
+            int n1 = i*50+150;
+            int n2 = (i+1)*50+150;
+            int yoff = (int) (Math.sin(Math.toRadians(counter%360)*3)*100);
+            gfx.drawLine(n1,(int)(HEIGHT/2-h)-yoff, n2,(int)(HEIGHT/2-h2)-yoff);
+            gfx.drawLine(n1,(int)(HEIGHT/2+h)+yoff, n2,(int)(HEIGHT/2+h2)+yoff);
+        }
+        g.setTargetBuffer(null);
+
 
         // copy buffer1 to screen
-        g.copyBuffer(gl, null, buffer1, null, null);
+        g.copyBuffer(null, buffer1, null, null);
 
         // copy buffer1 to buffer2
-        g.copyBuffer(gl,null,buffer1,null,buffer2);
+        g.copyBuffer(null, buffer1, null, buffer2);
+
+        counter++;
     }
 
 

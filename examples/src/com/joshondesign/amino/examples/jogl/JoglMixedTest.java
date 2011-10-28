@@ -1,4 +1,4 @@
-package com.joshondesign.amino.jogl.test;
+package com.joshondesign.amino.examples.jogl;
 
 import com.joshondesign.amino.core.AminoColor;
 import com.joshondesign.amino.core.GFX;
