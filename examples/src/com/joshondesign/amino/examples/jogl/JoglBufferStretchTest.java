@@ -17,14 +17,12 @@ import java.io.File;
  * To change this template use File | Settings | File Templates.
  */
 public class JoglBufferStretchTest implements Core.InitCallback {
-    private static final int WIDTH = 1100;
-    private static final int HEIGHT = 950;
+    private static int WIDTH = 1100;
+    private static int HEIGHT = 950;
 
     private Window window;
     private FrameBufferObject buffer1;
     private FrameBufferObject buffer2;
-    private Object defaultBuffer = new String("DEFAULT_BUFFER");
-    private static final boolean BUFFER_DEBUG = false;
     private AudioProcessor ap;
 
     public static void main(String ... args) {
@@ -33,7 +31,9 @@ public class JoglBufferStretchTest implements Core.InitCallback {
 
     public void call(Core core) throws Exception {
         ap = new AudioProcessor();
-        window = core.createResizableWindow(WIDTH,HEIGHT+20);
+        window = core.createFullscreenWindow();
+        WIDTH = window.getWidth();
+        HEIGHT = window.getHeight();
         window.setBackgroundFill(AminoColor.BLACK);
         window.setRoot(new Node() {
             @Override
@@ -43,9 +43,15 @@ public class JoglBufferStretchTest implements Core.InitCallback {
                 JoglBufferStretchTest.this.draw(g, gl);
             }
         });
+
         File file = new File("../forever.mp3");
-        PlayThread thread = new PlayThread(file.toURL().toString());
-        //"http://projects.joshy.org/MaiTai/b1/Samples/Forever_Young.mp3");
+        final PlayThread thread = new PlayThread(file.toURL().toString());
+        core.listen(Core.Events.MOUSE_PRESS,null, new Callback() {
+            public void call(Object o) {
+                thread.doDie();
+                window.close();
+            }
+        });
         thread.start();
     }
 
@@ -95,8 +101,8 @@ public class JoglBufferStretchTest implements Core.InitCallback {
             float h2 = freq[i+1]*200;
             //gfx.fillRect(i*50+50f,350-h,40,h);
             //gfx.fillRect(i*50+50f,370,40,h);
-            int n1 = i*50+150;
-            int n2 = (i+1)*50+150;
+            int n1 = WIDTH/2-freq.length/2*50+i*50;
+            int n2 = WIDTH/2-freq.length/2*50+(i+1)*50;
             int yoff = (int) (Math.sin(Math.toRadians(counter%360)*3)*100);
             gfx.drawLine(n1,(int)(HEIGHT/2-h)-yoff, n2,(int)(HEIGHT/2-h2)-yoff);
             gfx.drawLine(n1,(int)(HEIGHT/2+h)+yoff, n2,(int)(HEIGHT/2+h2)+yoff);
