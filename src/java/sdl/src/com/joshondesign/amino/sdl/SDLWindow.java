@@ -41,4 +41,9 @@ public class SDLWindow extends Window {
     public Core getCore() {
         return this.core;
     }
+
+    @Override
+    public void close() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

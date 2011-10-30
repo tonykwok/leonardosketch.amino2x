@@ -53,6 +53,11 @@ public class SDLCoreImpl extends CoreImpl {
     }
 
     @Override
+    public Window createFullscreenWindow(Core core) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void startTimerLoop(Core core) {
         try {
             SDL_Event event = new SDL_Event();

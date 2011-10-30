@@ -53,5 +53,6 @@ public abstract class Window {
         return null;
     }
 
+    public abstract void close();
 
 }
