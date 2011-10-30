@@ -32,7 +32,7 @@ public class JOGLWindow extends Window {
         this.fullscreen = fullscreen;
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice dev = env.getDefaultScreenDevice();
-        if(!dev.isFullScreenSupported()) {
+        if(!dev.isFullScreenSupported() && fullscreen) {
             u.p("can't go to full screen");
         }
 
@@ -45,7 +45,7 @@ public class JOGLWindow extends Window {
         canvas = new GLCanvas(caps);
 
         frame = new Frame("AWT Frame");
-        if(dev.isFullScreenSupported()) {
+        if(dev.isFullScreenSupported() && fullscreen) {
             frame.setResizable(false);
             frame.setUndecorated(true);
         }
@@ -66,7 +66,7 @@ public class JOGLWindow extends Window {
         canvas.addMouseMotionListener(ml);
         canvas.addKeyListener(ml);
 
-        if(dev.isFullScreenSupported()) {
+        if(dev.isFullScreenSupported() && fullscreen) {
             dev.setFullScreenWindow(frame);
         }
 
@@ -180,7 +180,7 @@ public class JOGLWindow extends Window {
             //clear the background
             gl.glClearColor(r,g,b, 1.0f);
             //gl.glClearColor(1f,0.5f,0f,1f);
-            gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+            gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
 
             //gl.glDepthMask(false);
