@@ -31,6 +31,11 @@ public class PerspectiveLayer extends Node {
         glu.gluPerspective(45, widthHeightRatio, 1, 1000);
         float distance = 100;
         glu.gluLookAt(0, 0, distance, 0, 0, 0, 0, 1, 0);
+
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        gl.glPushMatrix();
+        gl.glLoadIdentity();
+
         child.draw(gfx);
     }
     public Node setChild(Node shape) {

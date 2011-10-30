@@ -188,14 +188,14 @@ public class JOGLWindow extends Window {
             gl.glViewport(0, 0, width, height);
 
 
-            gl.glMatrixMode(GL2.GL_MODELVIEW);
-            gl.glPushMatrix();
-            gl.glLoadIdentity();
             gl.glMatrixMode(GL2.GL_PROJECTION);
             gl.glPushMatrix();
             gl.glLoadIdentity();
             gl.glOrtho(0, width, height, 0, -1, 1);
             gl.glTranslated(2, 0, 0);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
+            gl.glPushMatrix();
+            gl.glLoadIdentity();
 
 
             /*
