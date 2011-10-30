@@ -93,6 +93,6 @@ public class JoglCoreImpl extends CoreImpl {
 
     @Override
     public AminoPaint loadPattern(URL url) throws IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new JoglPatternPaint(url);
     }
 }
