@@ -25,13 +25,13 @@ public class JoglGFX extends GFX {
     private double translateY = 0;
     private static Shader copyBufferShader;
     private Object defaultBuffer = new String("DEFAULT_BUFFER");
-    private int WIDTH = 0;
-    private int HEIGHT = 0;
+    private int width = 0;
+    private int height = 0;
 
     public JoglGFX(GLAutoDrawable drawable, int width, int height) {
         super();
-        this.WIDTH = width;
-        this.HEIGHT = height;
+        this.width = width;
+        this.height = height;
         this.drawable = drawable;
         gl = drawable.getGL().getGL2();
         if(copyBufferShader == null) {
@@ -242,7 +242,7 @@ public class JoglGFX extends GFX {
         if(target != null && target != getDefaultBuffer()) {
             //p("rendering to a buffer");
             gl.glPushMatrix();
-            gl.glTranslated(-2,HEIGHT,0);
+            gl.glTranslated(-2, height,0);
             //gl.glTranslated(0,0,0);
             gl.glScaled(1,-1,1);
             FrameBufferObject tbuf = target;
@@ -289,7 +289,7 @@ public class JoglGFX extends GFX {
         if(target != null && target != getDefaultBuffer()) {
             gl.glPopMatrix();
             gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
-            gl.glViewport(0, 0, WIDTH, HEIGHT);
+            gl.glViewport(0, 0, width, height);
         }
 
 
@@ -322,7 +322,7 @@ public class JoglGFX extends GFX {
         //turn on alt buffer
         if(target != null && target != getDefaultBuffer()) {
             gl.glPushMatrix();
-            gl.glTranslated(0,HEIGHT,0);
+            gl.glTranslated(0, height,0);
             gl.glScaled(1,-1,1);
             FrameBufferObject tbuf = target;
             tbuf.bind(gl);
@@ -341,7 +341,7 @@ public class JoglGFX extends GFX {
         if(target != null && target != getDefaultBuffer()) {
             gl.glPopMatrix();
             gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
-            gl.glViewport(0, 0, WIDTH, HEIGHT);
+            gl.glViewport(0, 0, width, height);
         }
 
     }
@@ -371,7 +371,7 @@ public class JoglGFX extends GFX {
         if(target != null) {
             //set to real target buffer
             gl.glPushMatrix();
-            gl.glTranslated(0,HEIGHT,0);
+            gl.glTranslated(0, height,0);
             gl.glScaled(1,-1,1);
             FrameBufferObject tbuf = target;
             tbuf.bind(gl);
@@ -379,7 +379,16 @@ public class JoglGFX extends GFX {
             //set back to the screen
             gl.glPopMatrix();
             gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
-            gl.glViewport(0, 0, WIDTH, HEIGHT);
+            gl.glViewport(0, 0, width, height);
         }
+    }
+
+    public int getSceneWidth() {
+        return width;
+    }
+
+
+    public int getSceneHeight() {
+        return height;
     }
 }
