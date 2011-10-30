@@ -32,7 +32,8 @@ public class JoglTexturedSphere implements Core.InitCallback {
     public void call(Core core) throws Exception {
         img = (JoglPatternPaint) core.loadPattern(JoglTexturedSphere.class.getResource("earthmap1k.jpg"));
         //u.p("pattern = " + img);
-        window = core.createResizableWindow(1024,700);
+        //window = core.createResizableWindow(1024,700);
+        window = core.createFullscreenWindow();
         window.setBackgroundFill(AminoColor.BLACK);
         window.setRoot(new PerspectiveLayer().setChild(new Node() {
             @Override
@@ -40,6 +41,11 @@ public class JoglTexturedSphere implements Core.InitCallback {
                 doDraw((JoglGFX)gfx);
             }
         }));
+        core.listen(Core.Events.MOUSE_PRESS,null, new Callback() {
+            public void call(Object o) {
+                window.close();
+            }
+        });
     }
 
     double counter = 0;
@@ -51,16 +57,20 @@ public class JoglTexturedSphere implements Core.InitCallback {
         //turn on depth testing
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glDepthFunc(GL.GL_LEQUAL);
+        gl.glEnable(GL2.GL_NORMALIZE);
+        gl.glShadeModel(GL2.GL_SMOOTH);
 
         float SHINE_ALL_DIRECTIONS = 1;
-        float[] lightPos = {-300, 80, 200, SHINE_ALL_DIRECTIONS};
+        float[] lightPos = {50, 20, 30, SHINE_ALL_DIRECTIONS};
         float[] lightColorAmbient = {0.2f, 0.2f, 0.2f, 1f};
-        float[] lightColorSpecular = {0.8f, 0.8f, 0.8f, 1f};
+        float[] lightColorSpecular = {0.9f, 0.8f, 0.8f, 1f};
 
+        gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, lightColorAmbient,0); //global ambient
         // Set light parameters.
         gl.glLightfv(GL_LIGHT1, GL_POSITION, lightPos, 0);
-        gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightColorAmbient, 0);
-        gl.glLightfv(GL_LIGHT1, GL_SPECULAR, lightColorSpecular, 0);
+        //gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightColorAmbient, 0);//ambient from this light
+        //gl.glLightfv(GL_LIGHT1, GL_SPECULAR, lightColorSpecular, 0); //makes the sphere chunky
+        gl.glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColorSpecular, 0);
 
         // Enable lighting in GL.
         gl.glEnable(GL_LIGHT1);
@@ -75,6 +85,7 @@ public class JoglTexturedSphere implements Core.InitCallback {
         float[] rgba = {1f, 1f, 1f};
         gl.glMaterialfv(GL.GL_FRONT, GL2.GL_AMBIENT, rgba, 0);
         gl.glMaterialfv(GL.GL_FRONT, GL2.GL_SPECULAR, rgba, 0);
+        //gl.glMaterialfv(GL.GL_FRONT, GL2.GL_DIFFUSE, rgba, 0);
         gl.glMaterialf(GL.GL_FRONT, GL2.GL_SHININESS, 0.5f);
 
 
@@ -88,9 +99,9 @@ public class JoglTexturedSphere implements Core.InitCallback {
         glu.gluQuadricDrawStyle(earth, GLU.GLU_FILL);
         glu.gluQuadricNormals(earth,GLU.GLU_FLAT);
         glu.gluQuadricOrientation(earth,GLU.GLU_OUTSIDE);
-        float radius = 20.378f;
-        int slices = 64;
-        int stacks = 64;
+        float radius = 20.0f;
+        int slices = 20;
+        int stacks = 20;
         glu.gluSphere(earth,radius,slices, stacks);
         glu.gluDeleteQuadric(earth);
         texture.disable();
