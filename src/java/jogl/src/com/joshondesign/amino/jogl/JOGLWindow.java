@@ -139,6 +139,7 @@ public class JOGLWindow extends Window {
             //use vsync to let the OS handle the framerate and reduce tearing
             gl.setSwapInterval(1);
             //various screen setup parameters
+            //gl.glEnable(GL2.GL_NORMALIZE);
             //gl.glShadeModel(GL2.GL_SMOOTH);
             gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             gl.glClearDepth(1.0f);
