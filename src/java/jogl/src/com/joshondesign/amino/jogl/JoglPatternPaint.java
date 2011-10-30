@@ -7,6 +7,7 @@ import com.sun.opengl.util.texture.awt.AWTTextureIO;
 import javax.media.opengl.GL2;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,16 +19,26 @@ import java.io.IOException;
 public class JoglPatternPaint extends PatternPaint implements TextureProviderPaint {
     private Texture _texture;
     private File file;
+    private URL url;
 
     public JoglPatternPaint(File file) throws IOException {
         this.file = file;
+    }
+
+    public JoglPatternPaint(URL url) {
+        this.url = url;
     }
     //        texture = AWTTextureIO.newTexture(file, false);
 
     public Texture getTexture() {
         if(_texture == null) {
             try {
+                if(file != null) {
                 _texture = AWTTextureIO.newTexture(file,false);
+                }
+                if(url != null) {
+                    _texture = AWTTextureIO.newTexture(url,false,null);
+                }
                 _texture.setTexParameteri(GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
