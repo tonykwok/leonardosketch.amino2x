@@ -53,7 +53,7 @@ public class JoglTexturedSphere implements Core.InitCallback {
         gl.glDepthFunc(GL.GL_LEQUAL);
 
         float SHINE_ALL_DIRECTIONS = 1;
-        float[] lightPos = {-30, 0, 0, SHINE_ALL_DIRECTIONS};
+        float[] lightPos = {-300, 80, 200, SHINE_ALL_DIRECTIONS};
         float[] lightColorAmbient = {0.2f, 0.2f, 0.2f, 1f};
         float[] lightColorSpecular = {0.8f, 0.8f, 0.8f, 1f};
 
@@ -69,7 +69,7 @@ public class JoglTexturedSphere implements Core.InitCallback {
         gl.glPushMatrix();
         gl.glRotated(counter%360,0,1,0);
         gl.glRotated(90,1,0,0);
-        counter += 0.5;
+        counter += 0.1;
 
         // Set material properties.
         float[] rgba = {1f, 1f, 1f};
