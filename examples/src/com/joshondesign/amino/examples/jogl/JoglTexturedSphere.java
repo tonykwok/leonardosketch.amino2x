@@ -66,22 +66,23 @@ public class JoglTexturedSphere implements Core.InitCallback {
         gl.glEnable(GL_LIGHT1);
         gl.glEnable(GL_LIGHTING);
 
+        gl.glPushMatrix();
+        gl.glRotated(counter%360,0,1,0);
+        gl.glRotated(90,1,0,0);
+        counter += 0.5;
+
         // Set material properties.
         float[] rgba = {1f, 1f, 1f};
         gl.glMaterialfv(GL.GL_FRONT, GL2.GL_AMBIENT, rgba, 0);
         gl.glMaterialfv(GL.GL_FRONT, GL2.GL_SPECULAR, rgba, 0);
         gl.glMaterialf(GL.GL_FRONT, GL2.GL_SHININESS, 0.5f);
 
-        gl.glPushMatrix();
-        gl.glRotated(counter%360,0,1,0);
-        gl.glRotated(90,1,0,0);
-        counter += 0.5;
 
-        //gfx.setPaint(AminoColor.BLUE);
         Texture texture = img.getTexture();
         texture.enable();
         texture.bind();
-        //gfx.setPaint(img);
+
+
         GLUquadric earth = glu.gluNewQuadric();
         glu.gluQuadricTexture(earth,true);
         glu.gluQuadricDrawStyle(earth, GLU.GLU_FILL);
@@ -94,7 +95,6 @@ public class JoglTexturedSphere implements Core.InitCallback {
         glu.gluDeleteQuadric(earth);
         texture.disable();
 
-        //gfx.setPaint(img);
         //gfx.setPaint(AminoColor.RED);
         //gfx.fillRect(1, 2, 3, 4);
 
