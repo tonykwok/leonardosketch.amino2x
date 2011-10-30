@@ -15,6 +15,7 @@ import java.net.URL;
 public abstract class CoreImpl {
     public abstract void init(Core core, Core.InitCallback initCallback) throws AminoException;
     public abstract Window createResizableWindow(Core core, int width, int height) throws AminoException;
+    public abstract Window createFullscreenWindow(Core core);
     public abstract void startTimerLoop(Core core);
 
     public abstract AminoFont loadFont(URL resource) throws IOException, FontFormatException;

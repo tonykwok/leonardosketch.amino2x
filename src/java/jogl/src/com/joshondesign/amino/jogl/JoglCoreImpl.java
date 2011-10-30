@@ -32,7 +32,14 @@ public class JoglCoreImpl extends CoreImpl {
 
     @Override
     public Window createResizableWindow(Core core, int width, int height) throws AminoException {
-        JOGLWindow window =  new JOGLWindow(core,width,height);
+        JOGLWindow window =  new JOGLWindow(core,width,height,false);
+        windows.add(window);
+        return window;
+    }
+
+    @Override
+    public Window createFullscreenWindow(Core core) {
+        JOGLWindow window = new JOGLWindow(core,800,600,true);
         windows.add(window);
         return window;
     }

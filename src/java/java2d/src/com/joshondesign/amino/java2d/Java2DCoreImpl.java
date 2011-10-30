@@ -45,6 +45,11 @@ public class Java2DCoreImpl extends CoreImpl {
     }
 
     @Override
+    public Window createFullscreenWindow(Core core) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void startTimerLoop(Core core) {
         for(Java2DWindow w : windows) {
             if(!w._frame.isVisible()) {

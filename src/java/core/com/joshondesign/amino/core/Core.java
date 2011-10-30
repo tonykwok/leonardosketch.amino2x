@@ -345,6 +345,11 @@ public class Core {
         return _impl.createResizableWindow(_core, width,height);
     }
 
+    public Window createFullscreenWindow() {
+        return _impl.createFullscreenWindow(_core);
+    }
+
+
     public AminoFont loadFont(URL resource) throws Exception {
         return _impl.loadFont(resource);
     }
@@ -380,8 +385,6 @@ public class Core {
     public AminoPaint loadPattern(URL url) throws IOException {
         return _impl.loadPattern(url);
     }
-
-
 
     public interface InitCallback {
         public void call(Core core) throws Exception;

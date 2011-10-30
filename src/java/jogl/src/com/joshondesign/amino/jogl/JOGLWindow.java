@@ -23,11 +23,19 @@ public class JOGLWindow extends Window {
     private int width;
     private int height;
     private Animator animator;
+    private boolean fullscreen;
 
-    public JOGLWindow(Core core, int width, int height) {
+    public JOGLWindow(Core core, int width, int height, boolean fullscreen) {
         this.core = core;
         this.width = width;
         this.height = height;
+        this.fullscreen = fullscreen;
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice dev = env.getDefaultScreenDevice();
+        if(!dev.isFullScreenSupported()) {
+            u.p("can't go to full screen");
+        }
+
         GLProfile glp = GLProfile.get(GLProfile.GL2);
         GLCapabilities caps = new GLCapabilities(glp);
 
@@ -37,6 +45,11 @@ public class JOGLWindow extends Window {
         canvas = new GLCanvas(caps);
 
         frame = new Frame("AWT Frame");
+        if(dev.isFullScreenSupported()) {
+            frame.setResizable(false);
+            frame.setUndecorated(true);
+        }
+
         frame.setSize(this.width,this.height);
         frame.add(canvas);
         frame.setVisible(true);
@@ -52,6 +65,10 @@ public class JOGLWindow extends Window {
         canvas.addMouseListener(ml);
         canvas.addMouseMotionListener(ml);
         canvas.addKeyListener(ml);
+
+        if(dev.isFullScreenSupported()) {
+            dev.setFullScreenWindow(frame);
+        }
 
     }
 
@@ -88,6 +105,26 @@ public class JOGLWindow extends Window {
     @Override
     public Core getCore() {
         return this.core;
+    }
+
+    @Override
+    public void close() {
+        if(fullscreen) {
+            u.p("going out of fullscreen mode");
+            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice dev = env.getDefaultScreenDevice();
+            dev.setFullScreenWindow(null);
+        }
+        frame.setVisible(false);
+        frame.dispose();
+
+        u.p("stopping");
+        new Thread(new Runnable() {
+            public void run() {
+                animator.stop();
+            }
+        }).start();
+        u.p("stopped");
     }
 
     private static class JoglHandler implements GLEventListener {

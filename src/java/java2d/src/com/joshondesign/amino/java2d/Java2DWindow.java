@@ -68,6 +68,11 @@ public class Java2DWindow extends Window {
         return this.core;
     }
 
+    @Override
+    public void close() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     private static class MasterListener implements MouseListener, MouseMotionListener, KeyListener {
         private JComponent canvas;
         private boolean _mouse_pressed = false;
