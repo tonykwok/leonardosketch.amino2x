@@ -89,6 +89,10 @@ function Text() {
         } else {
             ctx.fillStyle = this.fill;
         }
+        ctx.save();
+        if(this.getOpacity() != 1) {
+            ctx.globalAlpha = this.getOpacity();
+        }
         
         var strs = this.text.split('\n');
         var h = ctx.measureText('m').width;
@@ -126,6 +130,7 @@ function Text() {
             }
             ctx.textAlign = align;
         }
+        ctx.restore();
         ctx.font = f;
         
         this._bounds = new Bounds(this.x,this.y,mw,y);
@@ -260,7 +265,7 @@ function Circle() {
     //@property radius The radius of the circle
     this.radius = 10.0;
     this.getRadius = function() { return this.radius; };
-    this.setRadius = function() { this.radius = radius; this.setDirty(); return this; }; 
+    this.setRadius = function(radius) { this.radius = radius; this.setDirty(); return this; }; 
     var self = this;
     
     //@method Set the x, y, and radius of the circle all in one step
@@ -282,7 +287,12 @@ function Circle() {
         ctx.beginPath();
         ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, true); 
         ctx.closePath();
+        ctx.save();
+        if(this.getOpacity() != 1) {
+            ctx.globalAlpha = this.getOpacity();
+        }
         ctx.fill();
+        ctx.restore();
         if(self.getStrokeWidth() > 0) {
             ctx.strokeStyle = self.getStroke();
             ctx.lineWidth = self.getStrokeWidth();
