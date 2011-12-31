@@ -48,7 +48,7 @@ public class JoglTexturedSphere implements Core.InitCallback {
         });
     }
 
-    double counter = 0;
+    double counter = 100;
     private void doDraw(JoglGFX gfx) {
         GL2 gl = gfx.getGL();
         if(glu == null) {
