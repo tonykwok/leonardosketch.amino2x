@@ -1,0 +1,10 @@
+{
+	"id": "com.joshondesign.amino.clock",
+	"version": "0.0.3",
+	"vendor": "Josh Marinacci",
+	"type": "web",
+	"main": "index.html",
+	"title": "Amino Clock",
+	"icon": "icon.png",
+	"dockMode": true	
+}

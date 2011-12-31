@@ -1,0 +1,56 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../src/js/core/amino.js"></script>
+    <style>
+    canvas { border: 1px solid black; }
+    </style>
+<script language="JavaScript">
+</script>
+<body>
+<canvas id="canvas" width="600" height="500"></canvas>
+<form>
+<input type=button id="more" value="more color"/>
+<input type=button id="less" value="less color"/>
+</form>
+<p>Demonstrates incremental rendering of pixel effects. The square should spin
+at a constant rate even though we are doing compute intensive pixel effects that
+take longer than a single frame to render. The work is split across multiple frames
+so that we can keep the UI responsive. On a desktop browser this may be fast
+enough to render in a single frame or two (~150ms), but on a mobile device it 
+may take several seconds, which is why incremental rendering is so important.</p>
+
+<script language="JavaScript">
+    var runner = new Runner();
+    runner.setCanvas(document.getElementById("canvas"));
+    runner.dirtyTrackingEnabled = false;    
+    var sn = new BackgroundSaturationNode(
+            //new Circle().set(300,300,300).setFill("yellow")
+            new ImageView("venus_large.jpg")
+        )
+    	.setSaturation(0.0)
+    	;
+    
+    var t = new Transform(new Rect().set(-10,-10,20,20).setFill("red")).setTranslateX(550).setTranslateY(30);
+    runner.addAnim(new Anim(t,"rotate",0,360,3).setLoop(true));
+    var g = new Group().add(sn).add(t);
+    runner.setRoot(g);
+    runner.setBackground("white");
+    runner.fps = 30;
+    runner.start();
+    
+    document.getElementById("more").onclick = function() {
+        var s = sn.getSaturation();
+        s+=0.33;
+        if(s>1.0) s = 1.0;
+        sn.setSaturation(s);
+    };
+    document.getElementById("less").onclick = function() {
+        var s = sn.getSaturation();
+        s-=0.33;
+        if(s<0.0) s = 0.0;
+        sn.setSaturation(s);
+    };
+</script>
+
+</body>
+</html>

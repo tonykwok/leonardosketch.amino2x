@@ -1,0 +1,178 @@
+<html>
+<head>
+<script src="../leonardosketch-amino2x/dist/amino.js" language="JavaScript"></script>
+<style type="text/css">
+body, canvas { border: 1px solid black; padding: 0; margin: 0;}
+#foo { border: 1px solid black; }
+body {font-size: 500%; }
+</style>
+</head>
+<body>
+<canvas id="canvas" width="1000" height="700"></canvas>
+<script language="JavaScript">
+function distance(x1,y1,x2,y2) {
+    var x = x2-x1;
+    var y = y2-y1;
+    return Math.sqrt(x*x+y*y);
+}
+
+
+var canvas = document.getElementById("canvas");
+
+var runner = new Runner();
+runner.setCanvas(canvas);
+runner.setFPS(30);
+runner.setBackground("white");
+
+
+
+var board = new Group();
+var tp = new Rect().set(0,0,1024,30).setFill("blue");
+var bottom = new Rect().set(0,670,1024,30).setFill("blue");
+var left = new Rect().set(0,0,30,700).setFill("blue");
+var right = new Rect().set(1024-30,0,30,700).setFill("blue");
+//board.add(top).add(bottom).add(left).add(right);
+board.add(tp).add(bottom).add(left).add(right);
+board.add(new Rect().set(300,30,3,700-60).setFill("#444444"));
+board.add(new Rect().set(1024-300,30,3,700-60).setFill("#444444"));
+runner.setRoot(board);
+
+
+var puck = new Circle().set(200,200,20).setFill("red");
+puck.vx = 8.5;
+puck.vy = 7.5;
+puck.ax = 0.999;
+puck.ay = 0.999;
+board.add(puck);
+
+
+var paddles = [];
+paddles[0] = new Circle().set(100,350,40).setFill("green");
+paddles[1] = new Circle().set(1024-100,350,40).setFill("green");
+board.add(paddles[0]);
+board.add(paddles[1]);        
+
+runner.addCallback(function() {
+    var x = puck.getX();
+    var y = puck.getY();
+    //console.log("radius = " + puck.getRadius());
+    //collide with borders
+    if(x + puck.getRadius() > right.getX()) {
+        puck.vx = -puck.vx;
+    }
+    if(x - puck.getRadius() < left.getX()+left.getWidth()) {
+        puck.vx = -puck.vx;
+    }
+    if(y + puck.getRadius() > bottom.getY()) {
+        puck.vy = -puck.vy;
+    }
+    if(y - puck.getRadius() < tp.getY()+tp.getHeight()) {
+        puck.vy = -puck.vy;
+    }
+    
+    //collide with paddles
+    comparePaddle(paddles[0],puck);
+    comparePaddle(paddles[1],puck);
+    
+    puck.vx *= puck.ax;
+    puck.vy *= puck.ay;
+    x += puck.vx;
+    y += puck.vy;
+    
+    puck.setX(x);
+    puck.setY(y);
+});
+
+function comparePaddle(pad, puck) {
+    if(distance(puck.getX(),puck.getY(),pad.getX(),pad.getY()) <
+            puck.getRadius() + pad.getRadius()) {
+        if(puck.getX() < pad.getX()) {
+            puck.vx = -20;
+        } else {
+            puck.vx = 20;
+        }
+    }
+}
+runner.start();
+var canvas = document.getElementById("canvas");
+canvas.ontouchstart = function(e) {
+    console.log("=== start ====");
+    console.log("target = " + e.targetTouches.length  
+        +  " changed = " + e.changedTouches.length);
+    for(var p=0; p<paddles.length; p++) {
+        var pad = paddles[p];
+        for(var i=0; i<e.changedTouches.length; i++) {
+            var touch = e.changedTouches[i];
+            console.log(" comparing: " + pad.getX() + " " + pad.getY()
+                + " to " + touch.clientX + " " + touch.clientY + " " + touch.identifier);
+            var dist = distance(pad.getX(),pad.getY(),touch.clientX,touch.clientY);
+            console.log("   dist = " + dist);
+            if(dist < 50) {
+                pad.active = true;
+                pad.touchid = touch.identifier;
+                console.log("started touch: " + touch.identifier);
+            }
+        }
+    }
+}
+function dump(e) {
+    console.log("touch event type = " + e.type);
+    for(var i=0; i<e.targetTouches.length; i++) {
+        var touch = e.targetTouches[i];
+        console.log("   touch " + i
+            + " " + touch.clientX + " " + touch.clientY);
+    }
+}
+canvas.ontouchmove = function(e) {
+    console.log("==== move ====");
+    console.log(" touches " + e.touches.length
+        +  " target = " + e.targetTouches.length  
+        +  " changed = " + e.changedTouches.length);
+    for(var i=0; i<e.touches.length; i++) {
+        var touch = e.touches[i];
+        console.log("touch id = " + touch.identifier);
+    }
+    for(var i=0; i<e.targetTouches.length; i++) {
+        var touch = e.targetTouches[i];
+        console.log("target touch id = " + touch.identifier);
+    }
+    for(var i=0; i<e.changedTouches.length; i++) {
+        var touch = e.changedTouches[i];
+        console.log("changed id = " + touch.identifier);
+    }
+    
+    for(var p=0; p<paddles.length; p++) {
+        var pad = paddles[p];
+        if(pad.active) {
+            for(var i=0; i<e.changedTouches.length; i++) {
+                var touch = e.changedTouches[i];
+                var dist = distance(pad.getX(),pad.getY(),touch.clientX,touch.clientY);
+                console.log("   dist = " + dist);
+                if(dist < 100) {
+                    pad.setX(touch.clientX);
+                    pad.setY(touch.clientY);
+                }
+            }
+        }
+    }
+};
+canvas.ontouchend = function(e) {
+    /*
+    console.log("end " + " count = " + e.targetTouches.length) ;
+    console.log("end " + " count = " + e.changedTouches.length) ;
+    for(var p=0; p<paddles.length; p++) {
+        var pad = paddles[p];
+        for(var i=0; i<e.changedTouches.length; i++) {
+            var touch = e.changedTouches[i];
+            if(touch.identifier == pad.touchid) {
+                pad.active = false;
+                console.log("disable");
+            }
+        }
+    }*/
+};
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<html>
+    <title>Fill Tests</title>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../../dist/amino.js"></script>
+    <style>
+    canvas { border: 0px solid black; margin: 0px;  padding:0px; }
+    </style>
+<body>
+<canvas id="can" width="500" height="300"></canvas>
+
+<script language="JavaScript">
+var r = new Runner();
+
+r.setCanvas(document.getElementById("can")).setBackground("green").setFPS(30);
+
+//fills are always in the coordinate system of the child node, excluding internal
+//offsets.  So a rect at 50,50 won't be the same as a rect at 0,0 in a transform of 50,50
+
+//linear gradient
+var grad0 = new LinearGradientFill(0,0, 100,0)
+    .addStop(0,"red")
+    .addStop(1,"blue");
+
+//radial gradient
+var grad1 = new RadialGradientFill(30,0,100)
+    .addStop(0, "white")
+    .addStop(0.5, "black")
+    .addStop(1, "white");
+
+//texture fill
+var pat = new PatternFill('checkerboard.png', 'repeat');
+var textRect = new Rect()
+    .set(0,0,100,40)
+    .setFill("yellow")
+    .setFill(pat);
+//var img = new Image();
+//we have to do this in a callback because the image might not be ready yet
+//img.onload = function() {
+//    var tex0 = r.getContext().createPattern(img,'repeat');
+//    textRect.setFill(tex0);
+//};
+//img.src = 'checkerboard.png';
+
+r.setRoot(new Group()
+    //radial gradient
+    .add(new Rect().set(0,0,100,40).setFill(grad1))
+    .add(new Rect().set(0,50,100,40).setFill(grad1))
+    .add(new Transform(new Rect().set(0,0,100,40).setFill(grad1)).setTranslateY(100))
+    
+    .add(new Transform(new Rect().set(0, 0,100,40).setFill(grad0)).setTranslateX(150))
+    //.add(new Transform(new Rect().set(0, 0,100,40).setFill(grad0)).setTranslateX(150))
+    .add(new Transform(textRect).setTranslateX(150).setTranslateY(50))
+    
+    );
+
+r.start();
+</script>
+
+</body>
+</html>
