@@ -7,7 +7,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Amino2" />
+    <orderEntry type="library" name="webos" level="project" />
+    <orderEntry type="library" name="webos1" level="project" />
+    <orderEntry type="module" module-name="Core" />
   </component>
 </module>
 

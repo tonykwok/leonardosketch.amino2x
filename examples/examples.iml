@@ -7,19 +7,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Amino2" />
-    <orderEntry type="module" module-name="java2d" />
-    <orderEntry type="module" module-name="sdl" />
-    <orderEntry type="module" module-name="jogl" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/jlayer.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="webos" level="project" />
+    <orderEntry type="library" name="jogl" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="webos1" level="project" />
+    <orderEntry type="module" module-name="Tests" />
+    <orderEntry type="module" module-name="Jogl" />
+    <orderEntry type="module" module-name="Core" />
   </component>
 </module>
 

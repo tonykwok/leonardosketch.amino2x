@@ -1,6 +1,7 @@
 package com.joshondesign.amino.examples.jogl;
 
 import com.joshondesign.amino.core.*;
+import com.joshondesign.amino.jogl.JoglCore;
 import com.joshondesign.amino.jogl.JoglGFX;
 import com.joshondesign.amino.jogl.JoglPatternPaint;
 import com.joshondesign.amino.jogl.PerspectiveLayer;
@@ -26,6 +27,7 @@ public class JoglTexturedSphere implements Core.InitCallback {
     private JoglPatternPaint img;
 
     public static void main(String ... args) {
+        Core.setImpl(JoglCore.getImpl());
         Core.init(new JoglTexturedSphere());
     }
 
