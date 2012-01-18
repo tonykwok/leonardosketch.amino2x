@@ -43,10 +43,12 @@ public class Particles2 implements Core.InitCallback {
         Node particleLayer = new Node() {
             @Override
             public void draw(GFX gfx) {
-                if(particles.size() < 100) {
-                    Particle p = new Particle();
-                    resetParticle(window, p);
-                    particles.add(p);
+                if(particles.size() < 400) {
+                    for(int i=0; i<3; i++) {
+                        Particle p = new Particle();
+                        resetParticle(window, p);
+                        particles.add(p);
+                    }
                 }
 
                 gfx.setPaint(AminoColor.BLACK);
