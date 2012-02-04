@@ -147,6 +147,69 @@ function Text() {
 };
 Text.extend(Shape);
 
+
+/* 
+@class Text A shape which draws a single line of text with the specified content (a string), font, and color.
+@category shape
+*/
+function BitmapText(src) {
+    Shape.call(this);
+    this.src = src;
+    this.img = new Image();
+    var self = this;
+    this.img.onload = function() {
+    	console.log("image loaded " + this.src);
+    	self.setDirty();
+    };
+    this.img.src = src;
+    //this.parent = null;
+    //@property x  The X coordinate of the left edge of the text.
+    this.x = 0;
+    this.setX = function(x) { this.x = x; this.setDirty(); return this; };
+    
+    //@property y  The Y coordinate of the bottom edge of the text.
+    this.y = 0;
+    this.setY = function(y) { this.y = y; this.setDirty(); return this; };
+    
+    //@property text The actual text string which will be drawn.
+    this.text = "-no text-";
+    this.setText = function(text) { this.text = text;  this.setDirty();  return this;  };
+    
+    this.metrics = [];
+    this.key = [];
+    this.setMetrics = function(key,metrics) {
+	    this.key = key;
+    	this.metrics = metrics;
+    	this.setDirty();
+    	return this;
+    }
+    this.lineHeight = 30;
+    this.setLineHeight = function(lineHeight) {
+    	this.lineHeight = lineHeight;
+    	return this;
+    }
+    this.draw = function(ctx) {
+        if(!this.isVisible()) return;
+        
+        var str = this.text;
+        //var str = "Greetings Earthling!";
+        var x = 0;
+        for(var i=0; i<str.length; i++) {
+	        var letter = str.charCodeAt(i);
+	        var n = this.key[letter];
+	        console.log("letter = " + letter + " char = " + n);
+	        var h = this.lineHeight;
+	        var xoff = this.metrics[n*2];
+	        var w = this.metrics[n*2+1];
+	        ctx.drawImage(this.img,
+	         xoff,0,w,h,
+	         x,0,w,h);
+	        x += w;
+        }
+    }
+};
+BitmapText.extend(Shape);
+
 // @class Ellipse  A ellipse shape.
 // @category shape
 //
